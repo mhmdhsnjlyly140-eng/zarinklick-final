@@ -8,7 +8,6 @@
     <style>
         body { font-family: Tahoma, sans-serif; max-width: 800px; margin: auto; padding: 20px; background: #f5f5f5; }
         .box { background: white; padding: 20px; border-radius: 12px; margin-bottom: 15px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
-        input { width: 100%; padding: 10px; margin: 6px 0; border: 1px solid #ddd; border-radius: 8px; }
         button { padding: 10px 20px; background: #28a745; color: white; border: none; border-radius: 8px; font-size: 16px; margin: 4px 0; }
         button:hover { background: #218838; }
         table { width: 100%; border-collapse: collapse; margin-top: 10px; }
@@ -18,7 +17,7 @@
         .btn-reject { background: #dc3545; }
         .btn-approve:hover { background: #0056b3; }
         .btn-reject:hover { background: #c82333; }
-        .admin-only { display: none; }
+        .hidden { display: none; }
         .error { color: red; }
         .success { color: green; }
     </style>
@@ -27,17 +26,14 @@
 
     <h1>👑 پنل ادمین زرین‌کلیک</h1>
 
-    <!-- فرم ورود ادمین -->
-    <div class="box" id="adminLoginBox">
-        <h3>ورود ادمین</h3>
-        <input type="email" id="adminEmail" placeholder="ایمیل ادمین" value="mhmdhsnjlyly140@gmail.com">
-        <input type="password" id="adminPassword" placeholder="رمز عبور" value="Mamad1234">
-        <button onclick="adminLogin()">ورود</button>
-        <p id="adminLoginMessage"></p>
+    <!-- دکمه ورود خودکار -->
+    <div class="box" id="loginBox">
+        <button onclick="autoLogin()" style="font-size:20px;">🔑 ورود به پنل ادمین</button>
+        <p id="loginMessage"></p>
     </div>
 
     <!-- پنل ادمین -->
-    <div class="box admin-only" id="adminPanel">
+    <div class="box hidden" id="adminPanel">
         <h3>📊 داشبورد ادمین</h3>
         <button onclick="loadUsers()">🔄 بارگذاری کاربران</button>
         <button onclick="loadWithdrawals()">🔄 بارگذاری درخواست‌های برداشت</button>
@@ -58,30 +54,11 @@
         const supabaseKey = 'sb_publishable_Gb3p43CBeX1VFOOzVtdI0w_IqNrVuEm';
         const supabase = window.supabase.createClient(supabaseUrl, supabaseKey);
 
-        // ======== رمز مستقیم ========
-        const ADMIN_EMAIL = 'mhmdhsnjlyly140@gmail.com';
-        const ADMIN_PASSWORD = 'Mamad1234';
-
-        // ======== ورود ادمین ========
-        window.adminLogin = async function() {
-            const email = document.getElementById('adminEmail').value.trim();
-            const password = document.getElementById('adminPassword').value.trim();
-
-            if (!email || !password) {
-                document.getElementById('adminLoginMessage').innerHTML = '<span class="error">ایمیل و رمز را پر کنید</span>';
-                return;
-            }
-
-            // بررسی ایمیل و رمز مستقیم
-            if (email !== ADMIN_EMAIL || password !== ADMIN_PASSWORD) {
-                document.getElementById('adminLoginMessage').innerHTML = '<span class="error">ایمیل یا رمز اشتباه است</span>';
-                return;
-            }
-
-            // اگر درست بود، پنل نمایش داده شود
-            document.getElementById('adminLoginMessage').innerHTML = '<span class="success">ورود موفق! خوش آمدید ادمین</span>';
-            document.getElementById('adminLoginBox').style.display = 'none';
-            document.querySelectorAll('.admin-only').forEach(el => el.style.display = 'block');
+        // ======== ورود خودکار ========
+        window.autoLogin = function() {
+            document.getElementById('loginBox').style.display = 'none';
+            document.getElementById('adminPanel').classList.remove('hidden');
+            document.getElementById('loginMessage').innerHTML = '<span class="success">✅ وارد پنل ادمین شدید.</span>';
             loadUsers();
             loadWithdrawals();
         };
@@ -193,11 +170,9 @@
 
         // ======== خروج ادمین ========
         window.logoutAdmin = function() {
-            document.querySelectorAll('.admin-only').forEach(el => el.style.display = 'none');
-            document.getElementById('adminLoginBox').style.display = 'block';
-            document.getElementById('adminLoginMessage').innerHTML = '';
-            document.getElementById('adminEmail').value = 'mhmdhsnjlyly140@gmail.com';
-            document.getElementById('adminPassword').value = 'Mamad1234';
+            document.getElementById('adminPanel').classList.add('hidden');
+            document.getElementById('loginBox').style.display = 'block';
+            document.getElementById('loginMessage').innerHTML = '';
         };
     </script>
 </body>
