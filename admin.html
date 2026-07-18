@@ -31,7 +31,7 @@
     <div class="box" id="adminLoginBox">
         <h3>ورود ادمین</h3>
         <input type="email" id="adminEmail" placeholder="ایمیل ادمین" value="mhmdhsnjlyly140@gmail.com">
-        <input type="password" id="adminPassword" placeholder="رمز عبور">
+        <input type="password" id="adminPassword" placeholder="رمز عبور" value="Mamad1234">
         <button onclick="adminLogin()">ورود</button>
         <p id="adminLoginMessage"></p>
     </div>
@@ -58,6 +58,10 @@
         const supabaseKey = 'sb_publishable_Gb3p43CBeX1VFOOzVtdI0w_IqNrVuEm';
         const supabase = window.supabase.createClient(supabaseUrl, supabaseKey);
 
+        // ======== رمز مستقیم ========
+        const ADMIN_EMAIL = 'mhmdhsnjlyly140@gmail.com';
+        const ADMIN_PASSWORD = 'Mamad1234';
+
         // ======== ورود ادمین ========
         window.adminLogin = async function() {
             const email = document.getElementById('adminEmail').value.trim();
@@ -68,31 +72,18 @@
                 return;
             }
 
-            // فقط ایمیل مشخص شده اجازه ورود دارد
-            if (email !== 'mhmdhsnjlyly140@gmail.com') {
-                document.getElementById('adminLoginMessage').innerHTML = '<span class="error">دسترسی غیرمجاز</span>';
+            // بررسی ایمیل و رمز مستقیم
+            if (email !== ADMIN_EMAIL || password !== ADMIN_PASSWORD) {
+                document.getElementById('adminLoginMessage').innerHTML = '<span class="error">ایمیل یا رمز اشتباه است</span>';
                 return;
             }
 
-            try {
-                const { data, error } = await supabase
-                    .from('users')
-                    .select('*')
-                    .eq('email', email)
-                    .eq('password', password);
-
-                if (error || data.length === 0) {
-                    document.getElementById('adminLoginMessage').innerHTML = '<span class="error">ایمیل یا رمز اشتباه است</span>';
-                } else {
-                    document.getElementById('adminLoginMessage').innerHTML = '<span class="success">ورود موفق! خوش آمدید ادمین</span>';
-                    document.getElementById('adminLoginBox').style.display = 'none';
-                    document.querySelectorAll('.admin-only').forEach(el => el.style.display = 'block');
-                    loadUsers();
-                    loadWithdrawals();
-                }
-            } catch (err) {
-                document.getElementById('adminLoginMessage').innerHTML = '<span class="error">خطا: ' + err.message + '</span>';
-            }
+            // اگر درست بود، پنل نمایش داده شود
+            document.getElementById('adminLoginMessage').innerHTML = '<span class="success">ورود موفق! خوش آمدید ادمین</span>';
+            document.getElementById('adminLoginBox').style.display = 'none';
+            document.querySelectorAll('.admin-only').forEach(el => el.style.display = 'block');
+            loadUsers();
+            loadWithdrawals();
         };
 
         // ======== بارگذاری کاربران ========
@@ -206,8 +197,8 @@
             document.getElementById('adminLoginBox').style.display = 'block';
             document.getElementById('adminLoginMessage').innerHTML = '';
             document.getElementById('adminEmail').value = 'mhmdhsnjlyly140@gmail.com';
-            document.getElementById('adminPassword').value = '';
+            document.getElementById('adminPassword').value = 'Mamad1234';
         };
     </script>
 </body>
-            </html>
+</html>
