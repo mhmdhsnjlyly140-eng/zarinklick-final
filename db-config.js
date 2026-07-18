@@ -3,6 +3,6 @@ module.exports = {
   port: 5432,
   database: 'neondb',
   user: 'neondb_owner',
-  password: 'npg_ayNhnpBP9Yx5',
+  password: 'npg_tgb5vDwZ8TEc
   ssl: { rejectUnauthorized: false }
 };
