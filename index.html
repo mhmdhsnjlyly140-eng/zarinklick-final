@@ -19,7 +19,6 @@
 
     <h1>💰 زرین‌کلیک</h1>
 
-    <!-- فرم ثبت‌نام -->
     <div class="box" id="registerBox">
         <h3>ثبت‌نام</h3>
         <input type="email" id="regEmail" placeholder="ایمیل">
@@ -29,7 +28,6 @@
         <p id="regMessage"></p>
     </div>
 
-    <!-- فرم ورود -->
     <div class="box" id="loginBox">
         <h3>ورود</h3>
         <input type="email" id="loginEmail" placeholder="ایمیل">
@@ -38,7 +36,6 @@
         <p id="loginMessage"></p>
     </div>
 
-    <!-- پنل کاربری (پس از ورود) -->
     <div class="box" id="dashboard" style="display:none;">
         <h3>خوش آمدید، <span id="userEmail"></span></h3>
         <p>موجودی کیف پول: <span id="userBalance">0</span> تومان</p>
@@ -46,14 +43,12 @@
     </div>
 
     <script>
-        // ======== اتصال به Supabase ========
+        // ======== فقط یک بار تعریف ========
         const supabaseUrl = 'https://fpogciahtzacgrglhmnx.supabase.co/rest/v1/
         const supabaseKey = 'sb_publishable_Gb3p43CBeX1VFOOzVtdI0w_IqNrVuEm
         const supabase = window.supabase.createClient(supabaseUrl, supabaseKey);
 
         // ======== توابع ========
-
-        // ثبت‌نام
         async function registerUser() {
             const email = document.getElementById('regEmail').value.trim();
             const password = document.getElementById('regPassword').value.trim();
@@ -64,21 +59,24 @@
                 return;
             }
 
-            const { data, error } = await supabase
-                .from('users')
-                .insert([{ email, password, ref_code: refCode, balance: 0 }]);
+            try {
+                const { data, error } = await supabase
+                    .from('users')
+                    .insert([{ email, password, ref_code: refCode, balance: 0 }]);
 
-            if (error) {
-                document.getElementById('regMessage').innerHTML = '<span class="error">خطا: ' + error.message + '</span>';
-            } else {
-                document.getElementById('regMessage').innerHTML = '<span class="success">ثبت‌نام موفق! حالا وارد شوید.</span>';
-                document.getElementById('regEmail').value = '';
-                document.getElementById('regPassword').value = '';
-                document.getElementById('regRef').value = '';
+                if (error) {
+                    document.getElementById('regMessage').innerHTML = '<span class="error">خطا: ' + error.message + '</span>';
+                } else {
+                    document.getElementById('regMessage').innerHTML = '<span class="success">ثبت‌نام موفق! حالا وارد شوید.</span>';
+                    document.getElementById('regEmail').value = '';
+                    document.getElementById('regPassword').value = '';
+                    document.getElementById('regRef').value = '';
+                }
+            } catch (err) {
+                document.getElementById('regMessage').innerHTML = '<span class="error">خطا: ' + err.message + '</span>';
             }
         }
 
-        // ورود
         async function loginUser() {
             const email = document.getElementById('loginEmail').value.trim();
             const password = document.getElementById('loginPassword').value.trim();
@@ -88,26 +86,29 @@
                 return;
             }
 
-            const { data, error } = await supabase
-                .from('users')
-                .select('*')
-                .eq('email', email)
-                .eq('password', password);
+            try {
+                const { data, error } = await supabase
+                    .from('users')
+                    .select('*')
+                    .eq('email', email)
+                    .eq('password', password);
 
-            if (error || data.length === 0) {
-                document.getElementById('loginMessage').innerHTML = '<span class="error">ایمیل یا رمز اشتباه است</span>';
-            } else {
-                const user = data[0];
-                document.getElementById('userEmail').innerText = user.email;
-                document.getElementById('userBalance').innerText = user.balance || 0;
-                document.getElementById('dashboard').style.display = 'block';
-                document.getElementById('loginBox').style.display = 'none';
-                document.getElementById('registerBox').style.display = 'none';
-                document.getElementById('loginMessage').innerHTML = '';
+                if (error || data.length === 0) {
+                    document.getElementById('loginMessage').innerHTML = '<span class="error">ایمیل یا رمز اشتباه است</span>';
+                } else {
+                    const user = data[0];
+                    document.getElementById('userEmail').innerText = user.email;
+                    document.getElementById('userBalance').innerText = user.balance || 0;
+                    document.getElementById('dashboard').style.display = 'block';
+                    document.getElementById('loginBox').style.display = 'none';
+                    document.getElementById('registerBox').style.display = 'none';
+                    document.getElementById('loginMessage').innerHTML = '';
+                }
+            } catch (err) {
+                document.getElementById('loginMessage').innerHTML = '<span class="error">خطا: ' + err.message + '</span>';
             }
         }
 
-        // خروج
         function logoutUser() {
             document.getElementById('dashboard').style.display = 'none';
             document.getElementById('loginBox').style.display = 'block';
@@ -118,4 +119,4 @@
     </script>
 
 </body>
-  </html>
+    </html>
