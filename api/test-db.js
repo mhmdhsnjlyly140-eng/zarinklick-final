@@ -1,10 +1,8 @@
 const { Client } = require('pg');
+const dbConfig = require('../db-config');
 
 module.exports = async function handler(req, res) {
-  const client = new Client({
-    connectionString: process.env.DATABASE_URL,
-    ssl: { rejectUnauthorized: false }
-  });
+  const client = new Client(dbConfig);
 
   try {
     await client.connect();
