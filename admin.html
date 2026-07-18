@@ -3,177 +3,472 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>پنل ادمین زرین‌کلیک</title>
+    <title>زرین‌کلیک</title>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
-        body { font-family: Tahoma, sans-serif; max-width: 800px; margin: auto; padding: 20px; background: #f5f5f5; }
+        body { font-family: Tahoma, sans-serif; max-width: 500px; margin: auto; padding: 20px; background: #f5f5f5; }
         .box { background: white; padding: 20px; border-radius: 12px; margin-bottom: 15px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
-        button { padding: 10px 20px; background: #28a745; color: white; border: none; border-radius: 8px; font-size: 16px; margin: 4px 0; }
+        input { width: 100%; padding: 10px; margin: 6px 0; border: 1px solid #ddd; border-radius: 8px; }
+        button { width: 100%; padding: 10px; background: #28a745; color: white; border: none; border-radius: 8px; font-size: 16px; margin: 4px 0; }
         button:hover { background: #218838; }
-        table { width: 100%; border-collapse: collapse; margin-top: 10px; }
-        th, td { border: 1px solid #ddd; padding: 8px; text-align: center; }
+        button:disabled { background: #aaa; cursor: not-allowed; }
+        .error { color: red; font-size: 14px; }
+        .success { color: green; font-size: 14px; }
+        hr { margin: 20px 0; border: 1px solid #ddd; }
+        table { width: 100%; border-collapse: collapse; margin-top: 10px; font-size: 14px; }
+        th, td { border: 1px solid #ddd; padding: 6px; text-align: center; }
         th { background: #4CAF50; color: white; }
-        .btn-approve { background: #007bff; }
-        .btn-reject { background: #dc3545; }
+        .btn-approve { background: #007bff; color: white; border: none; padding: 5px 10px; border-radius: 5px; }
+        .btn-reject { background: #dc3545; color: white; border: none; padding: 5px 10px; border-radius: 5px; }
         .btn-approve:hover { background: #0056b3; }
         .btn-reject:hover { background: #c82333; }
         .hidden { display: none; }
-        .error { color: red; }
-        .success { color: green; }
     </style>
 </head>
 <body>
 
-    <h1>👑 پنل ادمین زرین‌کلیک</h1>
+    <h1>💰 زرین‌کلیک</h1>
 
-    <!-- دکمه ورود خودکار -->
+    <!-- ثبت‌نام -->
+    <div class="box" id="registerBox">
+        <h3>ثبت‌نام</h3>
+        <input type="email" id="regEmail" placeholder="ایمیل">
+        <input type="password" id="regPassword" placeholder="رمز عبور">
+        <input type="text" id="regRef" placeholder="کد معرف (اختیاری)">
+        <button onclick="registerUser()">ثبت‌نام</button>
+        <p id="regMessage"></p>
+    </div>
+
+    <!-- ورود -->
     <div class="box" id="loginBox">
-        <button onclick="autoLogin()" style="font-size:20px;">🔑 ورود به پنل ادمین</button>
+        <h3>ورود</h3>
+        <input type="email" id="loginEmail" placeholder="ایمیل">
+        <input type="password" id="loginPassword" placeholder="رمز عبور">
+        <button onclick="loginUser()">ورود</button>
         <p id="loginMessage"></p>
     </div>
 
-    <!-- پنل ادمین -->
-    <div class="box hidden" id="adminPanel">
-        <h3>📊 داشبورد ادمین</h3>
-        <button onclick="loadUsers()">🔄 بارگذاری کاربران</button>
-        <button onclick="loadWithdrawals()">🔄 بارگذاری درخواست‌های برداشت</button>
-        <button onclick="logoutAdmin()">🚪 خروج</button>
-        <hr>
+    <!-- پنل کاربری -->
+    <div class="box hidden" id="dashboard">
+        <h3>خوش آمدید، <span id="userEmail"></span></h3>
+        <p>💰 کیف پول اصلی: <span id="walletMain">0</span> تومان</p>
+        <p>📢 کیف پول تبلیغ: <span id="walletAds">0</span> تومان</p>
 
-        <h4>👥 لیست کاربران</h4>
-        <div id="usersList"></div>
+        <button onclick="clickAd()">👆 کلیک روی تبلیغ (۱۰۰ تومان)</button>
+        <button onclick="transferToMain()">⬅️ انتقال از تبلیغ به اصلی</button>
+        <button onclick="withdrawFromAds()">🏦 برداشت از کیف پول تبلیغ</button>
 
         <hr>
-        <h4>🏦 درخواست‌های برداشت</h4>
-        <div id="withdrawalsList"></div>
+        <h3>🎡 گردونه شانس</h3>
+        <button onclick="spinWheel()" id="spinBtn">🔄 چرخش (هر ۴۸ ساعت یک بار)</button>
+        <p id="spinMessage"></p>
+
+        <hr>
+        <button onclick="showAdmin()">👑 پنل ادمین</button>
+        <div id="adminPanel" class="hidden" style="margin-top:15px;">
+            <h4>👥 لیست کاربران</h4>
+            <div id="usersList"></div>
+            <hr>
+            <h4>🏦 درخواست‌های برداشت</h4>
+            <div id="withdrawalsList"></div>
+        </div>
+
+        <hr>
+        <button onclick="logoutUser()">🚪 خروج</button>
     </div>
 
     <script>
         // ======== Supabase ========
-        const supabaseUrl = 'https://fpogciahtzacgrglhmnx.supabase.co';
-        const supabaseKey = 'sb_publishable_Gb3p43CBeX1VFOOzVtdI0w_IqNrVuEm';
-        const supabase = window.supabase.createClient(supabaseUrl, supabaseKey);
+        (function() {
+            const supabaseUrl = 'https://fpogciahtzacgrglhmnx.supabase.co';
+            const supabaseKey = 'sb_publishable_Gb3p43CBeX1VFOOzVtdI0w_IqNrVuEm';
+            const supabase = window.supabase.createClient(supabaseUrl, supabaseKey);
 
-        // ======== ورود خودکار ========
-        window.autoLogin = function() {
-            document.getElementById('loginBox').style.display = 'none';
-            document.getElementById('adminPanel').classList.remove('hidden');
-            document.getElementById('loginMessage').innerHTML = '<span class="success">✅ وارد پنل ادمین شدید.</span>';
-            loadUsers();
-            loadWithdrawals();
-        };
+            // ======== ثبت‌نام ========
+            window.registerUser = async function() {
+                const email = document.getElementById('regEmail').value.trim();
+                const password = document.getElementById('regPassword').value.trim();
+                const refCode = document.getElementById('regRef').value.trim() || '';
 
-        // ======== بارگذاری کاربران ========
-        window.loadUsers = async function() {
-            try {
-                const { data, error } = await supabase
-                    .from('users')
-                    .select('email, wallet_main, wallet_ads, created_at');
-
-                if (error) {
-                    document.getElementById('usersList').innerHTML = '<span class="error">خطا در بارگذاری کاربران</span>';
-                } else {
-                    let html = '<table><tr><th>ایمیل</th><th>کیف پول اصلی</th><th>کیف پول تبلیغ</th><th>تاریخ ثبت</th></tr>';
-                    data.forEach(user => {
-                        html += `<tr>
-                            <td>${user.email}</td>
-                            <td>${user.wallet_main || 0}</td>
-                            <td>${user.wallet_ads || 0}</td>
-                            <td>${new Date(user.created_at).toLocaleDateString('fa-IR')}</td>
-                        </tr>`;
-                    });
-                    html += '</table>';
-                    document.getElementById('usersList').innerHTML = html;
-                }
-            } catch (err) {
-                document.getElementById('usersList').innerHTML = '<span class="error">خطا: ' + err.message + '</span>';
-            }
-        };
-
-        // ======== بارگذاری درخواست‌های برداشت ========
-        window.loadWithdrawals = async function() {
-            try {
-                const { data, error } = await supabase
-                    .from('withdraw_requests')
-                    .select('*')
-                    .order('created_at', { ascending: false });
-
-                if (error) {
-                    document.getElementById('withdrawalsList').innerHTML = '<span class="error">خطا در بارگذاری درخواست‌ها</span>';
-                } else {
-                    let html = '<table><tr><th>کاربر</th><th>مبلغ</th><th>وضعیت</th><th>تاریخ</th><th>عملیات</th></tr>';
-                    data.forEach(req => {
-                        html += `<tr>
-                            <td>${req.user_email}</td>
-                            <td>${req.amount}</td>
-                            <td>${req.status === 'pending' ? '⏳ در انتظار' : req.status === 'approved' ? '✅ تأیید شده' : '❌ رد شده'}</td>
-                            <td>${new Date(req.created_at).toLocaleDateString('fa-IR')}</td>
-                            <td>
-                                ${req.status === 'pending' ? `
-                                    <button class="btn-approve" onclick="approveWithdrawal(${req.id}, '${req.user_email}', ${req.amount})">✅ تأیید</button>
-                                    <button class="btn-reject" onclick="rejectWithdrawal(${req.id})">❌ رد</button>
-                                ` : '—'}
-                            </td>
-                        </tr>`;
-                    });
-                    html += '</table>';
-                    document.getElementById('withdrawalsList').innerHTML = html;
-                }
-            } catch (err) {
-                document.getElementById('withdrawalsList').innerHTML = '<span class="error">خطا: ' + err.message + '</span>';
-            }
-        };
-
-        // ======== تأیید برداشت ========
-        window.approveWithdrawal = async function(id, email, amount) {
-            if (!confirm(`آیا از تأیید برداشت ${amount} تومانی برای ${email} مطمئن هستید؟`)) return;
-
-            try {
-                const { error: updateError } = await supabase
-                    .from('withdraw_requests')
-                    .update({ status: 'approved' })
-                    .eq('id', id);
-
-                if (updateError) {
-                    alert('خطا در تأیید برداشت');
+                if (!email || !password) {
+                    document.getElementById('regMessage').innerHTML = '<span class="error">ایمیل و رمز را پر کنید</span>';
                     return;
                 }
 
-                alert(`✅ برداشت ${amount} تومانی برای ${email} تأیید شد.`);
-                loadWithdrawals();
-            } catch (err) {
-                alert('خطا: ' + err.message);
-            }
-        };
+                try {
+                    const { data, error } = await supabase
+                        .from('users')
+                        .insert([{ email, password, ref_code: refCode, wallet_main: 0, wallet_ads: 0, last_spin: null }]);
 
-        // ======== رد برداشت ========
-        window.rejectWithdrawal = async function(id) {
-            if (!confirm('آیا از رد این درخواست مطمئن هستید؟')) return;
+                    if (error) {
+                        document.getElementById('regMessage').innerHTML = '<span class="error">خطا: ' + error.message + '</span>';
+                    } else {
+                        document.getElementById('regMessage').innerHTML = '<span class="success">ثبت‌نام موفق! حالا وارد شوید.</span>';
+                        document.getElementById('regEmail').value = '';
+                        document.getElementById('regPassword').value = '';
+                        document.getElementById('regRef').value = '';
+                    }
+                } catch (err) {
+                    document.getElementById('regMessage').innerHTML = '<span class="error">خطا: ' + err.message + '</span>';
+                }
+            };
 
-            try {
-                const { error: updateError } = await supabase
-                    .from('withdraw_requests')
-                    .update({ status: 'rejected' })
-                    .eq('id', id);
+            // ======== ورود ========
+            window.loginUser = async function() {
+                const email = document.getElementById('loginEmail').value.trim();
+                const password = document.getElementById('loginPassword').value.trim();
 
-                if (updateError) {
-                    alert('خطا در رد برداشت');
+                if (!email || !password) {
+                    document.getElementById('loginMessage').innerHTML = '<span class="error">ایمیل و رمز را پر کنید</span>';
                     return;
                 }
 
-                alert('❌ درخواست برداشت رد شد.');
-                loadWithdrawals();
-            } catch (err) {
-                alert('خطا: ' + err.message);
-            }
-        };
+                try {
+                    const { data, error } = await supabase
+                        .from('users')
+                        .select('*')
+                        .eq('email', email)
+                        .eq('password', password);
 
-        // ======== خروج ادمین ========
-        window.logoutAdmin = function() {
-            document.getElementById('adminPanel').classList.add('hidden');
-            document.getElementById('loginBox').style.display = 'block';
-            document.getElementById('loginMessage').innerHTML = '';
-        };
+                    if (error || data.length === 0) {
+                        document.getElementById('loginMessage').innerHTML = '<span class="error">ایمیل یا رمز اشتباه است</span>';
+                    } else {
+                        const user = data[0];
+                        document.getElementById('userEmail').innerText = user.email;
+                        document.getElementById('walletMain').innerText = user.wallet_main || 0;
+                        document.getElementById('walletAds').innerText = user.wallet_ads || 0;
+                        document.getElementById('dashboard').classList.remove('hidden');
+                        document.getElementById('loginBox').style.display = 'none';
+                        document.getElementById('registerBox').style.display = 'none';
+                        document.getElementById('loginMessage').innerHTML = '';
+                    }
+                } catch (err) {
+                    document.getElementById('loginMessage').innerHTML = '<span class="error">خطا: ' + err.message + '</span>';
+                }
+            };
+
+            // ======== کلیک روی تبلیغ ========
+            window.clickAd = async function() {
+                const email = document.getElementById('userEmail').innerText;
+
+                try {
+                    const { data: userData, error: fetchError } = await supabase
+                        .from('users')
+                        .select('wallet_ads')
+                        .eq('email', email)
+                        .single();
+
+                    if (fetchError) {
+                        alert('خطا در دریافت اطلاعات');
+                        return;
+                    }
+
+                    const newBalance = (userData.wallet_ads || 0) + 100;
+
+                    const { error: updateError } = await supabase
+                        .from('users')
+                        .update({ wallet_ads: newBalance })
+                        .eq('email', email);
+
+                    if (updateError) {
+                        alert('خطا در افزایش موجودی');
+                    } else {
+                        document.getElementById('walletAds').innerText = newBalance;
+                        alert('💰 ۱۰۰ تومان به کیف پول تبلیغ اضافه شد!');
+                    }
+                } catch (err) {
+                    alert('خطا: ' + err.message);
+                }
+            };
+
+            // ======== انتقال از تبلیغ به اصلی ========
+            window.transferToMain = async function() {
+                const email = document.getElementById('userEmail').innerText;
+                const amount = prompt('مبلغ انتقال به کیف پول اصلی را وارد کنید (تومان):');
+
+                if (!amount || isNaN(amount) || Number(amount) <= 0) {
+                    alert('مبلغ معتبر وارد کنید');
+                    return;
+                }
+
+                try {
+                    const { data: userData, error: fetchError } = await supabase
+                        .from('users')
+                        .select('wallet_main, wallet_ads')
+                        .eq('email', email)
+                        .single();
+
+                    if (fetchError) {
+                        alert('خطا در دریافت اطلاعات');
+                        return;
+                    }
+
+                    const adsBalance = userData.wallet_ads || 0;
+                    if (adsBalance < Number(amount)) {
+                        alert('موجودی کیف پول تبلیغ کافی نیست');
+                        return;
+                    }
+
+                    const newMain = (userData.wallet_main || 0) + Number(amount);
+                    const newAds = adsBalance - Number(amount);
+
+                    const { error: updateError } = await supabase
+                        .from('users')
+                        .update({ wallet_main: newMain, wallet_ads: newAds })
+                        .eq('email', email);
+
+                    if (updateError) {
+                        alert('خطا در انتقال موجودی');
+                    } else {
+                        document.getElementById('walletMain').innerText = newMain;
+                        document.getElementById('walletAds').innerText = newAds;
+                        alert(`✅ ${amount} تومان به کیف پول اصلی منتقل شد`);
+                    }
+                } catch (err) {
+                    alert('خطا: ' + err.message);
+                }
+            };
+
+            // ======== برداشت از کیف پول تبلیغ ========
+            window.withdrawFromAds = async function() {
+                const email = document.getElementById('userEmail').innerText;
+                const amount = prompt('مبلغ برداشت از کیف پول تبلیغ را وارد کنید (تومان):');
+
+                if (!amount || isNaN(amount) || Number(amount) <= 0) {
+                    alert('مبلغ معتبر وارد کنید');
+                    return;
+                }
+
+                try {
+                    const { data: userData, error: fetchError } = await supabase
+                        .from('users')
+                        .select('wallet_ads')
+                        .eq('email', email)
+                        .single();
+
+                    if (fetchError) {
+                        alert('خطا در دریافت اطلاعات');
+                        return;
+                    }
+
+                    const adsBalance = userData.wallet_ads || 0;
+                    if (adsBalance < Number(amount)) {
+                        alert('موجودی کیف پول تبلیغ کافی نیست');
+                        return;
+                    }
+
+                    const newAds = adsBalance - Number(amount);
+
+                    const { error: updateError } = await supabase
+                        .from('users')
+                        .update({ wallet_ads: newAds })
+                        .eq('email', email);
+
+                    if (updateError) {
+                        alert('خطا در برداشت');
+                    } else {
+                        document.getElementById('walletAds').innerText = newAds;
+
+                        const { error: insertError } = await supabase
+                            .from('withdraw_requests')
+                            .insert([{
+                                user_email: email,
+                                amount: Number(amount),
+                                status: 'pending'
+                            }]);
+
+                        if (insertError) {
+                            alert('برداشت انجام شد، اما در ثبت درخواست خطایی رخ داد');
+                        } else {
+                            alert(`✅ درخواست برداشت ${amount} تومان ثبت شد. پس از تأیید، واریز می‌شود.`);
+                        }
+                    }
+                } catch (err) {
+                    alert('خطا: ' + err.message);
+                }
+            };
+
+            // ======== گردونه شانس ========
+            window.spinWheel = async function() {
+                const email = document.getElementById('userEmail').innerText;
+                const spinBtn = document.getElementById('spinBtn');
+                const spinMsg = document.getElementById('spinMessage');
+
+                try {
+                    const { data: userData, error: fetchError } = await supabase
+                        .from('users')
+                        .select('last_spin, wallet_ads')
+                        .eq('email', email)
+                        .single();
+
+                    if (fetchError) {
+                        alert('خطا در دریافت اطلاعات');
+                        return;
+                    }
+
+                    const lastSpin = userData.last_spin ? new Date(userData.last_spin) : null;
+                    const now = new Date();
+                    const hoursDiff = lastSpin ? (now - lastSpin) / (1000 * 60 * 60) : 999;
+
+                    if (hoursDiff < 48) {
+                        const remaining = Math.ceil(48 - hoursDiff);
+                        spinMsg.innerHTML = `<span class="error">⏳ هنوز ${remaining} ساعت مونده تا چرخش بعدی</span>`;
+                        return;
+                    }
+
+                    spinBtn.disabled = true;
+                    spinBtn.innerText = '🌀 در حال چرخش...';
+                    spinMsg.innerHTML = '';
+
+                    const prize = Math.floor(Math.random() * 901) + 100;
+                    const newBalance = (userData.wallet_ads || 0) + prize;
+
+                    const { error: updateError } = await supabase
+                        .from('users')
+                        .update({
+                            wallet_ads: newBalance,
+                            last_spin: now.toISOString()
+                        })
+                        .eq('email', email);
+
+                    if (updateError) {
+                        alert('خطا در ثبت چرخش');
+                        spinBtn.disabled = false;
+                        spinBtn.innerText = '🔄 چرخش (هر ۴۸ ساعت یک بار)';
+                        return;
+                    }
+
+                    document.getElementById('walletAds').innerText = newBalance;
+                    spinMsg.innerHTML = `<span class="success">🎉 تبریک! ${prize} تومان به کیف پول تبلیغ اضافه شد!</span>`;
+                    spinBtn.disabled = false;
+                    spinBtn.innerText = '🔄 چرخش (هر ۴۸ ساعت یک بار)';
+
+                } catch (err) {
+                    alert('خطا: ' + err.message);
+                    spinBtn.disabled = false;
+                    spinBtn.innerText = '🔄 چرخش (هر ۴۸ ساعت یک بار)';
+                }
+            };
+
+            // ======== پنل ادمین ========
+            window.showAdmin = function() {
+                document.getElementById('adminPanel').classList.remove('hidden');
+                loadUsers();
+                loadWithdrawals();
+            };
+
+            window.loadUsers = async function() {
+                try {
+                    const { data, error } = await supabase
+                        .from('users')
+                        .select('email, wallet_main, wallet_ads, created_at');
+
+                    if (error) {
+                        document.getElementById('usersList').innerHTML = '<span class="error">خطا در بارگذاری کاربران</span>';
+                    } else {
+                        let html = '<table><tr><th>ایمیل</th><th>کیف پول اصلی</th><th>کیف پول تبلیغ</th><th>تاریخ ثبت</th></tr>';
+                        data.forEach(user => {
+                            html += `<tr>
+                                <td>${user.email}</td>
+                                <td>${user.wallet_main || 0}</td>
+                                <td>${user.wallet_ads || 0}</td>
+                                <td>${new Date(user.created_at).toLocaleDateString('fa-IR')}</td>
+                            </tr>`;
+                        });
+                        html += '</table>';
+                        document.getElementById('usersList').innerHTML = html;
+                    }
+                } catch (err) {
+                    document.getElementById('usersList').innerHTML = '<span class="error">خطا: ' + err.message + '</span>';
+                }
+            };
+
+            window.loadWithdrawals = async function() {
+                try {
+                    const { data, error } = await supabase
+                        .from('withdraw_requests')
+                        .select('*')
+                        .order('created_at', { ascending: false });
+
+                    if (error) {
+                        document.getElementById('withdrawalsList').innerHTML = '<span class="error">خطا در بارگذاری درخواست‌ها</span>';
+                    } else {
+                        let html = '<table><tr><th>کاربر</th><th>مبلغ</th><th>وضعیت</th><th>تاریخ</th><th>عملیات</th></tr>';
+                        data.forEach(req => {
+                            html += `<tr>
+                                <td>${req.user_email}</td>
+                                <td>${req.amount}</td>
+                                <td>${req.status === 'pending' ? '⏳ در انتظار' : req.status === 'approved' ? '✅ تأیید شده' : '❌ رد شده'}</td>
+                                <td>${new Date(req.created_at).toLocaleDateString('fa-IR')}</td>
+                                <td>
+                                    ${req.status === 'pending' ? `
+                                        <button class="btn-approve" onclick="approveWithdrawal(${req.id}, '${req.user_email}', ${req.amount})">✅ تأیید</button>
+                                        <button class="btn-reject" onclick="rejectWithdrawal(${req.id})">❌ رد</button>
+                                    ` : '—'}
+                                </td>
+                            </tr>`;
+                        });
+                        html += '</table>';
+                        document.getElementById('withdrawalsList').innerHTML = html;
+                    }
+                } catch (err) {
+                    document.getElementById('withdrawalsList').innerHTML = '<span class="error">خطا: ' + err.message + '</span>';
+                }
+            };
+
+            window.approveWithdrawal = async function(id, email, amount) {
+                if (!confirm(`آیا از تأیید برداشت ${amount} تومانی برای ${email} مطمئن هستید؟`)) return;
+
+                try {
+                    const { error: updateError } = await supabase
+                        .from('withdraw_requests')
+                        .update({ status: 'approved' })
+                        .eq('id', id);
+
+                    if (updateError) {
+                        alert('خطا در تأیید برداشت');
+                        return;
+                    }
+
+                    alert(`✅ برداشت ${amount} تومانی برای ${email} تأیید شد.`);
+                    loadWithdrawals();
+                } catch (err) {
+                    alert('خطا: ' + err.message);
+                }
+            };
+
+            window.rejectWithdrawal = async function(id) {
+                if (!confirm('آیا از رد این درخواست مطمئن هستید؟')) return;
+
+                try {
+                    const { error: updateError } = await supabase
+                        .from('withdraw_requests')
+                        .update({ status: 'rejected' })
+                        .eq('id', id);
+
+                    if (updateError) {
+                        alert('خطا در رد برداشت');
+                        return;
+                    }
+
+                    alert('❌ درخواست برداشت رد شد.');
+                    loadWithdrawals();
+                } catch (err) {
+                    alert('خطا: ' + err.message);
+                }
+            };
+
+            // ======== خروج ========
+            window.logoutUser = function() {
+                document.getElementById('dashboard').classList.add('hidden');
+                document.getElementById('loginBox').style.display = 'block';
+                document.getElementById('registerBox').style.display = 'block';
+                document.getElementById('loginEmail').value = '';
+                document.getElementById('loginPassword').value = '';
+                document.getElementById('adminPanel').classList.add('hidden');
+            };
+
+        })();
     </script>
 </body>
-</html>
+    </html>
