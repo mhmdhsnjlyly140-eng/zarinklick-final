@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>پنل ادمین زرین‌کلیک</title>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <style>
+        body { font-family: Tahoma, sans-serif; max-width: 800px; margin: auto; padding: 20px; background: #f5f5f5; }
+        .box { background: white; padding: 20px; border-radius: 12px; margin-bottom: 15px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
+        input { width: 100%; padding: 10px; margin: 6px 0; border: 1px solid #ddd; border-radius: 8px; }
+        button { padding: 10px 20px; background: #28a745; color: white; border: none; border-radius: 8px; font-size: 16px; margin: 4px 0; }
+        button:hover { background: #218838; }
+        table { width: 100%; border-collapse: collapse; margin-top: 10px; }
+        th, td { border: 1px solid #ddd; padding: 8px; text-align: center; }
+        th { background: #4CAF50; color: white; }
+        .btn-approve { background: #007bff; }
+        .btn-reject { background: #dc3545; }
+        .btn-approve:hover { background: #0056b3; }
+        .btn-reject:hover { background: #c82333; }
+        .admin-only { display: none; }
+        .error { color: red; }
+        .success { color: green; }
+    </style>
+</head>
+<body>
+
+    <h1>👑 پنل ادمین زرین‌کلیک</h1>
+
+    <!-- فرم ورود ادمین -->
+    <div class="box" id="adminLoginBox">
+        <h3>ورود ادمین</h3>
+        <input type="email" id="adminEmail" placeholder="ایمیل ادمین">
+        <input type="password" id="adminPassword" placeholder="رمز عبور">
+        <button onclick="adminLogin()">ورود</button>
+        <p id="adminLoginMessage"></p>
+    </div>
+
+    <!-- پنل ادمین -->
+    <div class="box admin-only" id="adminPanel">
+        <h3>📊 داشبورد ادمین</h3>
+        <button onclick="loadUsers()">🔄 بارگذاری کاربران</button>
+        <button onclick="loadWithdrawals()">🔄 بارگذاری درخواست‌های برداشت</button>
+        <button onclick="logoutAdmin()">🚪 خروج</button>
+        <hr>
+
+        <h4>👥 لیست کاربران</h4>
+        <div id="usersList"></div>
+
+        <hr>
+        <h4>🏦 درخواست‌های برداشت</h4>
+        <div id="withdrawalsList"></div>
+    </div>
+
+    <script>
+        // ======== Supabase ========
+        const supabaseUrl = 'https://fpogciahtzacgrglhmnx.supabase.co';
+        const supabaseKey = 'sb_publishable_Gb3p43CBeX1VFOOzVtdI0w_IqNrVuEm';
+        const supabase = window.supabase.createClient(supabaseUrl, supabaseKey);
+
+        // ======== ورود ادمین ========
+        window.adminLogin = async function() {
+            const email = document.getElementById('adminEmail').value.trim();
+            const password = document.getElementById('adminPassword').value.trim();
+
+            if (!email || !password) {
+                document.getElementById('adminLoginMessage').innerHTML = '<span class="error">ایمیل و رمز را پر کنید</span>';
+                return;
+            }
+
+            // فقط ایمیل مشخص شده اجازه ورود دارد
+            if (email !== 'mhmdhsnjlyly140@gmail.com') {
+                document.getElementById('adminLoginMessage').innerHTML = '<span class="error">دسترسی غیرمجاز</span>';
+                return;
+            }
+
+            try {
+                const { data, error } = await supabase
+                    .from('users')
+                    .select('*')
+                    .eq('email', email)
+                    .eq('password', password);
+
+                if (error || data.length === 0) {
+                    document.getElementById('adminLoginMessage').innerHTML = '<span class="error">ایمیل یا رمز اشتباه است</span>';
+                } else {
+                    document.getElementById('adminLoginMessage').innerHTML = '<span class="success">ورود موفق! خوش آمدید ادمین</span>';
+                    document.getElementById('adminLoginBox').style.display = 'none';
+                    document.querySelectorAll('.admin-only').forEach(el => el.style.display = 'block');
+                    loadUsers();
+                    loadWithdrawals();
+                }
+            } catch (err) {
+                document.getElementById('adminLoginMessage').innerHTML = '<span class="error">خطا: ' + err.message + '</span>';
+            }
+        };
+
+        // ======== بارگذاری کاربران ========
+        window.loadUsers = async function() {
+            try {
+                const { data, error } = await supabase
+                    .from('users')
+                    .select('email, wallet_main, wallet_ads, created_at');
+
+                if (error) {
+                    document.getElementById('usersList').innerHTML = '<span class="error">خطا در بارگذاری کاربران</span>';
+                } else {
+                    let html = '<table><tr><th>ایمیل</th><th>کیف پول اصلی</th><th>کیف پول تبلیغ</th><th>تاریخ ثبت</th></tr>';
+                    data.forEach(user => {
+                        html += `<tr>
+                            <td>${user.email}</td>
+                            <td>${user.wallet_main || 0}</td>
+                            <td>${user.wallet_ads || 0}</td>
+                            <td>${new Date(user.created_at).toLocaleDateString('fa-IR')}</td>
+                        </tr>`;
+                    });
+                    html += '</table>';
+                    document.getElementById('usersList').innerHTML = html;
+                }
+            } catch (err) {
+                document.getElementById('usersList').innerHTML = '<span class="error">خطا: ' + err.message + '</span>';
+            }
+        };
+
+        // ======== بارگذاری درخواست‌های برداشت ========
+        window.loadWithdrawals = async function() {
+            try {
+                const { data, error } = await supabase
+                    .from('withdraw_requests')
+                    .select('*')
+                    .order('created_at', { ascending: false });
+
+                if (error) {
+                    document.getElementById('withdrawalsList').innerHTML = '<span class="error">خطا در بارگذاری درخواست‌ها</span>';
+                } else {
+                    let html = '<table><tr><th>کاربر</th><th>مبلغ</th><th>وضعیت</th><th>تاریخ</th><th>عملیات</th></tr>';
+                    data.forEach(req => {
+                        html += `<tr>
+                            <td>${req.user_email}</td>
+                            <td>${req.amount}</td>
+                            <td>${req.status === 'pending' ? '⏳ در انتظار' : req.status === 'approved' ? '✅ تأیید شده' : '❌ رد شده'}</td>
+                            <td>${new Date(req.created_at).toLocaleDateString('fa-IR')}</td>
+                            <td>
+                                ${req.status === 'pending' ? `
+                                    <button class="btn-approve" onclick="approveWithdrawal(${req.id}, '${req.user_email}', ${req.amount})">✅ تأیید</button>
+                                    <button class="btn-reject" onclick="rejectWithdrawal(${req.id})">❌ رد</button>
+                                ` : '—'}
+                            </td>
+                        </tr>`;
+                    });
+                    html += '</table>';
+                    document.getElementById('withdrawalsList').innerHTML = html;
+                }
+            } catch (err) {
+                document.getElementById('withdrawalsList').innerHTML = '<span class="error">خطا: ' + err.message + '</span>';
+            }
+        };
+
+        // ======== تأیید برداشت ========
+        window.approveWithdrawal = async function(id, email, amount) {
+            if (!confirm(`آیا از تأیید برداشت ${amount} تومانی برای ${email} مطمئن هستید؟`)) return;
+
+            try {
+                // ۱. به‌روزرسانی وضعیت درخواست
+                const { error: updateError } = await supabase
+                    .from('withdraw_requests')
+                    .update({ status: 'approved' })
+                    .eq('id', id);
+
+                if (updateError) {
+                    alert('خطا در تأیید برداشت');
+                    return;
+                }
+
+                alert(`✅ برداشت ${amount} تومانی برای ${email} تأیید شد.`);
+                loadWithdrawals();
+            } catch (err) {
+                alert('خطا: ' + err.message);
+            }
+        };
+
+        // ======== رد برداشت ========
+        window.rejectWithdrawal = async function(id) {
+            if (!confirm('آیا از رد این درخواست مطمئن هستید؟')) return;
+
+            try {
+                const { error: updateError } = await supabase
+                    .from('withdraw_requests')
+                    .update({ status: 'rejected' })
+                    .eq('id', id);
+
+                if (updateError) {
+                    alert('خطا در رد برداشت');
+                    return;
+                }
+
+                alert('❌ درخواست برداشت رد شد.');
+                loadWithdrawals();
+            } catch (err) {
+                alert('خطا: ' + err.message);
+            }
+        };
+
+        // ======== خروج ادمین ========
+        window.logoutAdmin = function() {
+            document.querySelectorAll('.admin-only').forEach(el => el.style.display = 'none');
+            document.getElementById('adminLoginBox').style.display = 'block';
+            document.getElementById('adminLoginMessage').innerHTML = '';
+            document.getElementById('adminEmail').value = '';
+            document.getElementById('adminPassword').value = '';
+        };
+    </script>
+</body>
+</html>
