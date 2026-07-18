@@ -1,9 +1,121 @@
 <!DOCTYPE html>
-<html>
-<head><title>ZarinClick</title></head>
+<html lang="fa" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>زرین‌کلیک</title>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <style>
+        body { font-family: Tahoma, sans-serif; max-width: 400px; margin: auto; padding: 20px; background: #f5f5f5; }
+        .box { background: white; padding: 20px; border-radius: 12px; margin-bottom: 15px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
+        input { width: 100%; padding: 10px; margin: 6px 0; border: 1px solid #ddd; border-radius: 8px; }
+        button { width: 100%; padding: 10px; background: #28a745; color: white; border: none; border-radius: 8px; font-size: 16px; }
+        button:hover { background: #218838; }
+        .error { color: red; font-size: 14px; }
+        .success { color: green; font-size: 14px; }
+    </style>
+</head>
 <body>
-  <h1>ZarinClick is Ready!</h1>
-  <p>Database is connected.</p>
-  <a href="/api/test-db">Test Database</a>
+
+    <h1>💰 زرین‌کلیک</h1>
+
+    <!-- فرم ثبت‌نام -->
+    <div class="box" id="registerBox">
+        <h3>ثبت‌نام</h3>
+        <input type="email" id="regEmail" placeholder="ایمیل">
+        <input type="password" id="regPassword" placeholder="رمز عبور">
+        <input type="text" id="regRef" placeholder="کد معرف (اختیاری)">
+        <button onclick="registerUser()">ثبت‌نام</button>
+        <p id="regMessage"></p>
+    </div>
+
+    <!-- فرم ورود -->
+    <div class="box" id="loginBox">
+        <h3>ورود</h3>
+        <input type="email" id="loginEmail" placeholder="ایمیل">
+        <input type="password" id="loginPassword" placeholder="رمز عبور">
+        <button onclick="loginUser()">ورود</button>
+        <p id="loginMessage"></p>
+    </div>
+
+    <!-- پنل کاربری (پس از ورود) -->
+    <div class="box" id="dashboard" style="display:none;">
+        <h3>خوش آمدید، <span id="userEmail"></span></h3>
+        <p>موجودی کیف پول: <span id="userBalance">0</span> تومان</p>
+        <button onclick="logoutUser()">خروج</button>
+    </div>
+
+    <script>
+        // ======== اتصال به Supabase ========
+        const supabaseUrl = 'https://fpogciahtzacgrglhmnx.supabase.co/rest/v1/
+        const supabaseKey = 'sb_publishable_Gb3p43CBeX1VFOOzVtdI0w_IqNrVuEm
+        const supabase = window.supabase.createClient(supabaseUrl, supabaseKey);
+
+        // ======== توابع ========
+
+        // ثبت‌نام
+        async function registerUser() {
+            const email = document.getElementById('regEmail').value.trim();
+            const password = document.getElementById('regPassword').value.trim();
+            const refCode = document.getElementById('regRef').value.trim() || '';
+
+            if (!email || !password) {
+                document.getElementById('regMessage').innerHTML = '<span class="error">ایمیل و رمز را پر کنید</span>';
+                return;
+            }
+
+            const { data, error } = await supabase
+                .from('users')
+                .insert([{ email, password, ref_code: refCode, balance: 0 }]);
+
+            if (error) {
+                document.getElementById('regMessage').innerHTML = '<span class="error">خطا: ' + error.message + '</span>';
+            } else {
+                document.getElementById('regMessage').innerHTML = '<span class="success">ثبت‌نام موفق! حالا وارد شوید.</span>';
+                document.getElementById('regEmail').value = '';
+                document.getElementById('regPassword').value = '';
+                document.getElementById('regRef').value = '';
+            }
+        }
+
+        // ورود
+        async function loginUser() {
+            const email = document.getElementById('loginEmail').value.trim();
+            const password = document.getElementById('loginPassword').value.trim();
+
+            if (!email || !password) {
+                document.getElementById('loginMessage').innerHTML = '<span class="error">ایمیل و رمز را پر کنید</span>';
+                return;
+            }
+
+            const { data, error } = await supabase
+                .from('users')
+                .select('*')
+                .eq('email', email)
+                .eq('password', password);
+
+            if (error || data.length === 0) {
+                document.getElementById('loginMessage').innerHTML = '<span class="error">ایمیل یا رمز اشتباه است</span>';
+            } else {
+                const user = data[0];
+                document.getElementById('userEmail').innerText = user.email;
+                document.getElementById('userBalance').innerText = user.balance || 0;
+                document.getElementById('dashboard').style.display = 'block';
+                document.getElementById('loginBox').style.display = 'none';
+                document.getElementById('registerBox').style.display = 'none';
+                document.getElementById('loginMessage').innerHTML = '';
+            }
+        }
+
+        // خروج
+        function logoutUser() {
+            document.getElementById('dashboard').style.display = 'none';
+            document.getElementById('loginBox').style.display = 'block';
+            document.getElementById('registerBox').style.display = 'block';
+            document.getElementById('loginEmail').value = '';
+            document.getElementById('loginPassword').value = '';
+        }
+    </script>
+
 </body>
-</html>
+  </html>
