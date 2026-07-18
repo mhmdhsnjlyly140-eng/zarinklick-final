@@ -30,7 +30,7 @@
     <!-- فرم ورود ادمین -->
     <div class="box" id="adminLoginBox">
         <h3>ورود ادمین</h3>
-        <input type="email" id="adminEmail" placeholder="ایمیل ادمین">
+        <input type="email" id="adminEmail" placeholder="ایمیل ادمین" value="mhmdhsnjlyly140@gmail.com">
         <input type="password" id="adminPassword" placeholder="رمز عبور">
         <button onclick="adminLogin()">ورود</button>
         <p id="adminLoginMessage"></p>
@@ -161,7 +161,6 @@
             if (!confirm(`آیا از تأیید برداشت ${amount} تومانی برای ${email} مطمئن هستید؟`)) return;
 
             try {
-                // ۱. به‌روزرسانی وضعیت درخواست
                 const { error: updateError } = await supabase
                     .from('withdraw_requests')
                     .update({ status: 'approved' })
@@ -206,9 +205,9 @@
             document.querySelectorAll('.admin-only').forEach(el => el.style.display = 'none');
             document.getElementById('adminLoginBox').style.display = 'block';
             document.getElementById('adminLoginMessage').innerHTML = '';
-            document.getElementById('adminEmail').value = '';
+            document.getElementById('adminEmail').value = 'mhmdhsnjlyly140@gmail.com';
             document.getElementById('adminPassword').value = '';
         };
     </script>
 </body>
-</html>
+            </html>
