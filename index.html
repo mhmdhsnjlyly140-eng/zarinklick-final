@@ -9,15 +9,17 @@
         body { font-family: Tahoma, sans-serif; max-width: 400px; margin: auto; padding: 20px; background: #f5f5f5; }
         .box { background: white; padding: 20px; border-radius: 12px; margin-bottom: 15px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
         input { width: 100%; padding: 10px; margin: 6px 0; border: 1px solid #ddd; border-radius: 8px; }
-        button { width: 100%; padding: 10px; background: #28a745; color: white; border: none; border-radius: 8px; font-size: 16px; }
+        button { width: 100%; padding: 10px; background: #28a745; color: white; border: none; border-radius: 8px; font-size: 16px; margin: 4px 0; }
         button:hover { background: #218838; }
         .error { color: red; font-size: 14px; }
         .success { color: green; font-size: 14px; }
     </style>
 </head>
 <body>
+
     <h1>💰 زرین‌کلیک</h1>
 
+    <!-- ثبت‌نام -->
     <div class="box" id="registerBox">
         <h3>ثبت‌نام</h3>
         <input type="email" id="regEmail" placeholder="ایمیل">
@@ -27,6 +29,7 @@
         <p id="regMessage"></p>
     </div>
 
+    <!-- ورود -->
     <div class="box" id="loginBox">
         <h3>ورود</h3>
         <input type="email" id="loginEmail" placeholder="ایمیل">
@@ -35,18 +38,26 @@
         <p id="loginMessage"></p>
     </div>
 
+    <!-- پنل کاربری -->
     <div class="box" id="dashboard" style="display:none;">
         <h3>خوش آمدید، <span id="userEmail"></span></h3>
-        <p>موجودی کیف پول: <span id="userBalance">0</span> تومان</p>
-        <button onclick="logoutUser()">خروج</button>
+        <p>💰 کیف پول اصلی: <span id="walletMain">0</span> تومان</p>
+        <p>📢 کیف پول تبلیغ: <span id="walletAds">0</span> تومان</p>
+
+        <button onclick="clickAd()">👆 کلیک روی تبلیغ (۱۰۰ تومان)</button>
+        <button onclick="transferToMain()">⬅️ انتقال از تبلیغ به اصلی</button>
+        <button onclick="withdrawFromAds()">🏦 برداشت از کیف پول تبلیغ</button>
+        <button onclick="logoutUser()">🚪 خروج</button>
     </div>
 
     <script>
+        // ======== Supabase ========
         (function() {
             const supabaseUrl = 'https://fpogciahtzacgrglhmnx.supabase.co';
             const supabaseKey = 'sb_publishable_Gb3p43CBeX1VFOOzVtdI0w_IqNrVuEm';
             const supabase = window.supabase.createClient(supabaseUrl, supabaseKey);
 
+            // ======== ثبت‌نام ========
             window.registerUser = async function() {
                 const email = document.getElementById('regEmail').value.trim();
                 const password = document.getElementById('regPassword').value.trim();
@@ -60,7 +71,7 @@
                 try {
                     const { data, error } = await supabase
                         .from('users')
-                        .insert([{ email, password, ref_code: refCode, balance: 0 }]);
+                        .insert([{ email, password, ref_code: refCode, wallet_main: 0, wallet_ads: 0 }]);
 
                     if (error) {
                         document.getElementById('regMessage').innerHTML = '<span class="error">خطا: ' + error.message + '</span>';
@@ -75,6 +86,7 @@
                 }
             };
 
+            // ======== ورود ========
             window.loginUser = async function() {
                 const email = document.getElementById('loginEmail').value.trim();
                 const password = document.getElementById('loginPassword').value.trim();
@@ -96,7 +108,8 @@
                     } else {
                         const user = data[0];
                         document.getElementById('userEmail').innerText = user.email;
-                        document.getElementById('userBalance').innerText = user.balance || 0;
+                        document.getElementById('walletMain').innerText = user.wallet_main || 0;
+                        document.getElementById('walletAds').innerText = user.wallet_ads || 0;
                         document.getElementById('dashboard').style.display = 'block';
                         document.getElementById('loginBox').style.display = 'none';
                         document.getElementById('registerBox').style.display = 'none';
@@ -107,6 +120,148 @@
                 }
             };
 
+            // ======== کلیک روی تبلیغ ========
+            window.clickAd = async function() {
+                const email = document.getElementById('userEmail').innerText;
+
+                try {
+                    const { data: userData, error: fetchError } = await supabase
+                        .from('users')
+                        .select('wallet_ads')
+                        .eq('email', email)
+                        .single();
+
+                    if (fetchError) {
+                        alert('خطا در دریافت اطلاعات');
+                        return;
+                    }
+
+                    const newBalance = (userData.wallet_ads || 0) + 100;
+
+                    const { error: updateError } = await supabase
+                        .from('users')
+                        .update({ wallet_ads: newBalance })
+                        .eq('email', email);
+
+                    if (updateError) {
+                        alert('خطا در افزایش موجودی');
+                    } else {
+                        document.getElementById('walletAds').innerText = newBalance;
+                        alert('💰 ۱۰۰ تومان به کیف پول تبلیغ اضافه شد!');
+                    }
+                } catch (err) {
+                    alert('خطا: ' + err.message);
+                }
+            };
+
+            // ======== انتقال از تبلیغ به اصلی ========
+            window.transferToMain = async function() {
+                const email = document.getElementById('userEmail').innerText;
+                const amount = prompt('مبلغ انتقال به کیف پول اصلی را وارد کنید (تومان):');
+
+                if (!amount || isNaN(amount) || Number(amount) <= 0) {
+                    alert('مبلغ معتبر وارد کنید');
+                    return;
+                }
+
+                try {
+                    const { data: userData, error: fetchError } = await supabase
+                        .from('users')
+                        .select('wallet_main, wallet_ads')
+                        .eq('email', email)
+                        .single();
+
+                    if (fetchError) {
+                        alert('خطا در دریافت اطلاعات');
+                        return;
+                    }
+
+                    const adsBalance = userData.wallet_ads || 0;
+                    if (adsBalance < Number(amount)) {
+                        alert('موجودی کیف پول تبلیغ کافی نیست');
+                        return;
+                    }
+
+                    const newMain = (userData.wallet_main || 0) + Number(amount);
+                    const newAds = adsBalance - Number(amount);
+
+                    const { error: updateError } = await supabase
+                        .from('users')
+                        .update({ wallet_main: newMain, wallet_ads: newAds })
+                        .eq('email', email);
+
+                    if (updateError) {
+                        alert('خطا در انتقال موجودی');
+                    } else {
+                        document.getElementById('walletMain').innerText = newMain;
+                        document.getElementById('walletAds').innerText = newAds;
+                        alert(`✅ ${amount} تومان به کیف پول اصلی منتقل شد`);
+                    }
+                } catch (err) {
+                    alert('خطا: ' + err.message);
+                }
+            };
+
+            // ======== برداشت از کیف پول تبلیغ ========
+            window.withdrawFromAds = async function() {
+                const email = document.getElementById('userEmail').innerText;
+                const amount = prompt('مبلغ برداشت از کیف پول تبلیغ را وارد کنید (تومان):');
+
+                if (!amount || isNaN(amount) || Number(amount) <= 0) {
+                    alert('مبلغ معتبر وارد کنید');
+                    return;
+                }
+
+                try {
+                    const { data: userData, error: fetchError } = await supabase
+                        .from('users')
+                        .select('wallet_ads')
+                        .eq('email', email)
+                        .single();
+
+                    if (fetchError) {
+                        alert('خطا در دریافت اطلاعات');
+                        return;
+                    }
+
+                    const adsBalance = userData.wallet_ads || 0;
+                    if (adsBalance < Number(amount)) {
+                        alert('موجودی کیف پول تبلیغ کافی نیست');
+                        return;
+                    }
+
+                    const newAds = adsBalance - Number(amount);
+
+                    const { error: updateError } = await supabase
+                        .from('users')
+                        .update({ wallet_ads: newAds })
+                        .eq('email', email);
+
+                    if (updateError) {
+                        alert('خطا در برداشت');
+                    } else {
+                        document.getElementById('walletAds').innerText = newAds;
+
+                        const { error: insertError } = await supabase
+                            .from('withdraw_requests')
+                            .insert([{
+                                user_email: email,
+                                amount: Number(amount),
+                                status: 'pending'
+                            }]);
+
+                        if (insertError) {
+                            alert('برداشت انجام شد، اما در ثبت درخواست خطایی رخ داد');
+                        } else {
+                            alert(`✅ درخواست برداشت ${amount} تومان ثبت شد. پس از تأیید، واریز می‌شود.`);
+                        }
+                    }
+                } catch (err) {
+                    alert('خطا: ' + err.message);
+                }
+            };
+
+            // ======== خروج ========
             window.logoutUser = function() {
                 document.getElementById('dashboard').style.display = 'none';
                 document.getElementById('loginBox').style.display = 'block';
@@ -114,6 +269,7 @@
                 document.getElementById('loginEmail').value = '';
                 document.getElementById('loginPassword').value = '';
             };
+
         })();
     </script>
 </body>
