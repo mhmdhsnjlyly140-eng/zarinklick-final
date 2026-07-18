@@ -2,8 +2,7 @@ const { Client } = require('pg');
 
 module.exports = async function handler(req, res) {
   const client = new Client({
-    connectionString: 'postgresql://neondb_owner:npg_ayNhnpBP9Yx5@ep-jolly-lab-azzmo2t3-pooler.c-3.ap-southeast-1.aws.neon.tech/neondb?sslmode=require',
-    ssl: { rejectUnauthorized: true }
+    connectionString: 'postgresql://neondb_owner:posnpg_tgb5vDwZ8TEc@ep-nameless-smoke-auvrbyjl-pooler.c-10.us-east-1.aws.neon.tech/neondb?sslmode=require&channel_binding=require' //
   });
 
   try {
