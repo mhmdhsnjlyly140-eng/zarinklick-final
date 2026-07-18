@@ -1,8 +1,10 @@
 const { Client } = require('pg');
-const dbConfig = require('../db-config');
 
 module.exports = async function handler(req, res) {
-  const client = new Client(dbConfig);
+  const client = new Client({
+    connectionString: 'postgresql://neondb_owner:npg_ayNhnpBP9Yx5@ep-jolly-lab-azzmo2t3-pooler.c-3.ap-southeast-1.aws.neon.tech/neondb?sslmode=require',
+    ssl: { rejectUnauthorized: true }
+  });
 
   try {
     await client.connect();
