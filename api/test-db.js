@@ -1,9 +1,7 @@
 const { Pool } = require('pg');
 
 const pool = new Pool({
-  connectionString: process.env.DATABASE_URL,
-  ssl: { rejectUnauthorized: false }
-});
+  connectionString: 'postgresql://neondb_owner:npg_NaeEJrVP0ji2@ep-hidden-surf-a70uze4w-pooler.ap-southeast-2.aws.neon.tech/neondb?sslmode=require&channel_binding=require
 
 module.exports = async function handler(req, res) {
   try {
