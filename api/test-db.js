@@ -1,7 +1,12 @@
 const { Pool } = require('pg');
 
 const pool = new Pool({
-  connectionString: 'postgresql://neondb_owner:...' //npg_NaeEJrVP0ji2@ep-hidden-surf-a70uze4w-pooler.ap-southeast-2.aws.neon.tech/neondb?sslmode=require&channel_binding=require
+  host: 'ep-jolly-lab-azzmo2t3-pooler.c-3.ap-southeast-1.aws.neon.tech',
+  port: 5432,
+  database: 'neondb',
+  user: 'neondb_owner',
+  password: 'npg_ayNhnpBP9Yx5',
+  ssl: { rejectUnauthorized: false }
 });
 
 module.exports = async function handler(req, res) {
