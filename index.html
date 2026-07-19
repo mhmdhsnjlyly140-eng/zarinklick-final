@@ -3,24 +3,30 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>زرین‌کلیک</title>
-    <!-- ========== بارگذاری کتابخانه با روش مقاوم ========== -->
+    <title>زرین‌کلیک ۲.۰</title>
+    <!-- ===== بارگذاری Supabase با لینک پایدار ===== -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js">
     </script>
     <style>
-        /* ===== استایل‌های شما (همان‌هایی که داشتید) ===== */
+        /* ===== استایل‌های کامل ===== */
         * {
             box-sizing: border-box;
             margin: 0;
             padding: 0;
         }
         body {
-            font-family: Tahoma, sans-serif;
+            font-family: 'Tahoma', sans-serif;
             background: #0b0e1a;
             color: #fff;
             display: flex;
             justify-content: center;
             padding: 20px;
+            transition: background 0.3s, color 0.3s;
+            min-height: 100vh;
+        }
+        body.light {
+            background: #f0f2f5;
+            color: #1a1a2e;
         }
         .container {
             max-width: 480px;
@@ -29,6 +35,12 @@
             padding: 20px;
             border-radius: 24px;
             border: 1px solid #2a3457;
+            transition: background 0.3s, border 0.3s;
+            margin-bottom: 80px;
+        }
+        body.light .container {
+            background: #ffffff;
+            border: 1px solid #d0d7de;
         }
         h1 {
             text-align: center;
@@ -44,12 +56,22 @@
             border-radius: 16px;
             margin-bottom: 15px;
             border: 1px solid #2a3457;
+            transition: background 0.3s, border 0.3s;
+        }
+        body.light .box {
+            background: #f6f8fa;
+            border: 1px solid #d0d7de;
         }
         .box h3 {
             margin-bottom: 10px;
             color: #ffd200;
         }
-        input {
+        body.light .box h3 {
+            color: #f7971e;
+        }
+        input,
+        select,
+        textarea {
             width: 100%;
             padding: 12px;
             margin: 6px 0;
@@ -59,8 +81,18 @@
             color: #fff;
             font-size: 15px;
             outline: 1px solid #2a3457;
+            transition: background 0.3s, outline 0.3s, color 0.3s;
         }
-        input:focus {
+        body.light input,
+        body.light select,
+        body.light textarea {
+            background: #ffffff;
+            color: #1a1a2e;
+            outline: 1px solid #d0d7de;
+        }
+        input:focus,
+        select:focus,
+        textarea:focus {
             outline: 2px solid #f7971e;
         }
         button {
@@ -85,12 +117,16 @@
             background: #2a3457;
             color: #fff;
         }
+        body.light .btn-secondary {
+            background: #d0d7de;
+            color: #1a1a2e;
+        }
         .btn-danger {
             background: #ff6b6b;
             color: #fff;
         }
-        .btn-gold {
-            background: #f7971e;
+        .btn-success {
+            background: #92fe9d;
             color: #0b0e1a;
         }
         .btn-sm {
@@ -137,9 +173,13 @@
         }
         th,
         td {
-            padding: 6px;
+            padding: 8px;
             border-bottom: 1px solid #2a3457;
             text-align: center;
+        }
+        body.light th,
+        body.light td {
+            border-bottom: 1px solid #d0d7de;
         }
         th {
             color: #8892b0;
@@ -159,6 +199,12 @@
             display: none;
             max-width: 90%;
             text-align: center;
+            transition: background 0.3s, border 0.3s, color 0.3s;
+        }
+        body.light .toast {
+            background: #ffffff;
+            color: #1a1a2e;
+            border: 2px solid #f7971e;
         }
         .toast.show {
             display: block;
@@ -189,6 +235,10 @@
             border-radius: 12px;
             border-right: 4px solid #f7971e;
             margin-bottom: 10px;
+            transition: background 0.3s;
+        }
+        body.light .ad-item {
+            background: #f6f8fa;
         }
         .ad-item .title {
             font-weight: 700;
@@ -206,6 +256,9 @@
             display: inline-block;
             margin-top: 4px;
             color: #8892b0;
+        }
+        body.light .ad-item .category {
+            background: #d0d7de;
         }
         .ad-item .budget {
             font-size: 13px;
@@ -235,6 +288,9 @@
             padding: 6px 0;
             border-bottom: 1px solid #2a3457;
         }
+        body.light .history-item {
+            border-bottom: 1px solid #d0d7de;
+        }
         .green {
             color: #92fe9d;
         }
@@ -256,6 +312,11 @@
             z-index: 1000;
             border-radius: 20px 20px 0 0;
             width: 100%;
+            transition: background 0.3s, border 0.3s;
+        }
+        body.light .bottom-nav {
+            background: #ffffff;
+            border-top: 1px solid #d0d7de;
         }
         .nav-item {
             display: flex;
@@ -270,6 +331,10 @@
             padding: 4px 8px;
             flex: 1;
             max-width: 70px;
+            transition: color 0.3s;
+        }
+        body.light .nav-item {
+            color: #6e7681;
         }
         .nav-item .icon {
             font-size: 24px;
@@ -289,27 +354,6 @@
             font-size: 36px;
             margin: 0 auto 10px;
             border: 3px solid #f7971e;
-        }
-        .withdraw-select {
-            display: flex;
-            gap: 10px;
-            margin: 10px 0;
-        }
-        .withdraw-select button {
-            flex: 1;
-            padding: 8px;
-            border-radius: 12px;
-            border: 2px solid #2a3457;
-            background: #0f1422;
-            color: #fff;
-            cursor: pointer;
-            font-weight: 700;
-            transition: 0.2s;
-        }
-        .withdraw-select button.active {
-            border-color: #f7971e;
-            background: #f7971e;
-            color: #0b0e1a;
         }
         .wheel-container {
             display: flex;
@@ -376,6 +420,32 @@
             border-radius: 3px;
             margin-left: 4px;
         }
+        .theme-toggle {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: #1f2942;
+            border: none;
+            border-radius: 50%;
+            width: 48px;
+            height: 48px;
+            font-size: 24px;
+            cursor: pointer;
+            z-index: 999;
+            transition: background 0.3s;
+        }
+        body.light .theme-toggle {
+            background: #d0d7de;
+        }
+        .badge-pro {
+            background: linear-gradient(135deg, #f7971e, #ffd200);
+            color: #0b0e1a;
+            padding: 2px 10px;
+            border-radius: 20px;
+            font-size: 11px;
+            font-weight: 700;
+            display: inline-block;
+        }
         @media (max-width: 480px) {
             .container {
                 padding: 15px;
@@ -390,16 +460,23 @@
             .wheel-pointer {
                 font-size: 30px;
             }
+            .theme-toggle {
+                top: 10px;
+                right: 10px;
+                width: 40px;
+                height: 40px;
+                font-size: 20px;
+            }
         }
     </style>
 </head>
 <body>
 
+    <button class="theme-toggle" onclick="toggleTheme()" id="themeBtn">🌙</button>
     <div id="toast" class="toast"></div>
 
     <div class="container" id="app">
-
-        <h1>💰 زرین‌کلیک</h1>
+        <h1>💰 زرین‌کلیک ۲.۰</h1>
 
         <!-- ===== صفحه ورود/ثبت‌نام ===== -->
         <div id="authPage">
@@ -418,16 +495,14 @@
                 <button class="btn-primary" onclick="loginUser()">ورود</button>
                 <p id="loginMessage"></p>
             </div>
-            <div class="box" style="text-align:center;font-size:13px;color:#8892b0;">
-                🔒 اطلاعات در دیتابیس ابری Supabase ذخیره می‌شود.
-            </div>
         </div>
 
         <!-- ===== صفحه خانه ===== -->
         <div id="homePage" class="hidden">
             <div class="box">
-                <div style="display:flex;justify-content:space-between;align-items:center;">
+                <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px;">
                     <span>خوش آمدید، <strong id="userEmailDisplay">---</strong></span>
+                    <span id="userProBadge"></span>
                     <button class="btn-sm" style="background:#f7971e;color:#0b0e1a;" onclick="toggleAdminPanel()">👑 ادمین</button>
                 </div>
             </div>
@@ -528,82 +603,130 @@
     </div>
 
     <!-- ============================================================ -->
-    <!-- جاواسکریپت (نسخه‌ی مقاوم با بررسی بارگذاری) -->
+    <!-- جاواسکریپت کامل نسخه ۲.۰ با Supabase -->
     <!-- ============================================================ -->
     <script>
-        (function() {
-            // ================================================================
-            // ۰. بررسی اینکه کتابخانه بارگذاری شده یا نه
-            // ================================================================
+        // ================================================================
+        // ۰. بررسی بارگذاری کتابخانه Supabase
+        // ================================================================
+        (function checkSupabase() {
             if (typeof supabase === 'undefined') {
-                alert('❌ کتابخانه Supabase بارگذاری نشد! لطفاً اتصال اینترنت خود را بررسی کنید و صفحه را مجدداً بارگذاری نمایید (Ctrl+Shift+R).');
-                document.body.innerHTML = '<div style="text-align:center;padding:50px;color:#ff6b6b;font-size:20px;">❌ خطا: کتابخانه Supabase بارگذاری نشد.<br>لطفاً اتصال اینترنت را بررسی کنید.</div>';
-                return; // توقف کامل اجرا
+                document.body.innerHTML = `
+                    <div style="text-align:center;padding:50px;color:#ff6b6b;font-family:sans-serif;">
+                        <h2>❌ خطا در بارگذاری</h2>
+                        <p>کتابخانه Supabase بارگذاری نشد.</p>
+                        <p>لطفاً اتصال اینترنت را بررسی کرده و صفحه را دوباره بارگذاری کنید.</p>
+                        <button onclick="location.reload()" style="margin-top:20px;padding:10px 20px;font-size:16px;cursor:pointer;border-radius:12px;border:none;background:#f7971e;color:#0b0e1a;font-weight:700;">
+                            🔄 تلاش مجدد
+                        </button>
+                    </div>
+                `;
+                throw new Error('Supabase library failed to load');
+            }
+            console.log('✅ Supabase loaded successfully');
+        })();
+
+        // ================================================================
+        // ۱. اتصال به Supabase
+        // ================================================================
+        const supabaseClient = supabase.createClient(
+            'https://fpogciahtzacgrglhmnx.supabase.co',
+            'sb_publishable_Gb3p43CBeX1VFOOzVtdI0w_IqNrVuEm'
+        );
+
+        // ================================================================
+        // ۲. متغیرهای سراسری
+        // ================================================================
+        let currentUser = null;
+        const ADMIN_EMAIL = 'mhmdhsnjlyly140@gmail.com';
+        let wheelSpinning = false;
+        let allAds = [];
+
+        // ================================================================
+        // ۳. توابع کمکی
+        // ================================================================
+        function showToast(msg, type = 'success') {
+            const t = document.getElementById('toast');
+            t.textContent = msg;
+            t.className = 'toast show';
+            t.style.borderColor = type === 'error' ? '#ff6b6b' : '#92fe9d';
+            clearTimeout(t._timer);
+            t._timer = setTimeout(() => { t.className = 'toast'; }, 3000);
+        }
+
+        function getToday() {
+            return new Date().toISOString().split('T')[0];
+        }
+
+        function obfuscateEmail(email) {
+            if (!email) return '---';
+            let parts = email.split('@');
+            if (parts[0].length <= 3) return parts[0] + '***@' + parts[1];
+            return parts[0].slice(0, 3) + '***@' + parts[1];
+        }
+
+        function generateRefCode() {
+            return 'REF' + Math.floor(1000 + Math.random() * 9000);
+        }
+
+        function formatTime(ts) {
+            if (!ts) return '';
+            return new Date(ts).toLocaleTimeString('fa-IR');
+        }
+
+        // ================================================================
+        // ۴. تم (روشن/تاریک)
+        // ================================================================
+        function toggleTheme() {
+            document.body.classList.toggle('light');
+            const btn = document.getElementById('themeBtn');
+            btn.textContent = document.body.classList.contains('light') ? '🌙' : '☀️';
+            localStorage.setItem('theme', document.body.classList.contains('light') ? 'light' : 'dark');
+        }
+
+        (function loadTheme() {
+            if (localStorage.getItem('theme') === 'light') {
+                document.body.classList.add('light');
+                document.getElementById('themeBtn').textContent = '🌙';
+            }
+        })();
+
+        // ================================================================
+        // ۵. احراز هویت
+        // ================================================================
+        window.registerUser = async function() {
+            const email = document.getElementById('regEmail').value.trim();
+            const password = document.getElementById('regPassword').value.trim();
+            const ref = document.getElementById('regRef').value.trim().toUpperCase() || '';
+
+            if (!email || !password) {
+                document.getElementById('regMessage').innerHTML = '<span class="error">ایمیل و رمز را پر کنید</span>';
+                return;
+            }
+            if (password.length < 6) {
+                document.getElementById('regMessage').innerHTML = '<span class="error">رمز حداقل ۶ کاراکتر</span>';
+                return;
             }
 
-            // ================================================================
-            // ۱. اتصال به Supabase
-            // ================================================================
-            const supabaseClient = supabase.createClient(
-                'https://fpogciahtzacgrglhmnx.supabase.co',
-                'sb_publishable_Gb3p43CBeX1VFOOzVtdI0w_IqNrVuEm'
-            );
+            try {
+                // چک تکراری نبودن ایمیل
+                const { data: existing } = await supabaseClient
+                    .from('users')
+                    .select('email')
+                    .eq('email', email);
 
-            let currentUser = null;
-            const ADMIN_EMAIL = 'mhmdhsnjlyly140@gmail.com';
-            let wheelSpinning = false;
-
-            // ================================================================
-            // ۲. توابع کمکی
-            // ================================================================
-            function showToast(msg, type = 'success') {
-                const t = document.getElementById('toast');
-                t.textContent = msg;
-                t.className = 'toast show';
-                t.style.borderColor = type === 'error' ? '#ff6b6b' : '#92fe9d';
-                clearTimeout(t._timer);
-                t._timer = setTimeout(() => { t.className = 'toast'; }, 3000);
-            }
-
-            function getToday() { return new Date().toISOString().split('T')[0]; }
-
-            function generateRefCode() { return 'REF' + Math.floor(1000 + Math.random() * 9000); }
-
-            function obfuscateEmail(email) {
-                if (!email) return '---';
-                let parts = email.split('@');
-                if (parts[0].length <= 3) return parts[0] + '***@' + parts[1];
-                return parts[0].slice(0, 3) + '***@' + parts[1];
-            }
-
-            // ================================================================
-            // ۳. توابع احراز هویت (متصل به window برای onclick)
-            // ================================================================
-            window.registerUser = async function() {
-                const email = document.getElementById('regEmail').value.trim();
-                const password = document.getElementById('regPassword').value.trim();
-                const ref = document.getElementById('regRef').value.trim().toUpperCase() || '';
-
-                if (!email || !password) {
-                    document.getElementById('regMessage').innerHTML = '<span class="error">ایمیل و رمز را پر کنید</span>';
+                if (existing && existing.length > 0) {
+                    document.getElementById('regMessage').innerHTML = '<span class="error">این ایمیل قبلاً ثبت شده</span>';
                     return;
                 }
-                if (password.length < 6) {
-                    document.getElementById('regMessage').innerHTML = '<span class="error">رمز حداقل ۶ کاراکتر</span>';
-                    return;
-                }
 
-                try {
-                    const { data: existing } = await supabaseClient.from('users').select('email').eq('email', email);
-                    if (existing && existing.length > 0) {
-                        document.getElementById('regMessage').innerHTML = '<span class="error">این ایمیل قبلاً ثبت شده</span>';
-                        return;
-                    }
+                const refCode = generateRefCode();
+                const role = (email === ADMIN_EMAIL) ? 'admin' : 'user';
+                const now = Date.now();
 
-                    const refCode = generateRefCode();
-                    const role = (email === ADMIN_EMAIL) ? 'admin' : 'user';
-
-                    const { error } = await supabaseClient.from('users').insert([{
+                const { error } = await supabaseClient
+                    .from('users')
+                    .insert([{
                         email,
                         password,
                         ref_code: refCode,
@@ -611,324 +734,376 @@
                         referrals: [],
                         balance: 0,
                         ad_balance: 0,
-                        role: role,
-                        last_spin: null,
+                        daily_click_count: 0,
+                        last_click_date: null,
                         history: [],
-                        join_date: Date.now()
+                        role: role,
+                        total_earnings: 0,
+                        total_ads_created: 0,
+                        is_pro: false,
+                        ad_click_counts: {},
+                        join_date: now,
+                        ratings: {},
+                        last_spin: null,
+                        created_at: new Date().toISOString()
                     }]);
 
-                    if (error) {
-                        document.getElementById('regMessage').innerHTML = '<span class="error">' + error.message + '</span>';
-                    } else {
-                        document.getElementById('regMessage').innerHTML =
-                            '<span class="success">✅ ثبت‌نام موفق! وارد شوید.</span>';
-                        document.getElementById('regEmail').value = '';
-                        document.getElementById('regPassword').value = '';
-                        document.getElementById('regRef').value = '';
-                    }
-                } catch (err) {
-                    document.getElementById('regMessage').innerHTML = '<span class="error">' + err.message + '</span>';
+                if (error) {
+                    document.getElementById('regMessage').innerHTML = '<span class="error">' + error.message + '</span>';
+                } else {
+                    document.getElementById('regMessage').innerHTML =
+                    '<span class="success">✅ ثبت‌نام موفق! وارد شوید.</span>';
+                    document.getElementById('regEmail').value = '';
+                    document.getElementById('regPassword').value = '';
+                    document.getElementById('regRef').value = '';
                 }
-            };
+            } catch (err) {
+                document.getElementById('regMessage').innerHTML = '<span class="error">' + err.message + '</span>';
+            }
+        };
 
-            window.loginUser = async function() {
-                const email = document.getElementById('loginEmail').value.trim();
-                const password = document.getElementById('loginPassword').value.trim();
+        window.loginUser = async function() {
+            const email = document.getElementById('loginEmail').value.trim();
+            const password = document.getElementById('loginPassword').value.trim();
 
-                if (!email || !password) {
-                    document.getElementById('loginMessage').innerHTML = '<span class="error">ایمیل و رمز را پر کنید</span>';
-                    return;
+            if (!email || !password) {
+                document.getElementById('loginMessage').innerHTML = '<span class="error">ایمیل و رمز را پر کنید</span>';
+                return;
+            }
+
+            try {
+                const { data, error } = await supabaseClient
+                    .from('users')
+                    .select('*')
+                    .eq('email', email)
+                    .eq('password', password);
+
+                if (error || data.length === 0) {
+                    document.getElementById('loginMessage').innerHTML =
+                    '<span class="error">ایمیل یا رمز اشتباه است</span>';
+                } else {
+                    currentUser = data[0];
+                    localStorage.setItem('currentUserEmail', email);
+                    document.getElementById('loginMessage').innerHTML = '';
+                    showToast('✅ خوش آمدید', 'success');
+                    enterApp();
                 }
+            } catch (err) {
+                document.getElementById('loginMessage').innerHTML = '<span class="error">' + err.message + '</span>';
+            }
+        };
 
-                try {
-                    const { data, error } = await supabaseClient
-                        .from('users')
-                        .select('*')
-                        .eq('email', email)
-                        .eq('password', password);
+        window.logoutUser = function() {
+            localStorage.removeItem('currentUserEmail');
+            currentUser = null;
+            document.getElementById('authPage').classList.remove('hidden');
+            document.getElementById('homePage').classList.add('hidden');
+            document.getElementById('bottomNav').style.display = 'none';
+            document.getElementById('adminPanel').classList.add('hidden');
+            showToast('🚪 خارج شدید', 'success');
+        };
 
-                    if (error || data.length === 0) {
-                        document.getElementById('loginMessage').innerHTML =
-                        '<span class="error">ایمیل یا رمز اشتباه است</span>';
-                    } else {
-                        currentUser = data[0];
-                        localStorage.setItem('currentUserEmail', email);
-                        document.getElementById('loginMessage').innerHTML = '';
-                        showToast('✅ خوش آمدید', 'success');
-                        enterApp();
-                    }
-                } catch (err) {
-                    document.getElementById('loginMessage').innerHTML = '<span class="error">' + err.message + '</span>';
-                }
-            };
+        // ================================================================
+        // ۶. ورود به برنامه
+        // ================================================================
+        function enterApp() {
+            document.getElementById('authPage').classList.add('hidden');
+            document.getElementById('homePage').classList.remove('hidden');
+            document.getElementById('bottomNav').style.display = 'flex';
+            document.getElementById('userEmailDisplay').textContent = currentUser.email || '---';
 
-            window.logoutUser = function() {
-                localStorage.removeItem('currentUserEmail');
-                currentUser = null;
-                document.getElementById('authPage').classList.remove('hidden');
-                document.getElementById('homePage').classList.add('hidden');
-                document.getElementById('bottomNav').style.display = 'none';
-                document.getElementById('adminPanel').classList.add('hidden');
-                showToast('🚪 خارج شدید', 'success');
-            };
+            // نشان پرو
+            const proBadge = document.getElementById('userProBadge');
+            if (currentUser.is_pro) {
+                proBadge.innerHTML = '<span class="badge-pro">⭐ پرو</span>';
+            } else {
+                proBadge.innerHTML = '';
+            }
 
-            // ================================================================
-            // ۴. ورود به برنامه
-            // ================================================================
-            function enterApp() {
-                document.getElementById('authPage').classList.add('hidden');
-                document.getElementById('homePage').classList.remove('hidden');
-                document.getElementById('bottomNav').style.display = 'flex';
-                document.getElementById('userEmailDisplay').textContent = currentUser.email || '---';
+            renderAll();
+        }
+
+        // ================================================================
+        // ۷. نمایش صفحات
+        // ================================================================
+        window.showHome = function() {
+            document.getElementById('adsSection').classList.remove('hidden');
+            document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+            document.querySelector('.nav-item:first-child').classList.add('active');
+            renderAds();
+        };
+
+        window.showWallet = function() {
+            document.getElementById('adsSection').classList.add('hidden');
+            document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+            document.querySelector('.nav-item:nth-child(2)').classList.add('active');
+            renderWallet();
+        };
+
+        window.showProfile = function() {
+            document.getElementById('adsSection').classList.add('hidden');
+            document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+            document.querySelector('.nav-item:nth-child(3)').classList.add('active');
+            renderProfile();
+        };
+
+        // ================================================================
+        // ۸. رندر همه
+        // ================================================================
+        function renderAll() {
+            renderWallet();
+            renderAds();
+            renderHistory();
+            renderProfile();
+        }
+
+        // ================================================================
+        // ۹. کیف پول
+        // ================================================================
+        function renderWallet() {
+            if (!currentUser) return;
+            document.getElementById('walletMain').innerHTML = (currentUser.balance || 0).toLocaleString() +
+                ' <small>تومان</small>';
+            document.getElementById('walletAds').innerHTML = (currentUser.ad_balance || 0).toLocaleString() +
+                ' <small>تومان</small>';
+        }
+
+        // ================================================================
+        // ۱۰. کلیک روی تبلیغ
+        // ================================================================
+        window.clickAd = async function() {
+            if (!currentUser) { showToast('❌ وارد شوید', 'error'); return; }
+
+            const today = getToday();
+            if (currentUser.last_click_date !== today) {
+                currentUser.daily_click_count = 0;
+                currentUser.last_click_date = today;
+            }
+
+            // محاسبه حداکثر کلیک
+            let maxClicks = 10 + Math.floor((currentUser.referrals || []).length / 5);
+            if (currentUser.is_pro) maxClicks = 99999;
+
+            if ((currentUser.daily_click_count || 0) >= maxClicks) {
+                showToast(`❌ امروز ${maxClicks} کلیک کامل کردید`, 'error');
+                return;
+            }
+
+            try {
+                const amount = 100;
+                const newAdBalance = (currentUser.ad_balance || 0) + amount;
+                const newDailyClicks = (currentUser.daily_click_count || 0) + 1;
+
+                const { error } = await supabaseClient
+                    .from('users')
+                    .update({
+                        ad_balance: newAdBalance,
+                        daily_click_count: newDailyClicks,
+                        last_click_date: today
+                    })
+                    .eq('email', currentUser.email);
+
+                if (error) { showToast('❌ خطا: ' + error.message, 'error'); return; }
+
+                currentUser.ad_balance = newAdBalance;
+                currentUser.daily_click_count = newDailyClicks;
+                currentUser.last_click_date = today;
+
+                // تاریخچه
+                const history = currentUser.history || [];
+                history.push({
+                    desc: 'کلیک روی تبلیغ',
+                    amount: `+${amount}`,
+                    type: 'green',
+                    time: new Date().toLocaleTimeString('fa-IR')
+                });
+
+                const { error: histErr } = await supabaseClient
+                    .from('users')
+                    .update({ history: history })
+                    .eq('email', currentUser.email);
+
+                if (!histErr) currentUser.history = history;
+
                 renderAll();
+                showToast(`✅ ${amount} تومان به کیف پول تبلیغ اضافه شد`, 'success');
+            } catch (err) {
+                showToast('❌ خطا: ' + err.message, 'error');
+            }
+        };
+
+        // ================================================================
+        // ۱۱. انتقال به کیف پول اصلی
+        // ================================================================
+        window.transferToMain = async function() {
+            if (!currentUser) { showToast('❌ وارد شوید', 'error'); return; }
+
+            const amount = currentUser.ad_balance || 0;
+            if (amount < 20000) {
+                showToast('❌ حداقل انتقال ۲۰,۰۰۰ تومان', 'error');
+                return;
             }
 
-            // ================================================================
-            // ۵. نمایش صفحات (منوی پایین)
-            // ================================================================
-            window.showHome = function() {
-                document.getElementById('adsSection').classList.remove('hidden');
-                document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
-                document.querySelector('.nav-item:first-child').classList.add('active');
-                renderAds();
-            };
+            const fee = Math.round(amount * 0.1);
+            const netAmount = amount - fee;
 
-            window.showWallet = function() {
-                document.getElementById('adsSection').classList.add('hidden');
-                document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
-                document.querySelector('.nav-item:nth-child(2)').classList.add('active');
-                renderWallet();
-            };
+            try {
+                const newMain = (currentUser.balance || 0) + netAmount;
+                const newAd = 0;
 
-            window.showProfile = function() {
-                document.getElementById('adsSection').classList.add('hidden');
-                document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
-                document.querySelector('.nav-item:nth-child(3)').classList.add('active');
-                renderProfile();
-            };
+                const { error } = await supabaseClient
+                    .from('users')
+                    .update({ balance: newMain, ad_balance: newAd })
+                    .eq('email', currentUser.email);
 
-            // ================================================================
-            // ۶. رندر همه
-            // ================================================================
-            function renderAll() {
-                renderWallet();
-                renderAds();
-                renderHistory();
-                renderProfile();
+                if (error) { showToast('❌ خطا: ' + error.message, 'error'); return; }
+
+                currentUser.balance = newMain;
+                currentUser.ad_balance = newAd;
+
+                const history = currentUser.history || [];
+                history.push({
+                    desc: `انتقال از تبلیغ به اصلی (کارمزد ${fee} تومان)`,
+                    amount: `+${netAmount}`,
+                    type: 'green',
+                    time: new Date().toLocaleTimeString('fa-IR')
+                });
+
+                await supabaseClient
+                    .from('users')
+                    .update({ history: history })
+                    .eq('email', currentUser.email);
+
+                currentUser.history = history;
+
+                renderAll();
+                showToast(`✅ ${netAmount.toLocaleString()} تومان به کیف پول اصلی منتقل شد`, 'success');
+            } catch (err) {
+                showToast('❌ خطا: ' + err.message, 'error');
+            }
+        };
+
+        // ================================================================
+        // ۱۲. برداشت از کیف پول تبلیغ
+        // ================================================================
+        window.withdrawFromAds = async function() {
+            if (!currentUser) { showToast('❌ وارد شوید', 'error'); return; }
+
+            const amount = parseInt(prompt('مبلغ برداشت (حداقل ۱۰۰,۰۰۰ تومان):'));
+            if (!amount || amount < 100000) {
+                showToast('❌ حداقل ۱۰۰,۰۰۰ تومان', 'error');
+                return;
             }
 
-            // ================================================================
-            // ۷. کیف پول
-            // ================================================================
-            function renderWallet() {
-                if (!currentUser) return;
-                document.getElementById('walletMain').innerHTML = (currentUser.balance || 0).toLocaleString() +
-                    ' <small>تومان</small>';
-                document.getElementById('walletAds').innerHTML = (currentUser.ad_balance || 0).toLocaleString() +
-                    ' <small>تومان</small>';
+            if (amount > (currentUser.ad_balance || 0)) {
+                showToast('❌ موجودی کافی نیست', 'error');
+                return;
             }
 
-            // ================================================================
-            // ۸. کلیک روی تبلیغ
-            // ================================================================
-            window.clickAd = async function() {
-                if (!currentUser) { showToast('❌ وارد شوید', 'error'); return; }
+            const fee = Math.round(amount * 0.1);
+            const netAmount = amount - fee;
 
-                const today = getToday();
-                if (currentUser.last_click_date !== today) {
-                    currentUser.daily_click_count = 0;
-                    currentUser.last_click_date = today;
-                }
+            try {
+                const newAd = (currentUser.ad_balance || 0) - amount;
 
-                let maxClicks = 10 + Math.floor((currentUser.referrals || []).length / 5);
-                if (currentUser.is_pro) maxClicks = 99999;
+                const { error } = await supabaseClient
+                    .from('users')
+                    .update({ ad_balance: newAd })
+                    .eq('email', currentUser.email);
 
-                if ((currentUser.daily_click_count || 0) >= maxClicks) {
-                    showToast(`❌ امروز ${maxClicks} کلیک کامل کردید`, 'error');
-                    return;
-                }
+                if (error) { showToast('❌ خطا: ' + error.message, 'error'); return; }
 
-                try {
-                    const amount = 100;
-                    const newAdBalance = (currentUser.ad_balance || 0) + amount;
-                    const newDailyClicks = (currentUser.daily_click_count || 0) + 1;
+                currentUser.ad_balance = newAd;
 
-                    const { error } = await supabaseClient
-                        .from('users')
-                        .update({
-                            ad_balance: newAdBalance,
-                            daily_click_count: newDailyClicks,
-                            last_click_date: today
-                        })
-                        .eq('email', currentUser.email);
-
-                    if (error) { showToast('❌ خطا: ' + error.message, 'error'); return; }
-
-                    currentUser.ad_balance = newAdBalance;
-                    currentUser.daily_click_count = newDailyClicks;
-                    currentUser.last_click_date = today;
-
-                    const history = currentUser.history || [];
-                    history.push({
-                        desc: 'کلیک روی تبلیغ',
-                        amount: `+${amount}`,
-                        type: 'green',
-                        time: new Date().toLocaleTimeString()
-                    });
-                    await supabaseClient.from('users').update({ history }).eq('email', currentUser.email);
-                    currentUser.history = history;
-
-                    renderAll();
-                    showToast(`✅ ${amount} تومان به کیف پول تبلیغ اضافه شد`, 'success');
-                } catch (err) {
-                    showToast('❌ خطا: ' + err.message, 'error');
-                }
-            };
-
-            // ================================================================
-            // ۹. انتقال به کیف پول اصلی
-            // ================================================================
-            window.transferToMain = async function() {
-                if (!currentUser) { showToast('❌ وارد شوید', 'error'); return; }
-
-                const amount = currentUser.ad_balance || 0;
-                if (amount < 20000) {
-                    showToast('❌ حداقل انتقال ۲۰,۰۰۰ تومان', 'error');
-                    return;
-                }
-
-                const fee = Math.round(amount * 0.1);
-                const netAmount = amount - fee;
-
-                try {
-                    const newMain = (currentUser.balance || 0) + netAmount;
-                    const newAd = 0;
-
-                    const { error } = await supabaseClient
-                        .from('users')
-                        .update({ balance: newMain, ad_balance: newAd })
-                        .eq('email', currentUser.email);
-
-                    if (error) { showToast('❌ خطا: ' + error.message, 'error'); return; }
-
-                    currentUser.balance = newMain;
-                    currentUser.ad_balance = newAd;
-
-                    const history = currentUser.history || [];
-                    history.push({
-                        desc: `انتقال از تبلیغ به اصلی (کارمزد ${fee} تومان)`,
-                        amount: `+${netAmount}`,
-                        type: 'green',
-                        time: new Date().toLocaleTimeString()
-                    });
-                    await supabaseClient.from('users').update({ history }).eq('email', currentUser.email);
-                    currentUser.history = history;
-
-                    renderAll();
-                    showToast(`✅ ${netAmount.toLocaleString()} تومان به کیف پول اصلی منتقل شد`, 'success');
-                } catch (err) {
-                    showToast('❌ خطا: ' + err.message, 'error');
-                }
-            };
-
-            // ================================================================
-            // ۱۰. برداشت از کیف پول تبلیغ
-            // ================================================================
-            window.withdrawFromAds = async function() {
-                if (!currentUser) { showToast('❌ وارد شوید', 'error'); return; }
-
-                const amount = parseInt(prompt('مبلغ برداشت (حداقل ۱۰۰,۰۰۰ تومان):'));
-                if (!amount || amount < 100000) {
-                    showToast('❌ حداقل ۱۰۰,۰۰۰ تومان', 'error');
-                    return;
-                }
-
-                if (amount > (currentUser.ad_balance || 0)) {
-                    showToast('❌ موجودی کافی نیست', 'error');
-                    return;
-                }
-
-                const fee = Math.round(amount * 0.1);
-                const netAmount = amount - fee;
-
-                try {
-                    const newAd = (currentUser.ad_balance || 0) - amount;
-                    const { error } = await supabaseClient
-                        .from('users')
-                        .update({ ad_balance: newAd })
-                        .eq('email', currentUser.email);
-
-                    if (error) { showToast('❌ خطا: ' + error.message, 'error'); return; }
-
-                    currentUser.ad_balance = newAd;
-
-                    await supabaseClient.from('withdraw_requests').insert([{
+                // ثبت درخواست برداشت
+                const { error: wError } = await supabaseClient
+                    .from('withdraw_requests')
+                    .insert([{
+                        id: 'wd_' + Date.now(),
                         user_email: currentUser.email,
                         amount: amount,
                         net_amount: netAmount,
                         fee: fee,
+                        wallet: 'ad_balance',
+                        wallet_name: 'کیف پول تبلیغ',
+                        card_number: '',
+                        iban: '',
                         status: 'pending',
                         created_at: new Date().toISOString()
                     }]);
 
-                    const history = currentUser.history || [];
-                    history.push({
-                        desc: `درخواست برداشت ${amount} تومان`,
-                        amount: `-${amount}`,
-                        type: 'red',
-                        time: new Date().toLocaleTimeString()
-                    });
-                    await supabaseClient.from('users').update({ history }).eq('email', currentUser.email);
-                    currentUser.history = history;
+                if (wError) { showToast('❌ خطا در ثبت درخواست: ' + wError.message, 'error'); return; }
 
-                    renderAll();
-                    showToast(`✅ درخواست برداشت ${amount.toLocaleString()} تومان ثبت شد`, 'success');
-                } catch (err) {
-                    showToast('❌ خطا: ' + err.message, 'error');
-                }
-            };
+                const history = currentUser.history || [];
+                history.push({
+                    desc: `درخواست برداشت ${amount} تومان`,
+                    amount: `-${amount}`,
+                    type: 'red',
+                    time: new Date().toLocaleTimeString('fa-IR')
+                });
 
-            // ================================================================
-            // ۱۱. گردونه شانس
-            // ================================================================
-            window.spinWheel = async function() {
-                if (!currentUser) { showToast('❌ وارد شوید', 'error'); return; }
-                if (wheelSpinning) return;
+                await supabaseClient
+                    .from('users')
+                    .update({ history: history })
+                    .eq('email', currentUser.email);
 
-                const lastSpin = currentUser.last_spin ? new Date(currentUser.last_spin) : null;
-                const now = new Date();
-                if (lastSpin && (now - lastSpin) < 48 * 60 * 60 * 1000) {
-                    const remaining = Math.ceil(48 - (now - lastSpin) / (1000 * 60 * 60));
-                    showToast(`⏳ ${remaining} ساعت تا چرخش بعدی`, 'error');
-                    return;
-                }
+                currentUser.history = history;
 
-                wheelSpinning = true;
-                const wheel = document.getElementById('wheel');
-                const resultDiv = document.getElementById('prizeResult');
+                renderAll();
+                showToast(`✅ درخواست برداشت ${amount.toLocaleString()} تومان ثبت شد`, 'success');
+            } catch (err) {
+                showToast('❌ خطا: ' + err.message, 'error');
+            }
+        };
 
-                const prizes = [
-                    { name: '۵,۰۰۰ تومان', value: 5000 },
-                    { name: '۱,۰۰۰ تومان', value: 1000 },
-                    { name: '۵۰۰ تومان', value: 500 },
-                    { name: 'پوچ!', value: 0 },
-                    { name: 'پوچ!', value: 0 },
-                    { name: 'پوچ!', value: 0 }
-                ];
+        // ================================================================
+        // ۱۳. گردونه شانس
+        // ================================================================
+        window.spinWheel = async function() {
+            if (!currentUser) { showToast('❌ وارد شوید', 'error'); return; }
+            if (wheelSpinning) return;
 
-                const randomIndex = Math.floor(Math.random() * prizes.length);
-                const deg = 360 * 5 + randomIndex * 60;
-                wheel.style.transform = `rotate(${deg}deg)`;
+            const lastSpin = currentUser.last_spin ? new Date(currentUser.last_spin) : null;
+            const now = new Date();
+            if (lastSpin && (now - lastSpin) < 48 * 60 * 60 * 1000) {
+                const remaining = Math.ceil(48 - (now - lastSpin) / (1000 * 60 * 60));
+                showToast(`⏳ ${remaining} ساعت تا چرخش بعدی`, 'error');
+                return;
+            }
 
-                setTimeout(async () => {
-                    const prize = prizes[randomIndex];
+            wheelSpinning = true;
+            const wheel = document.getElementById('wheel');
+            const resultDiv = document.getElementById('prizeResult');
 
+            const prizes = [
+                { name: '۵,۰۰۰ تومان', value: 5000 },
+                { name: '۱,۰۰۰ تومان', value: 1000 },
+                { name: '۵۰۰ تومان', value: 500 },
+                { name: 'پوچ!', value: 0 },
+                { name: 'پوچ!', value: 0 },
+                { name: 'پوچ!', value: 0 }
+            ];
+
+            const randomIndex = Math.floor(Math.random() * prizes.length);
+            const deg = 360 * 5 + randomIndex * 60;
+            wheel.style.transform = `rotate(${deg}deg)`;
+
+            setTimeout(async () => {
+                const prize = prizes[randomIndex];
+
+                try {
                     if (prize.value > 0) {
                         const newBalance = (currentUser.balance || 0) + prize.value;
-                        await supabaseClient.from('users').update({
-                            balance: newBalance,
-                            last_spin: now.toISOString()
-                        }).eq('email', currentUser.email);
+
+                        const { error } = await supabaseClient
+                            .from('users')
+                            .update({
+                                balance: newBalance,
+                                last_spin: now.toISOString()
+                            })
+                            .eq('email', currentUser.email);
+
+                        if (error) { showToast('❌ خطا: ' + error.message, 'error'); return; }
 
                         currentUser.balance = newBalance;
                         currentUser.last_spin = now.toISOString();
@@ -938,202 +1113,261 @@
                             desc: `جایزه گردونه شانس`,
                             amount: `+${prize.value}`,
                             type: 'green',
-                            time: new Date().toLocaleTimeString()
+                            time: new Date().toLocaleTimeString('fa-IR')
                         });
-                        await supabaseClient.from('users').update({ history }).eq('email', currentUser.email);
+
+                        await supabaseClient
+                            .from('users')
+                            .update({ history: history })
+                            .eq('email', currentUser.email);
+
                         currentUser.history = history;
 
                         resultDiv.textContent = `🎉 ${prize.name} به کیف پول اصلی اضافه شد!`;
                         showToast(`💰 ${prize.value.toLocaleString()} تومان اضافه شد!`, 'success');
                     } else {
+                        const { error } = await supabaseClient
+                            .from('users')
+                            .update({ last_spin: now.toISOString() })
+                            .eq('email', currentUser.email);
+
+                        if (!error) currentUser.last_spin = now.toISOString();
                         resultDiv.textContent = '😐 متأسفانه هیچی!';
-                        await supabaseClient.from('users').update({ last_spin: now.toISOString() }).eq('email',
-                        currentUser.email);
-                        currentUser.last_spin = now.toISOString();
                         showToast('😐 شانس نیاوردید!', 'info');
                     }
 
                     renderAll();
-                    wheelSpinning = false;
-                }, 4000);
-            };
-
-            // ================================================================
-            // ۱۲. تبلیغات
-            // ================================================================
-            async function renderAds() {
-                try {
-                    const { data, error } = await supabaseClient.from('ads').select('*').eq('status', 'active');
-
-                    if (error) {
-                        document.getElementById('adFeed').innerHTML = '<div style="color:#8892b0;">خطا در بارگذاری</div>';
-                        return;
-                    }
-
-                    if (!data || data.length === 0) {
-                        document.getElementById('adFeed').innerHTML =
-                            '<div style="color:#4a5a7a;text-align:center;">هیچ تبلیغی فعال نیست</div>';
-                        return;
-                    }
-
-                    let html = '';
-                    data.forEach(ad => {
-                        html += `
-                            <div class="ad-item">
-                                <div class="title">${ad.title}</div>
-                                <div class="desc">${ad.desc || ''}</div>
-                                <span class="category">${ad.category || 'سایر'}</span>
-                                <div class="budget">💰 باقیمانده: ${ad.remaining_budget || 0} تومان | هر کلیک: ${Math.round((ad.cpc || 500) / 10)} تومان</div>
-                                <button class="click-btn" onclick="clickAd()">👆 کلیک کن</button>
-                            </div>
-                        `;
-                    });
-                    document.getElementById('adFeed').innerHTML = html;
                 } catch (err) {
-                    document.getElementById('adFeed').innerHTML = '<div style="color:#8892b0;">خطا در بارگذاری</div>';
+                    showToast('❌ خطا: ' + err.message, 'error');
                 }
-            }
+                wheelSpinning = false;
+            }, 4000);
+        };
 
-            // ================================================================
-            // ۱۳. تاریخچه
-            // ================================================================
-            function renderHistory() {
-                if (!currentUser) return;
-                const hist = currentUser.history || [];
-                if (hist.length === 0) {
-                    document.getElementById('historyList').innerHTML =
-                        '<div style="color:#4a5a7a;text-align:center;font-size:13px;">هیچ تراکنشی ثبت نشده</div>';
+        // ================================================================
+        // ۱۴. تبلیغات
+        // ================================================================
+        async function renderAds() {
+            try {
+                const { data, error } = await supabaseClient
+                    .from('ads')
+                    .select('*')
+                    .eq('status', 'active');
+
+                if (error) {
+                    document.getElementById('adFeed').innerHTML = '<div style="color:#8892b0;">خطا در بارگذاری</div>';
                     return;
                 }
+
+                allAds = data || [];
+
+                if (allAds.length === 0) {
+                    document.getElementById('adFeed').innerHTML =
+                        '<div style="color:#4a5a7a;text-align:center;">هیچ تبلیغی فعال نیست</div>';
+                    return;
+                }
+
                 let html = '';
-                hist.slice(-8).reverse().forEach(item => {
-                    const cls = item.type === 'green' ? 'green' : 'red';
+                allAds.forEach(ad => {
+                    const isClicked = currentUser && (currentUser.ad_click_counts || {})[ad.id] === true;
                     html += `
-                        <div class="history-item">
-                            <span>${item.desc}</span>
-                            <span class="${cls}">${item.amount} تومان</span>
-                            <span style="color:#4a5a7a;font-size:11px;">${item.time || ''}</span>
+                        <div class="ad-item">
+                            <div class="title">${ad.title}</div>
+                            <div class="desc">${ad.desc || ''}</div>
+                            <span class="category">${ad.category || 'سایر'}</span>
+                            <div class="budget">💰 باقیمانده: ${ad.remaining_budget || 0} تومان | هر کلیک: ${Math.round((ad.cpc || 500) / 10)} تومان</div>
+                            <button class="click-btn" onclick="clickAd()" ${isClicked ? 'disabled' : ''}>
+                                ${isClicked ? '✅ کلیک شده' : '👆 کلیک کن'}
+                            </button>
                         </div>
                     `;
                 });
-                document.getElementById('historyList').innerHTML = html;
+                document.getElementById('adFeed').innerHTML = html;
+            } catch (err) {
+                document.getElementById('adFeed').innerHTML = '<div style="color:#8892b0;">خطا در بارگذاری</div>';
             }
+        }
 
-            // ================================================================
-            // ۱۴. پروفایل (ساده)
-            // ================================================================
-            function renderProfile() {
-                // فعلاً کاری نمی‌کند
+        // ================================================================
+        // ۱۵. تاریخچه
+        // ================================================================
+        function renderHistory() {
+            if (!currentUser) return;
+            const hist = currentUser.history || [];
+            if (hist.length === 0) {
+                document.getElementById('historyList').innerHTML =
+                    '<div style="color:#4a5a7a;text-align:center;font-size:13px;">هیچ تراکنشی ثبت نشده</div>';
+                return;
             }
+            let html = '';
+            hist.slice(-8).reverse().forEach(item => {
+                const cls = item.type === 'green' ? 'green' : 'red';
+                html += `
+                    <div class="history-item">
+                        <span>${item.desc}</span>
+                        <span class="${cls}">${item.amount} تومان</span>
+                        <span style="color:#4a5a7a;font-size:11px;">${item.time || ''}</span>
+                    </div>
+                `;
+            });
+            document.getElementById('historyList').innerHTML = html;
+        }
 
-            // ================================================================
-            // ۱۵. پنل ادمین
-            // ================================================================
-            window.toggleAdminPanel = function() {
-                if (!currentUser || currentUser.email !== ADMIN_EMAIL) {
-                    showToast('⛔ دسترسی غیرمجاز', 'error');
-                    return;
-                }
-                const panel = document.getElementById('adminPanel');
-                panel.classList.toggle('hidden');
-                if (!panel.classList.contains('hidden')) {
-                    loadAdminData();
-                }
-            };
+        // ================================================================
+        // ۱۶. پروفایل
+        // ================================================================
+        function renderProfile() {
+            if (!currentUser) return;
+            // پروفایل ساده - برای نمایش اطلاعات کاربر
+            const profileHtml = `
+                <div class="box">
+                    <div class="profile-avatar">👤</div>
+                    <p style="text-align:center;font-size:16px;font-weight:700;">${currentUser.email}</p>
+                    <p style="text-align:center;color:#8892b0;font-size:13px;">نقش: ${currentUser.role === 'admin' ? '👑 ادمین' : '👤 کاربر'}</p>
+                    <p style="text-align:center;color:#8892b0;font-size:13px;">کد معرف: ${currentUser.ref_code || 'ندارد'}</p>
+                    <p style="text-align:center;color:#8892b0;font-size:13px;">زیرمجموعه: ${(currentUser.referrals || []).length} نفر</p>
+                    <p style="text-align:center;color:#8892b0;font-size:13px;">مجموع درآمد: ${(currentUser.total_earnings || 0).toLocaleString()} تومان</p>
+                    ${currentUser.is_pro ? '<p style="text-align:center;color:#ffd200;font-size:14px;">⭐ نسخه پرو فعال</p>' : ''}
+                </div>
+            `;
+            // قرار دادن در صفحه - از قبل بخشی برای پروفایل نداریم، در آینده می‌توان اضافه کرد
+        }
 
-            window.closeAdminPanel = function() {
-                document.getElementById('adminPanel').classList.add('hidden');
-            };
+        // ================================================================
+        // ۱۷. پنل ادمین
+        // ================================================================
+        window.toggleAdminPanel = function() {
+            if (!currentUser || currentUser.email !== ADMIN_EMAIL) {
+                showToast('⛔ دسترسی غیرمجاز', 'error');
+                return;
+            }
+            const panel = document.getElementById('adminPanel');
+            panel.classList.toggle('hidden');
+            if (!panel.classList.contains('hidden')) {
+                loadAdminData();
+            }
+        };
 
-            window.loadAdminData = async function() {
-                if (!currentUser || currentUser.email !== ADMIN_EMAIL) return;
+        window.closeAdminPanel = function() {
+            document.getElementById('adminPanel').classList.add('hidden');
+        };
 
+        window.loadAdminData = async function() {
+            if (!currentUser || currentUser.email !== ADMIN_EMAIL) return;
+
+            try {
+                // کاربران
+                const { data: users } = await supabaseClient
+                    .from('users')
+                    .select('email, balance, ad_balance, referrals, role, is_pro');
+
+                let usersHtml =
+                    '<table><tr><th>ایمیل</th><th>کیف پول اصلی</th><th>کیف پول تبلیغ</th><th>زیرمجموعه</th><th>نقش</th></tr>';
+                (users || []).forEach(u => {
+                    usersHtml += `<tr>
+                        <td>${obfuscateEmail(u.email)}</td>
+                        <td>${u.balance || 0}</td>
+                        <td>${u.ad_balance || 0}</td>
+                        <td>${(u.referrals || []).length}</td>
+                        <td>${u.role === 'admin' ? '👑' : u.is_pro ? '⭐' : ''}</td>
+                    </tr>`;
+                });
+                usersHtml += '</table>';
+                document.getElementById('adminUsers').innerHTML = usersHtml;
+
+                // درخواست‌های برداشت
+                const { data: withdraws } = await supabaseClient
+                    .from('withdraw_requests')
+                    .select('*')
+                    .eq('status', 'pending');
+
+                let wHtml = '<table><tr><th>کاربر</th><th>مبلغ</th><th>عملیات</th></tr>';
+                (withdraws || []).forEach(w => {
+                    wHtml += `<tr>
+                        <td>${obfuscateEmail(w.user_email)}</td>
+                        <td>${w.amount}</td>
+                        <td>
+                            <button class="btn-sm green" onclick="approveWithdraw('${w.id}')">✅</button>
+                            <button class="btn-sm red" onclick="rejectWithdraw('${w.id}')">❌</button>
+                        </td>
+                    </tr>`;
+                });
+                wHtml += '</table>';
+                document.getElementById('adminWithdrawals').innerHTML = wHtml || '<p>هیچ درخواستی نیست</p>';
+
+                // آمار
+                const { count } = await supabaseClient
+                    .from('users')
+                    .select('*', { count: 'exact', head: true });
+
+                document.getElementById('adminStats').innerHTML =
+                    `<p>👥 تعداد کاربران: ${count || 0}</p>`;
+
+            } catch (err) {
+                showToast('❌ خطا در بارگذاری', 'error');
+            }
+        };
+
+        window.approveWithdraw = async function(id) {
+            if (!confirm('تأیید برداشت؟')) return;
+            try {
+                const { error } = await supabaseClient
+                    .from('withdraw_requests')
+                    .update({ status: 'approved' })
+                    .eq('id', id);
+
+                if (error) { showToast('❌ خطا: ' + error.message, 'error'); return; }
+
+                showToast('✅ تأیید شد', 'success');
+                loadAdminData();
+            } catch (err) {
+                showToast('❌ خطا', 'error');
+            }
+        };
+
+        window.rejectWithdraw = async function(id) {
+            if (!confirm('رد برداشت؟')) return;
+            try {
+                const { error } = await supabaseClient
+                    .from('withdraw_requests')
+                    .update({ status: 'rejected' })
+                    .eq('id', id);
+
+                if (error) { showToast('❌ خطا: ' + error.message, 'error'); return; }
+
+                showToast('❌ رد شد', 'error');
+                loadAdminData();
+            } catch (err) {
+                showToast('❌ خطا', 'error');
+            }
+        };
+
+        // ================================================================
+        // ۱۸. شروع برنامه
+        // ================================================================
+        (async function init() {
+            const email = localStorage.getItem('currentUserEmail');
+            if (email) {
                 try {
-                    const { data: users } = await supabaseClient.from('users').select('email, balance, ad_balance, referrals');
-                    let usersHtml =
-                        '<table><tr><th>ایمیل</th><th>کیف پول اصلی</th><th>کیف پول تبلیغ</th><th>زیرمجموعه</th></tr>';
-                    users.forEach(u => {
-                        usersHtml += `<tr>
-                            <td>${obfuscateEmail(u.email)}</td>
-                            <td>${u.balance || 0}</td>
-                            <td>${u.ad_balance || 0}</td>
-                            <td>${(u.referrals || []).length}</td>
-                        </tr>`;
-                    });
-                    usersHtml += '</table>';
-                    document.getElementById('adminUsers').innerHTML = usersHtml;
+                    const { data, error } = await supabaseClient
+                        .from('users')
+                        .select('*')
+                        .eq('email', email);
 
-                    const { data: withdraws } = await supabaseClient.from('withdraw_requests').select('*').eq('status',
-                    'pending');
-                    let wHtml = '<table><tr><th>کاربر</th><th>مبلغ</th><th>عملیات</th></tr>';
-                    withdraws.forEach(w => {
-                        wHtml += `<tr>
-                            <td>${w.user_email}</td>
-                            <td>${w.amount}</td>
-                            <td>
-                                <button class="btn-sm green" onclick="approveWithdraw('${w.id}')">✅</button>
-                                <button class="btn-sm red" onclick="rejectWithdraw('${w.id}')">❌</button>
-                            </td>
-                        </tr>`;
-                    });
-                    wHtml += '</table>';
-                    document.getElementById('adminWithdrawals').innerHTML = wHtml || '<p>هیچ درخواستی نیست</p>';
+                    if (!error && data && data.length > 0) {
+                        currentUser = data[0];
+                        enterApp();
+                        return;
+                    }
+                } catch (e) { /* ignore */ }
+            }
+            document.getElementById('authPage').classList.remove('hidden');
+            document.getElementById('homePage').classList.add('hidden');
+            document.getElementById('bottomNav').style.display = 'none';
+        })();
 
-                    const { data: stats } = await supabaseClient.from('users').select('email');
-                    document.getElementById('adminStats').innerHTML =
-                        `<p>👥 تعداد کاربران: ${stats ? stats.length : 0}</p>`;
-
-                } catch (err) {
-                    showToast('❌ خطا در بارگذاری', 'error');
-                }
-            };
-
-            window.approveWithdraw = async function(id) {
-                if (!confirm('تأیید برداشت؟')) return;
-                try {
-                    await supabaseClient.from('withdraw_requests').update({ status: 'approved' }).eq('id', id);
-                    showToast('✅ تأیید شد', 'success');
-                    loadAdminData();
-                } catch (err) {
-                    showToast('❌ خطا', 'error');
-                }
-            };
-
-            window.rejectWithdraw = async function(id) {
-                if (!confirm('رد برداشت؟')) return;
-                try {
-                    await supabaseClient.from('withdraw_requests').update({ status: 'rejected' }).eq('id', id);
-                    showToast('❌ رد شد', 'error');
-                    loadAdminData();
-                } catch (err) {
-                    showToast('❌ خطا', 'error');
-                }
-            };
-
-            // ================================================================
-            // ۱۶. شروع برنامه
-            // ================================================================
-            (async function init() {
-                const email = localStorage.getItem('currentUserEmail');
-                if (email) {
-                    try {
-                        const { data } = await supabaseClient.from('users').select('*').eq('email', email);
-                        if (data && data.length > 0) {
-                            currentUser = data[0];
-                            enterApp();
-                            return;
-                        }
-                    } catch (e) { /* ignore */ }
-                }
-                document.getElementById('authPage').classList.remove('hidden');
-                document.getElementById('homePage').classList.add('hidden');
-                document.getElementById('bottomNav').style.display = 'none';
-            })();
-
-            console.log('✅ زرین‌کلیک با Supabase راه‌اندازی شد!');
-            console.log('👑 ادمین:', ADMIN_EMAIL);
-
-        })(); // پایان IIFE
+        console.log('✅ زرین‌کلیک ۲.۰ با Supabase راه‌اندازی شد!');
+        console.log('👑 ادمین:', ADMIN_EMAIL);
     </script>
 </body>
-                    </html>
+    </html>
