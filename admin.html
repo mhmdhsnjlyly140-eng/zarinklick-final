@@ -6,7 +6,7 @@
     <title>پنل ادمین زرین‌کلیک</title>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
-        body { font-family: Tahoma, sans-serif; max-width: 800px; margin: auto; padding: 20px; background: #f5f5f5; direction: rtl; }
+        body { font-family: Tahoma, sans-serif; max-width: 800px; margin: auto; padding: 20px; background: #f5f5f5; }
         .box { background: white; padding: 20px; border-radius: 12px; margin-bottom: 15px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
         input, select, textarea { width: 100%; padding: 10px; margin: 6px 0; border: 1px solid #ddd; border-radius: 8px; }
         button { padding: 10px 20px; background: #28a745; color: white; border: none; border-radius: 8px; font-size: 16px; margin: 4px 0; cursor: pointer; }
@@ -14,10 +14,6 @@
         table { width: 100%; border-collapse: collapse; margin-top: 10px; }
         th, td { border: 1px solid #ddd; padding: 8px; text-align: center; }
         th { background: #4CAF50; color: white; }
-        .btn-approve { background: #007bff; }
-        .btn-reject { background: #dc3545; }
-        .btn-approve:hover { background: #0056b3; }
-        .btn-reject:hover { background: #c82333; }
         .btn-sm { padding: 4px 10px; font-size: 11px; border-radius: 8px; border: none; cursor: pointer; font-weight: 700; }
         .btn-sm.green { background: #92fe9d; color: #0b0e1a; }
         .btn-sm.red { background: #ff6b6b; color: #fff; }
@@ -60,39 +56,23 @@
         <hr>
         <h4>📩 تیکت‌های پشتیبانی</h4>
         <div id="ticketsList"></div>
-
-        <hr>
-        <h4>🎫 ساخت کد شارژ (جایزه)</h4>
-        <div class="input-group">
-            <label>💰 مبلغ (تومان)</label>
-            <input type="number" id="adminChargeAmount" placeholder="مبلغ را وارد کنید" min="1000" />
-        </div>
-        <div class="input-group">
-            <label>تعداد کد</label>
-            <input type="number" id="adminChargeCount" value="1" min="1" max="20" />
-        </div>
-        <button onclick="adminGenerateChargeCodes()">ساخت کد شارژ</button>
-        <div id="adminChargeCodesResult" style="margin-top:10px;font-size:13px;color:#92fe9d;"></div>
-
-        <hr>
-        <h4>➕ ثبت تبلیغ بدون پرداخت (ادمین)</h4>
-        <div class="input-group"><label>عنوان</label><input type="text" id="adminAdTitle" placeholder="عنوان" /></div>
-        <div class="input-group"><label>شرح</label><textarea id="adminAdDesc" placeholder="توضیحات"></textarea></div>
-        <div class="input-group"><label>دسته‌بندی</label><select id="adminAdCategory"><option value="فروشگاهی">فروشگاهی</option><option value="خدماتی">خدماتی</option><option value="آموزشی">آموزشی</option><option value="سرگرمی">سرگرمی</option><option value="دیجیتال">دیجیتال</option><option value="سایر">سایر</option></select></div>
-        <div class="input-group"><label>تعداد بازدید (۱۰۰۰-۵۰۰۰۰)</label><input type="number" id="adminAdViews" value="1000" min="1000" max="50000" /></div>
-        <div class="input-group"><label>درآمد هر کلیک (۵۰۰-۱۰۰۰۰۰ ریال)</label><input type="number" id="adminAdCpc" value="500" min="500" max="100000" /></div>
-        <button onclick="adminCreateAd()">ثبت تبلیغ</button>
     </div>
 
     <script>
-        // ======== اتصال به Supabase ========
+        // ================================================================
+        // ۱. استفاده از Supabase تعریف‌شده در index.html (Global)
+        // ================================================================
+        // چون در index.html قبلاً supabase تعریف شده، اینجا نیازی به تعریف مجدد نیست
+        // ولی برای اطمینان، از همان استفاده می‌کنیم
         const supabaseUrl = 'https://fpogciahtzacgrglhmnx.supabase.co';
         const supabaseKey = 'sb_publishable_Gb3p43CBeX1VFOOzVtdI0w_IqNrVuEm';
         const supabase = window.supabase.createClient(supabaseUrl, supabaseKey);
 
         const ADMIN_EMAIL = 'mhmdhsnjlyly140@gmail.com';
 
-        // ======== ورود ادمین ========
+        // ================================================================
+        // ۲. ورود ادمین
+        // ================================================================
         window.adminLogin = async function() {
             const email = document.getElementById('adminEmail').value.trim();
             const password = document.getElementById('adminPassword').value.trim();
@@ -129,7 +109,9 @@
             }
         };
 
-        // ======== بارگذاری کاربران ========
+        // ================================================================
+        // ۳. بارگذاری کاربران
+        // ================================================================
         window.loadUsers = async function() {
             try {
                 const { data, error } = await supabase
@@ -157,7 +139,9 @@
             }
         };
 
-        // ======== بارگذاری درخواست‌های برداشت ========
+        // ================================================================
+        // ۴. بارگذاری درخواست‌های برداشت
+        // ================================================================
         window.loadWithdrawals = async function() {
             try {
                 const { data, error } = await supabase
@@ -168,14 +152,11 @@
                 if (error) {
                     document.getElementById('withdrawalsList').innerHTML = '<span class="error">خطا در بارگذاری درخواست‌ها</span>';
                 } else {
-                    let html = '<table><tr><th>کاربر</th><th>مبلغ</th><th>کارمزد</th><th>خالص</th><th>کیف پول</th><th>وضعیت</th><th>عملیات</th></tr>';
+                    let html = '<table><tr><th>کاربر</th><th>مبلغ</th><th>وضعیت</th><th>عملیات</th></tr>';
                     data.forEach(req => {
                         html += `<tr>
                             <td>${req.user_email}</td>
                             <td>${req.amount}</td>
-                            <td>${req.fee || 0}</td>
-                            <td>${req.net_amount || req.amount}</td>
-                            <td>${req.wallet_name || (req.wallet === 'balance' ? 'اصلی' : 'تبلیغ')}</td>
                             <td>${req.status === 'pending' ? '⏳ در انتظار' : req.status === 'approved' ? '✅ تأیید شده' : '❌ رد شده'}</td>
                             <td>
                                 ${req.status === 'pending' ? `
@@ -193,7 +174,9 @@
             }
         };
 
-        // ======== بارگذاری تیکت‌ها (از localStorage) ========
+        // ================================================================
+        // ۵. بارگذاری تیکت‌ها (از localStorage)
+        // ================================================================
         window.loadTickets = function() {
             const tickets = JSON.parse(localStorage.getItem('tickets')) || {};
             let html = '<table><tr><th>کاربر</th><th>موضوع</th><th>وضعیت</th><th>عملیات</th></tr>';
@@ -213,7 +196,9 @@
             document.getElementById('ticketsList').innerHTML = html || '<p>هیچ تیکتی وجود ندارد</p>';
         };
 
-        // ======== تأیید برداشت ========
+        // ================================================================
+        // ۶. تأیید برداشت
+        // ================================================================
         window.approveWithdrawal = async function(id) {
             if (!confirm('آیا از تأیید این برداشت مطمئن هستید؟')) return;
 
@@ -234,7 +219,9 @@
             }
         };
 
-        // ======== رد برداشت ========
+        // ================================================================
+        // ۷. رد برداشت
+        // ================================================================
         window.rejectWithdrawal = async function(id) {
             if (!confirm('آیا از رد این برداشت مطمئن هستید؟')) return;
 
@@ -255,7 +242,9 @@
             }
         };
 
-        // ======== پاسخ به تیکت ========
+        // ================================================================
+        // ۸. پاسخ به تیکت
+        // ================================================================
         window.replyTicket = function(id) {
             const reply = prompt('پاسخ خود را وارد کنید:');
             if (!reply) return;
@@ -269,7 +258,9 @@
             }
         };
 
-        // ======== بستن تیکت ========
+        // ================================================================
+        // ۹. بستن تیکت
+        // ================================================================
         window.closeTicket = function(id) {
             if (!confirm('آیا از بستن این تیکت مطمئن هستید؟')) return;
             const tickets = JSON.parse(localStorage.getItem('tickets')) || {};
@@ -281,73 +272,9 @@
             }
         };
 
-        // ======== ساخت کد شارژ ========
-        window.adminGenerateChargeCodes = function() {
-            const amount = parseInt(document.getElementById('adminChargeAmount').value);
-            const count = parseInt(document.getElementById('adminChargeCount').value) || 1;
-            if (!amount || amount < 1000) {
-                alert('❌ مبلغ را به‌درستی وارد کنید (حداقل ۱۰۰۰ تومان)');
-                return;
-            }
-
-            let codes = JSON.parse(localStorage.getItem('chargeCodes')) || {};
-            let resultHtml = '';
-            for (let i = 0; i < count; i++) {
-                const code = 'CH' + Math.floor(100000 + Math.random() * 900000);
-                codes[code] = amount;
-                resultHtml += `<div style="background:#0b0e1a;padding:4px 10px;border-radius:8px;margin:3px 0;display:flex;justify-content:space-between;font-size:13px;">
-                    <span style="color:#ffd200;">${code}</span>
-                    <span style="color:#92fe9d;">${amount.toLocaleString()} تومان</span>
-                </div>`;
-            }
-            localStorage.setItem('chargeCodes', JSON.stringify(codes));
-            document.getElementById('adminChargeCodesResult').innerHTML = `
-                <div style="background:#1a3a1a;padding:10px;border-radius:12px;margin-top:5px;">
-                    <div style="color:#92fe9d;font-weight:700;">✅ ${count} کد ساخته شد:</div>
-                    ${resultHtml}
-                </div>
-            `;
-            alert(`✅ ${count} کد شارژ ساخته شد`);
-        };
-
-        // ======== ثبت تبلیغ توسط ادمین ========
-        window.adminCreateAd = async function() {
-            const title = document.getElementById('adminAdTitle').value.trim();
-            const desc = document.getElementById('adminAdDesc').value.trim();
-            const category = document.getElementById('adminAdCategory').value;
-            const views = parseInt(document.getElementById('adminAdViews').value) || 1000;
-            const cpc = parseInt(document.getElementById('adminAdCpc').value) || 500;
-            if (!title || !desc) {
-                alert('❌ عنوان و شرح را پر کنید');
-                return;
-            }
-            const totalToman = Math.round((views * cpc) / 10);
-            const newAd = {
-                id: Date.now().toString(),
-                owner: ADMIN_EMAIL,
-                title,
-                desc,
-                category,
-                image: '',
-                max_views: views,
-                cpc,
-                total_budget: totalToman,
-                remaining_budget: totalToman,
-                clicks: 0,
-                status: 'active',
-                clicked_by: {},
-                ratings: {},
-                created_at: Date.now()
-            };
-            let ads = JSON.parse(localStorage.getItem('ads')) || {};
-            ads[newAd.id] = newAd;
-            localStorage.setItem('ads', JSON.stringify(ads));
-            alert(`✅ تبلیغ "${title}" توسط ادمین ثبت شد (رایگان)`);
-            document.getElementById('adminAdTitle').value = '';
-            document.getElementById('adminAdDesc').value = '';
-        };
-
-        // ======== خروج ادمین ========
+        // ================================================================
+        // ۱۰. خروج ادمین
+        // ================================================================
         window.logoutAdmin = function() {
             document.querySelectorAll('.admin-only').forEach(el => el.style.display = 'none');
             document.getElementById('adminLoginBox').style.display = 'block';
@@ -356,4 +283,4 @@
         };
     </script>
 </body>
-        </html>
+    </html>
