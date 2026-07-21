@@ -5,13 +5,13 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>زرین‌کلیک</title>
     
-    <!-- ===== کتابخانه Supabase با Fallback ===== -->
-    <script src="https://unpkg.com/@supabase/supabase-js@2/dist/umd/supabase.min.js">
-    </script>
-    <script>
-        if (typeof supabase === 'undefined') {
-            document.write('<script src="https://cdnjs.cloudflare.com/ajax/libs/supabase-js/2.42.0/umd/supabase.min.js"><\/script>');
+    <!-- ===== کتابخانه Supabase با روش ESM (مقاوم‌ترین روش) ===== -->
+    <script type="importmap">
+    {
+        "imports": {
+            "@supabase/supabase-js": "https://esm.sh/@supabase/supabase-js@2.42.0"
         }
+    }
     </script>
     
     <style>
@@ -479,36 +479,26 @@
     <button class="nav-item" onclick="navigateTo('profile')"><span class="icon">👤</span><span>حساب</span></button>
     <button class="nav-item" onclick="navigateTo('contact')"><span class="icon">📞</span><span>ارتباط</span></button>
     <button class="nav-item" onclick="navigateTo('admin')" id="adminNavBtn" style="display:none;"><span class="icon">👑</span><span>ادمین</span></button>
-    </div>
-        <!-- ============================================================ -->
-    <!-- جاواسکریپت کامل نهایی (نسخه ۷.۳) -->
+            </div>
+                <!-- ============================================================ -->
+    <!-- جاواسکریپت کامل نهایی (نسخه ۷.۴ - با import) -->
     <!-- ============================================================ -->
-    <script>
+    <script type="module">
         // ================================================================
-        // ۰. بررسی Supabase
+        // ۱. import کتابخانه Supabase
         // ================================================================
-        if (typeof supabase === 'undefined') {
-            document.body.innerHTML =
-                `
-                    <div style="text-align:center;padding:50px;color:#ff6b6b;font-family:sans-serif;">
-                        <h2>❌ خطا در بارگذاری</h2>
-                        <p>کتابخانه Supabase بارگذاری نشد.</p>
-                        <button onclick="location.reload()" style="margin-top:20px;padding:10px 20px;font-size:16px;cursor:pointer;border-radius:12px;border:none;background:#f7971e;color:#0b0e1a;font-weight:700;">🔄 تلاش مجدد</button>
-                    </div>
-                `;
-            throw new Error('Supabase library failed to load');
-        }
+        import { createClient } from '@supabase/supabase-js';
 
         // ================================================================
-        // ۱. اتصال به Supabase
+        // ۲. اتصال به Supabase
         // ================================================================
-        const supabaseClient = supabase.createClient(
+        const supabaseClient = createClient(
             'https://fpogciahtzacgrglhmnx.supabase.co',
             'sb_publishable_Gb3p43CBeX1VFOOzVtdI0w_IqNrVuEm'
         );
 
         // ================================================================
-        // ۲. متغیرها
+        // ۳. متغیرها
         // ================================================================
         let currentUser = null;
         const ADMIN_EMAIL = 'mhmdhsnjlyly140@gmail.com';
@@ -519,35 +509,35 @@
         let currentHomeTab = 'home';
 
         // ================================================================
-        // ۳. توابع کمکی (همه در window)
+        // ۴. توابع کمکی
         // ================================================================
-        window.showToast = function(msg, type = 'success') {
+        function showToast(msg, type = 'success') {
             const t = document.getElementById('toast');
             t.textContent = msg;
             t.className = 'toast show';
             t.style.borderColor = type === 'error' ? '#ff6b6b' : '#92fe9d';
             clearTimeout(t._timer);
             t._timer = setTimeout(() => { t.className = 'toast'; }, 3000);
-        };
+        }
 
-        window.getToday = function() {
+        function getToday() {
             return new Date().toISOString().split('T')[0];
-        };
+        }
 
-        window.obfuscateEmail = function(email) {
+        function obfuscateEmail(email) {
             if (!email) return '---';
             let parts = email.split('@');
             if (parts[0].length <= 3) return parts[0] + '***@' + parts[1];
             return parts[0].slice(0, 3) + '***@' + parts[1];
-        };
+        }
 
-        window.generateRefCode = function() {
+        function generateRefCode() {
             return 'REF' + Math.floor(1000 + Math.random() * 9000);
-        };
+        }
 
-        window.copyToClipboard = function(text) {
+        function copyToClipboard(text) {
             navigator.clipboard.writeText(text).then(() => {
-                window.showToast('📋 کپی شد!', 'success');
+                showToast('📋 کپی شد!', 'success');
             }).catch(() => {
                 const el = document.createElement('textarea');
                 el.value = text;
@@ -555,17 +545,17 @@
                 el.select();
                 document.execCommand('copy');
                 document.body.removeChild(el);
-                window.showToast('📋 کپی شد!', 'success');
+                showToast('📋 کپی شد!', 'success');
             });
-        };
+        }
 
-        window.isValidEmail = function(email) {
+        function isValidEmail(email) {
             const regex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
             return regex.test(email);
-        };
+        }
 
         // ================================================================
-        // ۴. تم خودکار
+        // ۵. توابع (همه به window متصل میشن برای onclick)
         // ================================================================
         window.toggleTheme = function() {
             document.body.classList.toggle('light');
@@ -574,35 +564,6 @@
             localStorage.setItem('theme', document.body.classList.contains('light') ? 'light' : 'dark');
         };
 
-        window.setAutoTheme = function() {
-            const hour = new Date().getHours();
-            if (hour >= 6 && hour < 18) {
-                document.body.classList.add('light');
-                document.getElementById('themeBtn').textContent = '🌙';
-                localStorage.setItem('theme', 'light');
-            } else {
-                document.body.classList.remove('light');
-                document.getElementById('themeBtn').textContent = '☀️';
-                localStorage.setItem('theme', 'dark');
-            }
-        };
-
-        (function loadTheme() {
-            const saved = localStorage.getItem('theme');
-            if (saved === 'light') {
-                document.body.classList.add('light');
-                document.getElementById('themeBtn').textContent = '🌙';
-            } else if (saved === 'dark') {
-                document.body.classList.remove('light');
-                document.getElementById('themeBtn').textContent = '☀️';
-            } else {
-                window.setAutoTheme();
-            }
-        })();
-
-        // ================================================================
-        // ۵. نمایش فرم‌ها
-        // ================================================================
         window.showRegisterForm = function() {
             document.getElementById('loginForm').classList.add('hidden');
             document.getElementById('registerForm').classList.remove('hidden');
@@ -614,7 +575,7 @@
         };
 
         // ================================================================
-        // ۶. ثبت‌نام (با شماره موبایل - آپدیت ۲۳)
+        // ۶. ثبت‌نام (با شماره موبایل)
         // ================================================================
         window.registerUser = async function() {
             const email = document.getElementById('regEmail').value.trim();
@@ -626,7 +587,7 @@
                 document.getElementById('regMessage').innerHTML = '<span class="error">ایمیل و رمز را پر کنید</span>';
                 return;
             }
-            if (!window.isValidEmail(email)) {
+            if (!isValidEmail(email)) {
                 document.getElementById('regMessage').innerHTML = '<span class="error">❌ فرمت ایمیل معتبر نیست</span>';
                 return;
             }
@@ -652,7 +613,7 @@
                     options: {
                         emailRedirectTo: window.location.origin,
                         data: {
-                            ref_code: window.generateRefCode(),
+                            ref_code: generateRefCode(),
                             referred_by: referrer ? referrer.email : null,
                             phone: phone,
                             balance: 0,
@@ -677,7 +638,7 @@
                             id: authData.user.id,
                             email: email,
                             phone: phone,
-                            ref_code: window.generateRefCode(),
+                            ref_code: generateRefCode(),
                             referred_by: referrer ? referrer.email : null,
                             referrals: [],
                             referrals_level2: [],
@@ -746,7 +707,7 @@
                 document.getElementById('regPhone').value = '';
                 document.getElementById('regRef').value = '';
 
-                window.showToast('✅ لینک تأیید به ایمیل شما ارسال شد', 'success');
+                showToast('✅ لینک تأیید به ایمیل شما ارسال شد', 'success');
 
             } catch (err) {
                 document.getElementById('regMessage').innerHTML = '<span class="error">' + err.message + '</span>';
@@ -760,7 +721,7 @@
         window.resendConfirmation = async function() {
             const email = document.getElementById('regEmail').value.trim();
             if (!email) {
-                window.showToast('❌ ایمیل را وارد کنید', 'error');
+                showToast('❌ ایمیل را وارد کنید', 'error');
                 return;
             }
             try {
@@ -772,12 +733,12 @@
                     }
                 });
                 if (error) {
-                    window.showToast('❌ خطا: ' + error.message, 'error');
+                    showToast('❌ خطا: ' + error.message, 'error');
                 } else {
-                    window.showToast('✅ ایمیل تأیید دوباره ارسال شد', 'success');
+                    showToast('✅ ایمیل تأیید دوباره ارسال شد', 'success');
                 }
             } catch (err) {
-                window.showToast('❌ خطا: ' + err.message, 'error');
+                showToast('❌ خطا: ' + err.message, 'error');
             }
         };
 
@@ -792,7 +753,7 @@
                 document.getElementById('loginMessage').innerHTML = '<span class="error">ایمیل و رمز را پر کنید</span>';
                 return;
             }
-            if (!window.isValidEmail(email)) {
+            if (!isValidEmail(email)) {
                 document.getElementById('loginMessage').innerHTML = '<span class="error">❌ فرمت ایمیل معتبر نیست</span>';
                 return;
             }
@@ -874,10 +835,10 @@
                     currentUser = userData;
                     localStorage.setItem('currentUserEmail', email);
                     document.getElementById('loginMessage').innerHTML = '';
-                    window.showToast('✅ خوش آمدید', 'success');
+                    showToast('✅ خوش آمدید', 'success');
 
-                    window.checkClickAlert();
-                    window.enterApp();
+                    checkClickAlert();
+                    enterApp();
                 }
 
             } catch (err) {
@@ -896,7 +857,7 @@
             document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
             document.getElementById('authPage').classList.add('active');
             document.getElementById('bottomNav').style.display = 'none';
-            window.showToast('🚪 خارج شدید', 'success');
+            showToast('🚪 خارج شدید', 'success');
         };
 
         // ================================================================
@@ -906,8 +867,8 @@
             const email = prompt('لطفاً ایمیل خود را وارد کنید:');
             if (!email) return;
 
-            if (!window.isValidEmail(email)) {
-                window.showToast('❌ فرمت ایمیل معتبر نیست', 'error');
+            if (!isValidEmail(email)) {
+                showToast('❌ فرمت ایمیل معتبر نیست', 'error');
                 return;
             }
 
@@ -917,19 +878,19 @@
                 });
 
                 if (error) {
-                    window.showToast('❌ خطا: ' + error.message, 'error');
+                    showToast('❌ خطا: ' + error.message, 'error');
                 } else {
-                    window.showToast('✅ لینک بازیابی به ایمیل شما ارسال شد', 'success');
+                    showToast('✅ لینک بازیابی به ایمیل شما ارسال شد', 'success');
                 }
             } catch (err) {
-                window.showToast('❌ خطا: ' + err.message, 'error');
+                showToast('❌ خطا: ' + err.message, 'error');
             }
         };
 
         // ================================================================
         // ۱۱. هشدار کلیک
         // ================================================================
-        window.checkClickAlert = function() {
+        function checkClickAlert() {
             if (!currentUser) return;
             const referralsCount = (currentUser.referrals || []).length;
             let maxClicks = 10 + (referralsCount * 2);
@@ -938,14 +899,14 @@
             const used = currentUser.daily_click_count || 0;
             const percent = (used / maxClicks) * 100;
             if (percent >= 80 && used < maxClicks) {
-                window.showToast(`⚠️ هشدار: ${Math.round(percent)}% از کلیک‌های امروز خود را مصرف کرده‌اید! (${used}/${maxClicks})`, 'error');
+                showToast(`⚠️ هشدار: ${Math.round(percent)}% از کلیک‌های امروز خود را مصرف کرده‌اید! (${used}/${maxClicks})`, 'error');
             }
-        };
+        }
 
         // ================================================================
         // ۱۲. ورود به برنامه
         // ================================================================
-        window.enterApp = function() {
+        function enterApp() {
             document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
             document.getElementById('homePage').classList.add('active');
             document.getElementById('bottomNav').style.display = 'flex';
@@ -969,23 +930,23 @@
             }
 
             if (!currentUser.first_click_bonus) {
-                window.showToast('🎁 برای اولین کلیک خود ۵۰۰ تومان جایزه بگیرید!', 'success');
+                showToast('🎁 برای اولین کلیک خود ۵۰۰ تومان جایزه بگیرید!', 'success');
             }
 
-            window.updateClickInfo();
-            window.renderAll();
-            window.loadTickets();
-            window.loadUserRatings();
-            window.loadWeekWinners();
-            window.loadPopularAds();
-        };
+            updateClickInfo();
+            renderAll();
+            loadTickets();
+            loadUserRatings();
+            loadWeekWinners();
+            loadPopularAds();
+        }
 
         // ================================================================
         // ۱۳. ناوبری
         // ================================================================
         window.navigateTo = function(page) {
             if (page === 'admin' && (!currentUser || currentUser.email !== ADMIN_EMAIL)) {
-                window.showToast('⛔ دسترسی غیرمجاز', 'error');
+                showToast('⛔ دسترسی غیرمجاز', 'error');
                 return;
             }
 
@@ -1012,14 +973,14 @@
                 if (navItems[idx]) navItems[idx].classList.add('active');
             }
 
-            if (page === 'home') { window.switchHomeTab('home');
-                window.renderAll(); } else if (page === 'wallet') { window.renderWallet();
-                window.renderHistory(); } else if (page === 'profile') { window.renderProfile();
-                window.loadTickets(); } else if (page === 'admin') window.loadAdminData();
+            if (page === 'home') { switchHomeTab('home');
+                renderAll(); } else if (page === 'wallet') { renderWallet();
+                renderHistory(); } else if (page === 'profile') { renderProfile();
+                loadTickets(); } else if (page === 'admin') loadAdminData();
         };
 
         // ================================================================
-        // ۱۴. منوی بالا (فقط خانه و رده‌بندی)
+        // ۱۴. منوی بالا
         // ================================================================
         window.switchHomeTab = function(tab) {
             currentHomeTab = tab;
@@ -1034,28 +995,28 @@
             document.getElementById('homeTab').classList.toggle('hidden', tab !== 'home');
             document.getElementById('rankingTab').classList.toggle('hidden', tab !== 'ranking');
 
-            if (tab === 'home') { window.renderAds();
-                window.loadWeekWinners();
-                window.loadPopularAds(); } else if (tab === 'ranking') window.loadRanking();
+            if (tab === 'home') { renderAds();
+                loadWeekWinners();
+                loadPopularAds(); } else if (tab === 'ranking') loadRanking();
         };
 
         // ================================================================
         // ۱۵. رندر همه
         // ================================================================
-        window.renderAll = function() {
-            window.renderWallet();
-            window.renderAds();
-            window.renderHistory();
-            window.updateClickInfo();
-            window.loadWeekWinners();
-            window.loadUserRatings();
-            window.loadPopularAds();
-        };
+        function renderAll() {
+            renderWallet();
+            renderAds();
+            renderHistory();
+            updateClickInfo();
+            loadWeekWinners();
+            loadUserRatings();
+            loadPopularAds();
+        }
 
         // ================================================================
         // ۱۶. کیف پول
         // ================================================================
-        window.renderWallet = function() {
+        function renderWallet() {
             if (!currentUser) return;
             const main = currentUser.balance || 0;
             const ad = currentUser.ad_balance || 0;
@@ -1068,12 +1029,12 @@
             document.getElementById('walletMain2').innerHTML = main.toLocaleString() + ' <small>تومان</small>';
             document.getElementById('walletAds2').innerHTML = ad.toLocaleString() + ' <small>تومان</small>';
             document.getElementById('walletCoins2').innerHTML = coins.toLocaleString() + ' <small>سکه</small>';
-        };
+        }
 
         // ================================================================
         // ۱۷. اطلاعات کلیک
         // ================================================================
-        window.updateClickInfo = function() {
+        function updateClickInfo() {
             if (!currentUser) return;
             const referralsCount = (currentUser.referrals || []).length;
             let maxClicks = 10 + (referralsCount * 2);
@@ -1081,15 +1042,15 @@
             if (currentUser.is_ultra) maxClicks *= 3;
             document.getElementById('todayClicks').textContent = currentUser.daily_click_count || 0;
             document.getElementById('maxClicksDisplay').textContent = maxClicks;
-        };
+        }
 
         // ================================================================
         // ۱۸. کلیک روی تبلیغ
         // ================================================================
         window.clickAd = async function(adId, cpc, isSpecial = false) {
-            if (!currentUser) { window.showToast('❌ وارد شوید', 'error'); return; }
+            if (!currentUser) { showToast('❌ وارد شوید', 'error'); return; }
 
-            const today = window.getToday();
+            const today = getToday();
             if (currentUser.last_click_date !== today) {
                 currentUser.daily_click_count = 0;
                 currentUser.last_click_date = today;
@@ -1101,7 +1062,7 @@
             if (currentUser.is_ultra) maxClicks *= 3;
 
             if ((currentUser.daily_click_count || 0) >= maxClicks) {
-                window.showToast(`❌ امروز ${maxClicks} کلیک کامل کردید`, 'error');
+                showToast(`❌ امروز ${maxClicks} کلیک کامل کردید`, 'error');
                 return;
             }
 
@@ -1134,7 +1095,7 @@
                     })
                     .eq('email', currentUser.email);
 
-                if (error) { window.showToast('❌ خطا: ' + error.message, 'error'); return; }
+                if (error) { showToast('❌ خطا: ' + error.message, 'error'); return; }
 
                 currentUser.ad_balance = newAdBalance + bonusAmount;
                 currentUser.daily_click_count = newDailyClicks;
@@ -1178,17 +1139,17 @@
 
                 currentUser.history = history;
 
-                window.renderAll();
-                window.showToast(`✅ ${amount + bonusAmount} تومان به کیف پول تبلیغ اضافه شد${bonusMessage}`, 'success');
+                renderAll();
+                showToast(`✅ ${amount + bonusAmount} تومان به کیف پول تبلیغ اضافه شد${bonusMessage}`, 'success');
 
                 const used = currentUser.daily_click_count || 0;
                 const percent = (used / maxClicks) * 100;
                 if (percent >= 80 && used < maxClicks) {
-                    window.showToast(`⚠️ هشدار: ${Math.round(percent)}% از کلیک‌های امروز خود را مصرف کرده‌اید! (${used}/${maxClicks})`, 'error');
+                    showToast(`⚠️ هشدار: ${Math.round(percent)}% از کلیک‌های امروز خود را مصرف کرده‌اید! (${used}/${maxClicks})`, 'error');
                 }
 
             } catch (err) {
-                window.showToast('❌ خطا: ' + err.message, 'error');
+                showToast('❌ خطا: ' + err.message, 'error');
             }
         };
 
@@ -1196,11 +1157,11 @@
         // ۱۹. انتقال به کیف پول اصلی
         // ================================================================
         window.transferToMain = async function() {
-            if (!currentUser) { window.showToast('❌ وارد شوید', 'error'); return; }
+            if (!currentUser) { showToast('❌ وارد شوید', 'error'); return; }
 
             const amount = currentUser.ad_balance || 0;
             if (amount < 20000) {
-                window.showToast('❌ حداقل انتقال ۲۰,۰۰۰ تومان', 'error');
+                showToast('❌ حداقل انتقال ۲۰,۰۰۰ تومان', 'error');
                 return;
             }
 
@@ -1215,7 +1176,7 @@
                     .update({ balance: newMain, ad_balance: 0 })
                     .eq('email', currentUser.email);
 
-                if (error) { window.showToast('❌ خطا: ' + error.message, 'error'); return; }
+                if (error) { showToast('❌ خطا: ' + error.message, 'error'); return; }
 
                 currentUser.balance = newMain;
                 currentUser.ad_balance = 0;
@@ -1248,10 +1209,10 @@
 
                 currentUser.history = history;
 
-                window.renderAll();
-                window.showToast(`✅ ${netAmount.toLocaleString()} تومان به کیف پول اصلی منتقل شد`, 'success');
+                renderAll();
+                showToast(`✅ ${netAmount.toLocaleString()} تومان به کیف پول اصلی منتقل شد`, 'success');
             } catch (err) {
-                window.showToast('❌ خطا: ' + err.message, 'error');
+                showToast('❌ خطا: ' + err.message, 'error');
             }
         };
 
@@ -1259,16 +1220,16 @@
         // ۲۰. برداشت از کیف پول تبلیغ
         // ================================================================
         window.withdrawFromAds = async function() {
-            if (!currentUser) { window.showToast('❌ وارد شوید', 'error'); return; }
+            if (!currentUser) { showToast('❌ وارد شوید', 'error'); return; }
 
             const amount = parseInt(prompt('مبلغ برداشت (حداقل ۱۰۰,۰۰۰ تومان):'));
             if (!amount || amount < 100000) {
-                window.showToast('❌ حداقل ۱۰۰,۰۰۰ تومان', 'error');
+                showToast('❌ حداقل ۱۰۰,۰۰۰ تومان', 'error');
                 return;
             }
 
             if (amount > (currentUser.ad_balance || 0)) {
-                window.showToast('❌ موجودی کافی نیست', 'error');
+                showToast('❌ موجودی کافی نیست', 'error');
                 return;
             }
 
@@ -1283,7 +1244,7 @@
                     .update({ ad_balance: newAd })
                     .eq('email', currentUser.email);
 
-                if (error) { window.showToast('❌ خطا: ' + error.message, 'error'); return; }
+                if (error) { showToast('❌ خطا: ' + error.message, 'error'); return; }
 
                 currentUser.ad_balance = newAd;
 
@@ -1331,10 +1292,10 @@
 
                 currentUser.history = history;
 
-                window.renderAll();
-                window.showToast(`✅ درخواست برداشت ${amount.toLocaleString()} تومان ثبت شد`, 'success');
+                renderAll();
+                showToast(`✅ درخواست برداشت ${amount.toLocaleString()} تومان ثبت شد`, 'success');
             } catch (err) {
-                window.showToast('❌ خطا: ' + err.message, 'error');
+                showToast('❌ خطا: ' + err.message, 'error');
             }
         };
 
@@ -1342,7 +1303,7 @@
         // ۲۱. واریز به حساب بانکی
         // ================================================================
         window.withdrawToBank = async function() {
-            if (!currentUser) { window.showToast('❌ وارد شوید', 'error'); return; }
+            if (!currentUser) { showToast('❌ وارد شوید', 'error'); return; }
 
             const cardNumber = document.getElementById('bankCardNumber').value.trim();
             const iban = document.getElementById('bankIban').value.trim();
@@ -1376,7 +1337,7 @@
                     .update({ balance: newBalance })
                     .eq('email', currentUser.email);
 
-                if (error) { window.showToast('❌ خطا: ' + error.message, 'error'); return; }
+                if (error) { showToast('❌ خطا: ' + error.message, 'error'); return; }
 
                 currentUser.balance = newBalance;
 
@@ -1415,8 +1376,8 @@
                 document.getElementById('bankCardNumber').value = '';
                 document.getElementById('bankIban').value = '';
                 document.getElementById('bankWithdrawAmount').value = '';
-                window.renderAll();
-                window.showToast('✅ درخواست واریز به بانک ثبت شد', 'success');
+                renderAll();
+                showToast('✅ درخواست واریز به بانک ثبت شد', 'success');
             } catch (err) {
                 document.getElementById('bankMessage').innerHTML = '<span class="error">' + err.message + '</span>';
             }
@@ -1436,14 +1397,14 @@
         // ۲۲. گردونه شانس
         // ================================================================
         window.spinWheel = async function() {
-            if (!currentUser) { window.showToast('❌ وارد شوید', 'error'); return; }
+            if (!currentUser) { showToast('❌ وارد شوید', 'error'); return; }
             if (wheelSpinning) return;
 
             const lastSpin = currentUser.last_spin ? new Date(currentUser.last_spin) : null;
             const now = new Date();
             if (lastSpin && (now - lastSpin) < 48 * 60 * 60 * 1000) {
                 const remaining = Math.ceil(48 - (now - lastSpin) / (1000 * 60 * 60));
-                window.showToast(`⏳ ${remaining} ساعت تا چرخش بعدی`, 'error');
+                showToast(`⏳ ${remaining} ساعت تا چرخش بعدی`, 'error');
                 return;
             }
 
@@ -1479,7 +1440,7 @@
                             })
                             .eq('email', currentUser.email);
 
-                        if (error) { window.showToast('❌ خطا: ' + error.message, 'error'); return; }
+                        if (error) { showToast('❌ خطا: ' + error.message, 'error'); return; }
 
                         currentUser.balance = newBalance;
                         currentUser.last_spin = now.toISOString();
@@ -1500,7 +1461,7 @@
                         currentUser.history = history;
 
                         resultDiv.textContent = `🎉 ${prize.name} به کیف پول اصلی اضافه شد!`;
-                        window.showToast(`💰 ${prize.value.toLocaleString()} تومان اضافه شد!`, 'success');
+                        showToast(`💰 ${prize.value.toLocaleString()} تومان اضافه شد!`, 'success');
                     } else {
                         await supabaseClient
                             .from('users')
@@ -1509,12 +1470,12 @@
 
                         currentUser.last_spin = now.toISOString();
                         resultDiv.textContent = '😐 متأسفانه هیچی!';
-                        window.showToast('😐 شانس نیاوردید!', 'info');
+                        showToast('😐 شانس نیاوردید!', 'info');
                     }
 
-                    window.renderAll();
+                    renderAll();
                 } catch (err) {
-                    window.showToast('❌ خطا: ' + err.message, 'error');
+                    showToast('❌ خطا: ' + err.message, 'error');
                 }
                 wheelSpinning = false;
             }, 4000);
@@ -1525,18 +1486,18 @@
         // ================================================================
         window.chargeWallet = function(amount) {
             if (!currentUser) {
-                window.showToast('❌ ابتدا وارد شوید', 'error');
+                showToast('❌ ابتدا وارد شوید', 'error');
                 return;
             }
-            window.showToast(`💳 درخواست شارژ ${amount.toLocaleString()} تومان ثبت شد.`, 'info');
+            showToast(`💳 درخواست شارژ ${amount.toLocaleString()} تومان ثبت شد.`, 'info');
         };
 
         // ================================================================
-        // ۲۴. سیستم کد شارژ
+        // ۲۴. کد شارژ
         // ================================================================
         window.redeemChargeCode = async function() {
             if (!currentUser) {
-                window.showToast('❌ ابتدا وارد شوید', 'error');
+                showToast('❌ ابتدا وارد شوید', 'error');
                 return;
             }
 
@@ -1588,13 +1549,13 @@
                     .eq('code', code);
 
                 currentUser.balance = newBalance;
-                window.renderWallet();
-                window.renderAll();
+                renderWallet();
+                renderAll();
 
                 document.getElementById('chargeCodeMessage').innerHTML =
                     `<span class="success">✅ ${codeData.amount.toLocaleString()} تومان به کیف پول شما اضافه شد</span>`;
                 document.getElementById('chargeCodeInput').value = '';
-                window.showToast(`💰 ${codeData.amount.toLocaleString()} تومان شارژ شد!`, 'success');
+                showToast(`💰 ${codeData.amount.toLocaleString()} تومان شارژ شد!`, 'success');
 
             } catch (err) {
                 document.getElementById('chargeCodeMessage').innerHTML = '<span class="error">' + err.message + '</span>';
@@ -1605,7 +1566,7 @@
         // ۲۵. خرید نسخه‌های ویژه
         // ================================================================
         window.buyPlan = function(plan, method) {
-            if (!currentUser) { window.showToast('❌ وارد شوید', 'error'); return; }
+            if (!currentUser) { showToast('❌ وارد شوید', 'error'); return; }
 
             const planName = plan === 'pro' ? 'پرو' : 'الترا';
             const price = plan === 'pro' ? 299 : 399;
@@ -1614,13 +1575,13 @@
 
             if (method === 'full') {
                 if (confirm(`آیا از خرید نسخه ${planName} به مبلغ ${price} تومان (نقدی) از طریق درگاه پرداخت مطمئن هستید؟`)) {
-                    window.showToast(`✅ درخواست خرید ${planName} ثبت شد. از طریق درگاه پرداخت کنید.`, 'success');
+                    showToast(`✅ درخواست خرید ${planName} ثبت شد. از طریق درگاه پرداخت کنید.`, 'success');
                 }
             } else if (method === 'installment') {
                 if (confirm(
                         `آیا از خرید نسخه ${planName} به صورت ${installments} قسط ماهانه ${installmentPrice} تومانی (از طریق درگاه) مطمئن هستید؟\nتوجه: در صورت عدم پرداخت به موقع، مبلغ برگشت داده نمی‌شود.`
                         )) {
-                    window.showToast(`✅ درخواست خرید ${planName} (قسطی) ثبت شد. از طریق درگاه پرداخت کنید.`, 'success');
+                    showToast(`✅ درخواست خرید ${planName} (قسطی) ثبت شد. از طریق درگاه پرداخت کنید.`, 'success');
                 }
             }
         };
@@ -1663,10 +1624,10 @@
                                         <span class="category">${ad.category || 'سایر'}</span>
                                         <div class="budget">💰 هر کلیک: ${ad.cpc || 100} تومان | باقیمانده: ${ad.remaining_budget || 0} تومان</div>
                                         <div style="display:flex;justify-content:space-between;align-items:center;margin-top:6px;">
-                                            <button class="click-btn" onclick="window.clickAd('${ad.id}', ${ad.cpc || 100}, true)" ${isClicked ? 'disabled' : ''}>
+                                            <button class="click-btn" onclick="clickAd('${ad.id}', ${ad.cpc || 100}, true)" ${isClicked ? 'disabled' : ''}>
                                                 ${isClicked ? '✅ کلیک شده' : '👆 کلیک کن (ویژه)'}
                                             </button>
-                                            <button class="share-btn" onclick="window.shareAd('${ad.title}', '${ad.desc || ''}', '${shareLink}')" title="اشتراک‌گذاری">
+                                            <button class="share-btn" onclick="shareAd('${ad.title}', '${ad.desc || ''}', '${shareLink}')" title="اشتراک‌گذاری">
                                                 📤
                                             </button>
                                         </div>
@@ -1701,15 +1662,15 @@
                                             <span style="font-size:13px;color:#8892b0;">⭐ ${avgRating ? avgRating.toFixed(1) : 'بدون امتیاز'}</span>
                                             <div class="rating-stars">
                                                 ${[1,2,3,4,5].map(s => `
-                                                        <span class="star" onclick="window.rateAd('${ad.id}', ${s})" style="color:${avgRating >= s ? '#f7971e' : '#4a5a7a'};">★</span>
+                                                        <span class="star" onclick="rateAd('${ad.id}', ${s})" style="color:${avgRating >= s ? '#f7971e' : '#4a5a7a'};">★</span>
                                                     `).join('')}
                                             </div>
                                         </div>
                                         <div style="display:flex;justify-content:space-between;align-items:center;margin-top:6px;">
-                                            <button class="click-btn" onclick="window.clickAd('${ad.id}', ${ad.cpc || 100}, false)" ${isClicked ? 'disabled' : ''}>
+                                            <button class="click-btn" onclick="clickAd('${ad.id}', ${ad.cpc || 100}, false)" ${isClicked ? 'disabled' : ''}>
                                                 ${isClicked ? '✅ کلیک شده' : '👆 کلیک کن'}
                                             </button>
-                                            <button class="share-btn" onclick="window.shareAd('${ad.title}', '${ad.desc || ''}', '${shareLink}')" title="اشتراک‌گذاری">
+                                            <button class="share-btn" onclick="shareAd('${ad.title}', '${ad.desc || ''}', '${shareLink}')" title="اشتراک‌گذاری">
                                                 📤
                                             </button>
                                         </div>
@@ -1736,15 +1697,15 @@
                     url: link
                 }).catch(() => {});
             } else {
-                window.copyToClipboard(text);
-                window.showToast('📋 متن تبلیغ کپی شد!', 'success');
+                copyToClipboard(text);
+                showToast('📋 متن تبلیغ کپی شد!', 'success');
             }
         };
 
         // ================================================================
         // ۲۸. محبوب‌ترین تبلیغات
         // ================================================================
-        window.loadPopularAds = async function() {
+        async function loadPopularAds() {
             try {
                 const { data, error } = await supabaseClient
                     .from('ads')
@@ -1775,17 +1736,17 @@
             } catch (err) {
                 document.getElementById('popularAds').innerHTML = '<p style="color:#8892b0;font-size:13px;">خطا در بارگذاری</p>';
             }
-        };
+        }
 
         // ================================================================
         // ۲۹. امتیازدهی
         // ================================================================
         window.rateAd = async function(adId, rating) {
-            if (!currentUser) { window.showToast('❌ وارد شوید', 'error'); return; }
+            if (!currentUser) { showToast('❌ وارد شوید', 'error'); return; }
 
             const userRatings = currentUser.ratings || {};
             if (userRatings[adId]) {
-                window.showToast('❌ قبلاً به این تبلیغ امتیاز داده‌اید', 'error');
+                showToast('❌ قبلاً به این تبلیغ امتیاز داده‌اید', 'error');
                 return;
             }
 
@@ -1811,15 +1772,15 @@
                 .eq('email', currentUser.email);
 
             currentUser.ratings = userRatings;
-            window.showToast(`✅ امتیاز ${rating} ستاره ثبت شد`, 'success');
-            window.renderAds();
-            window.loadUserRatings();
+            showToast(`✅ امتیاز ${rating} ستاره ثبت شد`, 'success');
+            renderAds();
+            loadUserRatings();
         };
 
         // ================================================================
-        // ۳۰. بارگذاری امتیازهای کاربر
+        // ۳۰. بارگذاری امتیازها
         // ================================================================
-        window.loadUserRatings = async function() {
+        async function loadUserRatings() {
             if (!currentUser) return;
             const container = document.getElementById('userRatings');
             const ratings = currentUser.ratings || {};
@@ -1847,12 +1808,12 @@
                 }
             }
             container.innerHTML = html;
-        };
+        }
 
         // ================================================================
         // ۳۱. کاربران برتر هفته
         // ================================================================
-        window.loadWeekWinners = async function() {
+        async function loadWeekWinners() {
             try {
                 const { data: users } = await supabaseClient
                     .from('users')
@@ -1871,7 +1832,7 @@
                     const medals = ['🥇', '🥈', '🥉'];
                     html += `
                                 <div style="display:flex;justify-content:space-between;padding:4px 0;">
-                                    <span>${medals[i] || '#' + (i+1)} ${window.obfuscateEmail(u.email)}</span>
+                                    <span>${medals[i] || '#' + (i+1)} ${obfuscateEmail(u.email)}</span>
                                     <span style="color:#92fe9d;">${(u.total_earnings || 0).toLocaleString()} تومان</span>
                                 </div>
                             `;
@@ -1881,12 +1842,12 @@
             } catch (err) {
                 console.log('خطا در بارگذاری کاربران برتر:', err);
             }
-        };
+        }
 
         // ================================================================
         // ۳۲. تاریخچه
         // ================================================================
-        window.renderHistory = function() {
+        function renderHistory() {
             if (!currentUser) return;
             const hist = currentUser.history || [];
             const container1 = document.getElementById('historyList');
@@ -1912,12 +1873,12 @@
             });
             container1.innerHTML = html;
             container2.innerHTML = html;
-        };
+        }
 
         // ================================================================
         // ۳۳. حساب کاربری
         // ================================================================
-        window.renderProfile = function() {
+        function renderProfile() {
             if (!currentUser) return;
             document.getElementById('profileEmail').textContent = currentUser.email;
             document.getElementById('profileRole').textContent = currentUser.role === 'admin' ? '👑 ادمین' : '👤 کاربر';
@@ -1934,18 +1895,18 @@
             document.getElementById('profileCoins').textContent = (currentUser.coins || 0).toLocaleString();
             document.getElementById('profileCardNumber').value = currentUser.card_number || '';
             document.getElementById('profileIban').value = currentUser.iban || '';
-        };
+        }
 
         window.copyRefCode = function() {
             if (currentUser && currentUser.ref_code) {
-                window.copyToClipboard(currentUser.ref_code);
+                copyToClipboard(currentUser.ref_code);
             } else {
-                window.showToast('❌ کد معرف موجود نیست', 'error');
+                showToast('❌ کد معرف موجود نیست', 'error');
             }
         };
 
         window.saveProfileInfo = async function() {
-            if (!currentUser) { window.showToast('❌ وارد شوید', 'error'); return; }
+            if (!currentUser) { showToast('❌ وارد شوید', 'error'); return; }
 
             const cardNumber = document.getElementById('profileCardNumber').value.trim();
             const iban = document.getElementById('profileIban').value.trim();
@@ -1963,7 +1924,7 @@
                     currentUser.iban = iban;
                     document.getElementById('profileMessage').innerHTML =
                         '<span class="success">✅ اطلاعات ذخیره شد</span>';
-                    window.showToast('✅ اطلاعات ذخیره شد', 'success');
+                    showToast('✅ اطلاعات ذخیره شد', 'success');
                 }
             } catch (err) {
                 document.getElementById('profileMessage').innerHTML = '<span class="error">' + err.message + '</span>';
@@ -1971,7 +1932,7 @@
         };
 
         window.changePassword = async function() {
-            if (!currentUser) { window.showToast('❌ وارد شوید', 'error'); return; }
+            if (!currentUser) { showToast('❌ وارد شوید', 'error'); return; }
 
             const oldPass = document.getElementById('oldPassword').value.trim();
             const newPass = document.getElementById('newPassword').value.trim();
@@ -2013,7 +1974,7 @@
                     document.getElementById('oldPassword').value = '';
                     document.getElementById('newPassword').value = '';
                     document.getElementById('confirmNewPassword').value = '';
-                    window.showToast('✅ رمز عبور تغییر کرد', 'success');
+                    showToast('✅ رمز عبور تغییر کرد', 'success');
                 }
             } catch (err) {
                 document.getElementById('passwordMessage').innerHTML = '<span class="error">' + err.message + '</span>';
@@ -2024,7 +1985,7 @@
         // ۳۴. سیستم تیکت (با آپلود عکس)
         // ================================================================
         window.submitTicket = async function() {
-            if (!currentUser) { window.showToast('❌ وارد شوید', 'error'); return; }
+            if (!currentUser) { showToast('❌ وارد شوید', 'error'); return; }
 
             const subject = document.getElementById('ticketSubject').value.trim();
             const message = document.getElementById('ticketMessage').value.trim();
@@ -2071,15 +2032,15 @@
                     document.getElementById('ticketMessage').value = '';
                     document.getElementById('ticketImage').value = '';
                     document.getElementById('ticketImagePreview').innerHTML = '';
-                    window.loadTickets();
-                    window.showToast('✅ تیکت ثبت شد', 'success');
+                    loadTickets();
+                    showToast('✅ تیکت ثبت شد', 'success');
                 }
             } catch (err) {
                 document.getElementById('ticketMessageStatus').innerHTML = '<span class="error">' + err.message + '</span>';
             }
         };
 
-        window.loadTickets = async function() {
+        async function loadTickets() {
             if (!currentUser) return;
             try {
                 const { data, error } = await supabaseClient
@@ -2111,31 +2072,31 @@
                 });
                 container.innerHTML = html;
             } catch (err) { /* ignore */ }
-        };
+        }
 
         // ================================================================
         // ۳۵. ثبت تبلیغ
         // ================================================================
-        document.getElementById('adCpc').addEventListener('input', window.calcBudget);
-        document.getElementById('adMaxViews').addEventListener('input', window.calcBudget);
+        document.getElementById('adCpc').addEventListener('input', calcBudget);
+        document.getElementById('adMaxViews').addEventListener('input', calcBudget);
 
-        window.calcBudget = function() {
+        function calcBudget() {
             const cpc = parseInt(document.getElementById('adCpc').value) || 0;
             const views = parseInt(document.getElementById('adMaxViews').value) || 0;
             const isSpecial = document.getElementById('adIsSpecial').checked;
             let total = cpc * views;
             if (isSpecial) total = total * 1.5;
             document.getElementById('calculatedBudget').textContent = total.toLocaleString();
-        };
+        }
 
-        document.getElementById('adIsSpecial').addEventListener('change', window.calcBudget);
+        document.getElementById('adIsSpecial').addEventListener('change', calcBudget);
 
         window.goToStep1 = function() {
             adStep = 1;
             document.getElementById('adStep1').classList.remove('hidden');
             document.getElementById('adStep2').classList.add('hidden');
             document.getElementById('adStep3').classList.add('hidden');
-            window.updateSteps();
+            updateSteps();
         };
 
         window.goToStep2 = function() {
@@ -2145,15 +2106,15 @@
             const maxViews = parseInt(document.getElementById('adMaxViews').value);
 
             if (!title || !desc || !cpc || !maxViews) {
-                window.showToast('❌ لطفاً تمام فیلدها را پر کنید', 'error');
+                showToast('❌ لطفاً تمام فیلدها را پر کنید', 'error');
                 return;
             }
             if (cpc < 10) {
-                window.showToast('❌ مبلغ هر کلیک حداقل ۱۰ تومان', 'error');
+                showToast('❌ مبلغ هر کلیک حداقل ۱۰ تومان', 'error');
                 return;
             }
             if (maxViews < 1) {
-                window.showToast('❌ تعداد کلیک حداقل ۱', 'error');
+                showToast('❌ تعداد کلیک حداقل ۱', 'error');
                 return;
             }
 
@@ -2161,7 +2122,7 @@
             document.getElementById('adStep1').classList.add('hidden');
             document.getElementById('adStep2').classList.remove('hidden');
             document.getElementById('adStep3').classList.add('hidden');
-            window.updateSteps();
+            updateSteps();
         };
 
         window.goToStep3 = function() {
@@ -2183,17 +2144,17 @@
             document.getElementById('confirmMaxViews').textContent = views;
             document.getElementById('confirmBudget').textContent = total.toLocaleString();
             document.getElementById('confirmSpecial').textContent = isSpecial ? '✅ بله' : 'خیر';
-            window.updateSteps();
+            updateSteps();
         };
 
-        window.updateSteps = function() {
+        function updateSteps() {
             for (let i = 1; i <= 3; i++) {
                 const el = document.getElementById('step' + i);
                 el.classList.remove('active', 'done');
                 if (i < adStep) el.classList.add('done');
                 if (i === adStep) el.classList.add('active');
             }
-        };
+        }
 
         window.previewImage = function(event) {
             const file = event.target.files[0];
@@ -2209,7 +2170,7 @@
         };
 
         window.submitAd = async function() {
-            if (!currentUser) { window.showToast('❌ وارد شوید', 'error'); return; }
+            if (!currentUser) { showToast('❌ وارد شوید', 'error'); return; }
 
             const title = document.getElementById('adTitle').value.trim();
             const desc = document.getElementById('adDesc').value.trim();
@@ -2287,7 +2248,7 @@
 
                 document.getElementById('adMessage').innerHTML =
                     '<span class="success">✅ تبلیغ با موفقیت ثبت شد و در انتظار تأیید است</span>';
-                window.showToast('✅ تبلیغ ثبت شد!', 'success');
+                showToast('✅ تبلیغ ثبت شد!', 'success');
 
                 document.getElementById('adTitle').value = '';
                 document.getElementById('adDesc').value = '';
@@ -2301,11 +2262,11 @@
                 document.getElementById('adStep1').classList.remove('hidden');
                 document.getElementById('adStep2').classList.add('hidden');
                 document.getElementById('adStep3').classList.add('hidden');
-                window.updateSteps();
-                window.calcBudget();
+                updateSteps();
+                calcBudget();
 
-                window.renderAll();
-                window.switchHomeTab('home');
+                renderAll();
+                switchHomeTab('home');
 
             } catch (err) {
                 document.getElementById('adMessage').innerHTML = '<span class="error">' + err.message + '</span>';
@@ -2317,7 +2278,7 @@
         // ================================================================
         window.submitFreeAd = async function() {
             if (!currentUser || currentUser.email !== ADMIN_EMAIL) {
-                window.showToast('⛔ فقط ادمین', 'error');
+                showToast('⛔ فقط ادمین', 'error');
                 return;
             }
 
@@ -2368,9 +2329,9 @@
                     document.getElementById('adminAdCpc').value = '';
                     document.getElementById('adminAdMaxViews').value = '';
                     document.getElementById('adminAdIsSpecial').checked = false;
-                    window.showToast('✅ تبلیغ رایگان ثبت شد', 'success');
-                    window.loadAdminData();
-                    window.renderAds();
+                    showToast('✅ تبلیغ رایگان ثبت شد', 'success');
+                    loadAdminData();
+                    renderAds();
                 }
             } catch (err) {
                 document.getElementById('adminAdMessage').innerHTML = '<span class="error">' + err.message + '</span>';
@@ -2378,25 +2339,25 @@
         };
 
         // ================================================================
-        // ۳۷. پنل ادمین (با نمایش کامل ایمیل‌ها - آپدیت ۲۱ و ۲۲)
+        // ۳۷. پنل ادمین (با نمایش کامل ایمیل‌ها)
         // ================================================================
         let adminDetailMode = false;
 
         window.showAdminDetail = function(type) {
             adminDetailMode = true;
             const container = document.getElementById('adminDetailView');
-            let html = `<div class="box"><button class="btn-sm blue" onclick="window.closeAdminDetail()">⬅️ بازگشت</button>`;
+            let html = `<div class="box"><button class="btn-sm blue" onclick="closeAdminDetail()">⬅️ بازگشت</button>`;
             html += `<div style="margin-top:10px;" id="adminDetailContent">در حال بارگذاری...</div></div>`;
             container.innerHTML = html;
-            window.loadAdminDetail(type);
+            loadAdminDetail(type);
         };
 
-        window.closeAdminDetail = function() {
+        function closeAdminDetail() {
             adminDetailMode = false;
             document.getElementById('adminDetailView').innerHTML = '';
-        };
+        }
 
-        window.loadAdminDetail = async function(type) {
+        async function loadAdminDetail(type) {
             const content = document.getElementById('adminDetailContent');
             try {
                 if (type === 'ads') {
@@ -2475,11 +2436,11 @@
             } catch (err) {
                 content.innerHTML = '<p style="color:#ff6b6b;">خطا در بارگذاری</p>';
             }
-        };
+        }
 
         window.loadAdminData = async function() {
             if (!currentUser || currentUser.email !== ADMIN_EMAIL) {
-                window.showToast('⛔ دسترسی غیرمجاز', 'error');
+                showToast('⛔ دسترسی غیرمجاز', 'error');
                 return;
             }
 
@@ -2523,8 +2484,8 @@
                                         </div>
                                         <div style="font-size:13px;color:#8892b0;">بودجه: ${a.total_budget} تومان | CPC: ${a.cpc}</div>
                                         <div style="display:flex;gap:6px;margin-top:6px;">
-                                            <button class="btn-sm green" onclick="window.approveAd('${a.id}')">✅ تأیید</button>
-                                            <button class="btn-sm red" onclick="window.rejectAd('${a.id}')">❌ رد</button>
+                                            <button class="btn-sm green" onclick="approveAd('${a.id}')">✅ تأیید</button>
+                                            <button class="btn-sm red" onclick="rejectAd('${a.id}')">❌ رد</button>
                                         </div>
                                     </div>
                                 `;
@@ -2552,8 +2513,8 @@
                                         </div>
                                         <div style="font-size:13px;color:#8892b0;">کارمزد: ${w.fee} تومان</div>
                                         <div style="display:flex;gap:6px;margin-top:6px;">
-                                            <button class="btn-sm green" onclick="window.approveWithdraw('${w.id}')">✅ تأیید</button>
-                                            <button class="btn-sm red" onclick="window.rejectWithdraw('${w.id}')">❌ رد</button>
+                                            <button class="btn-sm green" onclick="approveWithdraw('${w.id}')">✅ تأیید</button>
+                                            <button class="btn-sm red" onclick="rejectWithdraw('${w.id}')">❌ رد</button>
                                         </div>
                                     </div>
                                 `;
@@ -2564,7 +2525,7 @@
                         '<p style="color:#8892b0;font-size:13px;">هیچ درخواست برداشتی وجود ندارد</p>';
                 }
 
-                // ----- تیکت‌ها (همه تیکت‌ها - آپدیت ۲۲) (ایمیل کامل) -----
+                // ----- تیکت‌ها (همه تیکت‌ها) (ایمیل کامل) -----
                 const { data: tickets } = await supabaseClient
                     .from('tickets')
                     .select('*')
@@ -2591,8 +2552,8 @@
                                         ${t.status === 'open' ? `
                                             <div style="display:flex;gap:6px;margin-top:6px;">
                                                 <input type="text" id="reply_${t.id}" placeholder="پاسخ..." style="flex:1;padding:6px;border-radius:8px;border:none;background:#1f2942;color:#fff;font-size:13px;">
-                                                <button class="btn-sm blue" onclick="window.replyTicket('${t.id}')">📨</button>
-                                                <button class="btn-sm green" onclick="window.closeTicket('${t.id}')">✅</button>
+                                                <button class="btn-sm blue" onclick="replyTicket('${t.id}')">📨</button>
+                                                <button class="btn-sm green" onclick="closeTicket('${t.id}')">✅</button>
                                             </div>
                                         ` : ''}
                                     </div>
@@ -2605,7 +2566,7 @@
                 }
 
             } catch (err) {
-                window.showToast('❌ خطا در بارگذاری', 'error');
+                showToast('❌ خطا در بارگذاری', 'error');
             }
         };
 
@@ -2619,10 +2580,10 @@
                     .from('ads')
                     .update({ status: 'active' })
                     .eq('id', id);
-                window.showToast('✅ تبلیغ تأیید شد', 'success');
-                window.loadAdminData();
-                window.renderAds();
-            } catch (err) { window.showToast('❌ خطا', 'error'); }
+                showToast('✅ تبلیغ تأیید شد', 'success');
+                loadAdminData();
+                renderAds();
+            } catch (err) { showToast('❌ خطا', 'error'); }
         };
 
         window.rejectAd = async function(id) {
@@ -2655,10 +2616,10 @@
                     .update({ status: 'rejected' })
                     .eq('id', id);
 
-                window.showToast('❌ تبلیغ رد شد و بودجه برگشت', 'success');
-                window.loadAdminData();
-                window.renderAds();
-            } catch (err) { window.showToast('❌ خطا', 'error'); }
+                showToast('❌ تبلیغ رد شد و بودجه برگشت', 'success');
+                loadAdminData();
+                renderAds();
+            } catch (err) { showToast('❌ خطا', 'error'); }
         };
 
         window.approveWithdraw = async function(id) {
@@ -2668,9 +2629,9 @@
                     .from('withdraw_requests')
                     .update({ status: 'approved' })
                     .eq('id', id);
-                window.showToast('✅ برداشت تأیید شد', 'success');
-                window.loadAdminData();
-            } catch (err) { window.showToast('❌ خطا', 'error'); }
+                showToast('✅ برداشت تأیید شد', 'success');
+                loadAdminData();
+            } catch (err) { showToast('❌ خطا', 'error'); }
         };
 
         window.rejectWithdraw = async function(id) {
@@ -2703,9 +2664,9 @@
                     .update({ status: 'rejected' })
                     .eq('id', id);
 
-                window.showToast('❌ برداشت رد شد و مبلغ برگشت', 'success');
-                window.loadAdminData();
-            } catch (err) { window.showToast('❌ خطا', 'error'); }
+                showToast('❌ برداشت رد شد و مبلغ برگشت', 'success');
+                loadAdminData();
+            } catch (err) { showToast('❌ خطا', 'error'); }
         };
 
         window.closeTicket = async function(id) {
@@ -2715,15 +2676,15 @@
                     .from('tickets')
                     .update({ status: 'closed' })
                     .eq('id', id);
-                window.showToast('✅ تیکت بسته شد', 'success');
-                window.loadAdminData();
-            } catch (err) { window.showToast('❌ خطا', 'error'); }
+                showToast('✅ تیکت بسته شد', 'success');
+                loadAdminData();
+            } catch (err) { showToast('❌ خطا', 'error'); }
         };
 
         window.replyTicket = async function(id) {
             const replyInput = document.getElementById('reply_' + id);
             const reply = replyInput.value.trim();
-            if (!reply) { window.showToast('❌ پاسخ را وارد کنید', 'error'); return; }
+            if (!reply) { showToast('❌ پاسخ را وارد کنید', 'error'); return; }
 
             try {
                 const { data: ticket } = await supabaseClient
@@ -2744,10 +2705,10 @@
                     .update({ replies: replies })
                     .eq('id', id);
 
-                window.showToast('✅ پاسخ ارسال شد', 'success');
+                showToast('✅ پاسخ ارسال شد', 'success');
                 replyInput.value = '';
-                window.loadAdminData();
-            } catch (err) { window.showToast('❌ خطا', 'error'); }
+                loadAdminData();
+            } catch (err) { showToast('❌ خطا', 'error'); }
         };
 
         // ================================================================
@@ -2772,7 +2733,7 @@
                     html += `
                                 <div class="rank-item" style="${isCurrent ? 'border-color:#ffd200;background:#1f2942;' : ''}">
                                     <span class="rank">#${i + 1}</span>
-                                    <span class="email">${window.obfuscateEmail(u.email)} ${isCurrent ? '⭐' : ''}</span>
+                                    <span class="email">${obfuscateEmail(u.email)} ${isCurrent ? '⭐' : ''}</span>
                                     <span class="amount">${(u.balance || 0).toLocaleString()} تومان</span>
                                     <span class="refs">👥 ${(u.referrals || []).length}</span>
                                 </div>
@@ -2800,8 +2761,15 @@
                 if (!error && userData) {
                     currentUser = userData;
                     localStorage.setItem('currentUserEmail', userData.email);
-                    window.setAutoTheme();
-                    window.enterApp();
+                    
+                    // تنظیم تم
+                    const hour = new Date().getHours();
+                    if (hour >= 6 && hour < 18) {
+                        document.body.classList.add('light');
+                        document.getElementById('themeBtn').textContent = '🌙';
+                    }
+                    
+                    enterApp();
                     return;
                 }
             }
@@ -2810,68 +2778,7 @@
             document.getElementById('bottomNav').style.display = 'none';
         })();
 
-        // ================================================================
-        // ۴۱. اتصال توابع به window
-        // ================================================================
-        window.toggleTheme = toggleTheme;
-        window.setAutoTheme = setAutoTheme;
-        window.showRegisterForm = showRegisterForm;
-        window.showLoginForm = showLoginForm;
-        window.registerUser = registerUser;
-        window.resendConfirmation = resendConfirmation;
-        window.loginUser = loginUser;
-        window.logoutUser = logoutUser;
-        window.resetPassword = resetPassword;
-        window.checkClickAlert = checkClickAlert;
-        window.enterApp = enterApp;
-        window.navigateTo = navigateTo;
-        window.switchHomeTab = switchHomeTab;
-        window.renderAll = renderAll;
-        window.renderWallet = renderWallet;
-        window.updateClickInfo = updateClickInfo;
-        window.clickAd = clickAd;
-        window.transferToMain = transferToMain;
-        window.withdrawFromAds = withdrawFromAds;
-        window.withdrawToBank = withdrawToBank;
-        window.withdrawToBank2 = withdrawToBank2;
-        window.spinWheel = spinWheel;
-        window.chargeWallet = chargeWallet;
-        window.redeemChargeCode = redeemChargeCode;
-        window.buyPlan = buyPlan;
-        window.renderAds = renderAds;
-        window.shareAd = shareAd;
-        window.loadPopularAds = loadPopularAds;
-        window.rateAd = rateAd;
-        window.loadUserRatings = loadUserRatings;
-        window.loadWeekWinners = loadWeekWinners;
-        window.renderHistory = renderHistory;
-        window.renderProfile = renderProfile;
-        window.copyRefCode = copyRefCode;
-        window.saveProfileInfo = saveProfileInfo;
-        window.changePassword = changePassword;
-        window.submitTicket = submitTicket;
-        window.loadTickets = loadTickets;
-        window.calcBudget = calcBudget;
-        window.goToStep1 = goToStep1;
-        window.goToStep2 = goToStep2;
-        window.goToStep3 = goToStep3;
-        window.updateSteps = updateSteps;
-        window.previewImage = previewImage;
-        window.submitAd = submitAd;
-        window.submitFreeAd = submitFreeAd;
-        window.loadAdminData = loadAdminData;
-        window.loadAdminDetail = loadAdminDetail;
-        window.showAdminDetail = showAdminDetail;
-        window.closeAdminDetail = closeAdminDetail;
-        window.approveAd = approveAd;
-        window.rejectAd = rejectAd;
-        window.approveWithdraw = approveWithdraw;
-        window.rejectWithdraw = rejectWithdraw;
-        window.closeTicket = closeTicket;
-        window.replyTicket = replyTicket;
-        window.loadRanking = loadRanking;
-
-        console.log('✅ زرین‌کلیک نسخه ۷.۳ (با شماره موبایل، نمایش کامل ایمیل در ادمین، همه تیکت‌ها) راه‌اندازی شد!');
+        console.log('✅ زرین‌کلیک نسخه ۷.۴ با import راه‌اندازی شد!');
         console.log('👑 ادمین:', ADMIN_EMAIL);
     </script>
 </body>
