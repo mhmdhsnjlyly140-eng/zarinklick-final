@@ -4,8 +4,16 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>زرین‌کلیک</title>
+    
+    <!-- ===== کتابخانه Supabase با Fallback ===== -->
     <script src="https://unpkg.com/@supabase/supabase-js@2/dist/umd/supabase.min.js">
     </script>
+    <script>
+        if (typeof supabase === 'undefined') {
+            document.write('<script src="https://cdnjs.cloudflare.com/ajax/libs/supabase-js/2.42.0/umd/supabase.min.js"><\/script>');
+        }
+    </script>
+    
     <style>
         *{box-sizing:border-box;margin:0;padding:0}
         body{font-family:Tahoma,sans-serif;background:#0b0e1a;color:#fff;display:flex;justify-content:center;padding:20px;min-height:100vh;transition:background .5s,color .5s}
@@ -143,6 +151,7 @@
         .contact-card .value a{color:#92fe9d;text-decoration:none}
         .contact-card .divider{margin:12px 0;height:1px;background:#2a3457}
         .contact-card .sub{font-size:13px;color:#8892b0}
+        .phone-hint{font-size:12px;color:#8892b0;text-align:center;margin:-2px 0 8px 0}
         @media(max-width:480px){.container{padding:15px}.balance-amount{font-size:26px}.wheel{width:160px;height:160px}.wheel-pointer{font-size:30px}.top-nav button{font-size:12px;padding:6px}.theme-toggle{top:10px;right:10px;width:40px;height:40px;font-size:20px}}
     </style>
 </head>
@@ -177,6 +186,8 @@
                 <div class="subtitle">یک حساب جدید بسازید</div>
                 <input type="email" id="regEmail" placeholder="ایمیل">
                 <input type="password" id="regPassword" placeholder="رمز عبور (حداقل ۶ کاراکتر)">
+                <input type="text" id="regPhone" placeholder="شماره موبایل (اختیاری)" dir="ltr">
+                <div class="phone-hint">📱 جهت اطلاع‌رسانی و دریافت جایزه</div>
                 <input type="text" id="regRef" placeholder="کد معرف (اختیاری)">
                 <button class="btn-secondary" onclick="registerUser()">ثبت‌نام</button>
                 <p id="regMessage"></p>
@@ -470,7 +481,7 @@
     <button class="nav-item" onclick="navigateTo('admin')" id="adminNavBtn" style="display:none;"><span class="icon">👑</span><span>ادمین</span></button>
     </div>
         <!-- ============================================================ -->
-    <!-- جاواسکریپت کامل نهایی (نسخه ۷.۲) -->
+    <!-- جاواسکریپت کامل نهایی (نسخه ۷.۳) -->
     <!-- ============================================================ -->
     <script>
         // ================================================================
@@ -554,7 +565,7 @@
         };
 
         // ================================================================
-        // ۴. تم خودکار (آپدیت ۲۰)
+        // ۴. تم خودکار
         // ================================================================
         window.toggleTheme = function() {
             document.body.classList.toggle('light');
@@ -603,11 +614,12 @@
         };
 
         // ================================================================
-        // ۶. ثبت‌نام
+        // ۶. ثبت‌نام (با شماره موبایل - آپدیت ۲۳)
         // ================================================================
         window.registerUser = async function() {
             const email = document.getElementById('regEmail').value.trim();
             const password = document.getElementById('regPassword').value.trim();
+            const phone = document.getElementById('regPhone').value.trim() || null;
             const ref = document.getElementById('regRef').value.trim().toUpperCase() || '';
 
             if (!email || !password) {
@@ -642,6 +654,7 @@
                         data: {
                             ref_code: window.generateRefCode(),
                             referred_by: referrer ? referrer.email : null,
+                            phone: phone,
                             balance: 0,
                             ad_balance: 0,
                             coins: 0,
@@ -663,6 +676,7 @@
                         .insert([{
                             id: authData.user.id,
                             email: email,
+                            phone: phone,
                             ref_code: window.generateRefCode(),
                             referred_by: referrer ? referrer.email : null,
                             referrals: [],
@@ -729,6 +743,7 @@
                     '<span class="success">✅ ایمیل تأیید به ایمیل شما ارسال شد. لطفاً ایمیل خود را بررسی کنید.</span>';
                 document.getElementById('regEmail').value = '';
                 document.getElementById('regPassword').value = '';
+                document.getElementById('regPhone').value = '';
                 document.getElementById('regRef').value = '';
 
                 window.showToast('✅ لینک تأیید به ایمیل شما ارسال شد', 'success');
@@ -810,6 +825,7 @@
                         const newUser = {
                             id: data.user.id,
                             email: data.user.email,
+                            phone: data.user.user_metadata?.phone || null,
                             ref_code: 'REF' + Math.floor(1000 + Math.random() * 9000),
                             balance: 0,
                             ad_balance: 0,
@@ -1516,7 +1532,7 @@
         };
 
         // ================================================================
-        // ۲۴. سیستم کد شارژ (موقت)
+        // ۲۴. سیستم کد شارژ
         // ================================================================
         window.redeemChargeCode = async function() {
             if (!currentUser) {
@@ -2362,7 +2378,7 @@
         };
 
         // ================================================================
-        // ۳۷. پنل ادمین
+        // ۳۷. پنل ادمین (با نمایش کامل ایمیل‌ها - آپدیت ۲۱ و ۲۲)
         // ================================================================
         let adminDetailMode = false;
 
@@ -2393,7 +2409,7 @@
                         '<table style="width:100%;font-size:12px;border-collapse:collapse;"><tr><th>عنوان</th><th>مالک</th><th>وضعیت</th><th>کلیک</th></tr>';
                     data.forEach(a => {
                         html +=
-                            `<tr><td>${a.title}</td><td>${window.obfuscateEmail(a.owner)}</td><td>${a.status}</td><td>${a.clicks||0}</td></tr>`;
+                            `<tr><td>${a.title}</td><td>${a.owner}</td><td>${a.status}</td><td>${a.clicks||0}</td></tr>`;
                     });
                     html += '</table>';
                     content.innerHTML = html;
@@ -2416,7 +2432,7 @@
                         '<table style="width:100%;font-size:12px;border-collapse:collapse;"><tr><th>کاربر</th><th>توضیحات</th><th>مبلغ</th><th>زمان</th></tr>';
                     allClicks.forEach(c => {
                         html +=
-                            `<tr><td>${window.obfuscateEmail(c.user)}</td><td>${c.desc}</td><td>${c.amount}</td><td>${c.time||''}</td></tr>`;
+                            `<tr><td>${c.user}</td><td>${c.desc}</td><td>${c.amount}</td><td>${c.time||''}</td></tr>`;
                     });
                     html += '</table>';
                     content.innerHTML = html;
@@ -2431,7 +2447,7 @@
                         '<table style="width:100%;font-size:12px;border-collapse:collapse;"><tr><th>ایمیل</th><th>نقش</th><th>موجودی</th><th>زیرمجموعه</th></tr>';
                     data.forEach(u => {
                         html +=
-                            `<tr><td>${window.obfuscateEmail(u.email)}</td><td>${u.role}</td><td>${u.balance||0}</td><td>${(u.referrals||[]).length}</td></tr>`;
+                            `<tr><td>${u.email}</td><td>${u.role}</td><td>${u.balance||0}</td><td>${(u.referrals||[]).length}</td></tr>`;
                     });
                     html += '</table>';
                     content.innerHTML = html;
@@ -2490,6 +2506,7 @@
                 document.getElementById('statClicks').textContent = totalClicks;
                 document.getElementById('statRevenue').textContent = totalRevenue.toLocaleString();
 
+                // ----- تبلیغات در انتظار تأیید -----
                 const { data: pendingAds } = await supabaseClient
                     .from('ads')
                     .select('*')
@@ -2502,7 +2519,7 @@
                                     <div style="background:#0f1422;padding:10px;border-radius:8px;margin-bottom:8px;">
                                         <div style="display:flex;justify-content:space-between;">
                                             <strong>${a.title} ${a.is_special ? '⭐' : ''}</strong>
-                                            <span style="color:#8892b0;font-size:11px;">${window.obfuscateEmail(a.owner)}</span>
+                                            <span style="color:#8892b0;font-size:11px;">${a.owner}</span>
                                         </div>
                                         <div style="font-size:13px;color:#8892b0;">بودجه: ${a.total_budget} تومان | CPC: ${a.cpc}</div>
                                         <div style="display:flex;gap:6px;margin-top:6px;">
@@ -2518,6 +2535,7 @@
                         '<p style="color:#8892b0;font-size:13px;">هیچ تبلیغ در انتظار تأییدی وجود ندارد</p>';
                 }
 
+                // ----- درخواست‌های برداشت (ایمیل کامل) -----
                 const { data: withdraws } = await supabaseClient
                     .from('withdraw_requests')
                     .select('*')
@@ -2530,7 +2548,7 @@
                                     <div style="background:#0f1422;padding:10px;border-radius:8px;margin-bottom:8px;">
                                         <div style="display:flex;justify-content:space-between;">
                                             <strong>${w.amount} تومان</strong>
-                                            <span style="color:#8892b0;font-size:11px;">${window.obfuscateEmail(w.user_email)}</span>
+                                            <span style="color:#8892b0;font-size:11px;">${w.user_email}</span>
                                         </div>
                                         <div style="font-size:13px;color:#8892b0;">کارمزد: ${w.fee} تومان</div>
                                         <div style="display:flex;gap:6px;margin-top:6px;">
@@ -2546,35 +2564,44 @@
                         '<p style="color:#8892b0;font-size:13px;">هیچ درخواست برداشتی وجود ندارد</p>';
                 }
 
+                // ----- تیکت‌ها (همه تیکت‌ها - آپدیت ۲۲) (ایمیل کامل) -----
                 const { data: tickets } = await supabaseClient
                     .from('tickets')
                     .select('*')
-                    .eq('status', 'open')
                     .order('created_at', { ascending: false });
 
                 if (tickets && tickets.length > 0) {
                     let tHtml = '';
                     tickets.forEach(t => {
+                        const statusColor = t.status === 'open' ? '#92fe9d' : '#ff6b6b';
+                        const statusText = t.status === 'open' ? 'باز' : 'بسته';
                         tHtml += `
-                                    <div style="background:#0f1422;padding:10px;border-radius:8px;margin-bottom:8px;">
+                                    <div style="background:#0f1422;padding:10px;border-radius:8px;margin-bottom:8px;border-right:3px solid ${statusColor};">
                                         <div style="display:flex;justify-content:space-between;">
                                             <strong>${t.subject}</strong>
-                                            <span style="color:#8892b0;font-size:11px;">${window.obfuscateEmail(t.user_email)}</span>
+                                            <span style="color:#8892b0;font-size:11px;">${t.user_email}</span>
+                                        </div>
+                                        <div style="font-size:12px;color:#8892b0;margin-top:2px;">
+                                            وضعیت: <span style="color:${statusColor};">${statusText}</span> | 
+                                            ${new Date(t.created_at).toLocaleDateString('fa-IR')}
                                         </div>
                                         <div style="font-size:13px;margin-top:4px;">${t.message}</div>
                                         ${t.image ? `<div style="margin-top:6px;"><img src="${t.image}" style="max-width:100%;max-height:150px;border-radius:8px;border:1px solid #2a3457;"></div>` : ''}
-                                        <div style="display:flex;gap:6px;margin-top:6px;">
-                                            <input type="text" id="reply_${t.id}" placeholder="پاسخ..." style="flex:1;padding:6px;border-radius:8px;border:none;background:#1f2942;color:#fff;font-size:13px;">
-                                            <button class="btn-sm blue" onclick="window.replyTicket('${t.id}')">📨</button>
-                                            <button class="btn-sm green" onclick="window.closeTicket('${t.id}')">✅</button>
-                                        </div>
+                                        ${t.replies && t.replies.length > 0 ? `<div style="margin-top:4px;font-size:12px;color:#8892b0;">💬 پاسخ ادمین: ${t.replies[t.replies.length-1].message}</div>` : ''}
+                                        ${t.status === 'open' ? `
+                                            <div style="display:flex;gap:6px;margin-top:6px;">
+                                                <input type="text" id="reply_${t.id}" placeholder="پاسخ..." style="flex:1;padding:6px;border-radius:8px;border:none;background:#1f2942;color:#fff;font-size:13px;">
+                                                <button class="btn-sm blue" onclick="window.replyTicket('${t.id}')">📨</button>
+                                                <button class="btn-sm green" onclick="window.closeTicket('${t.id}')">✅</button>
+                                            </div>
+                                        ` : ''}
                                     </div>
                                 `;
                     });
                     document.getElementById('adminTickets').innerHTML = tHtml;
                 } else {
                     document.getElementById('adminTickets').innerHTML =
-                        '<p style="color:#8892b0;font-size:13px;">هیچ تیکتی وجود ندارد</p>';
+                        '<p style="color:#8892b0;font-size:13px;">هیچ تیکتی ثبت نشده</p>';
                 }
 
             } catch (err) {
@@ -2724,7 +2751,7 @@
         };
 
         // ================================================================
-        // ۳۹. رده‌بندی
+        // ۳۹. رده‌بندی (ایمیل مخفی)
         // ================================================================
         window.loadRanking = async function() {
             try {
@@ -2844,7 +2871,7 @@
         window.replyTicket = replyTicket;
         window.loadRanking = loadRanking;
 
-        console.log('✅ زرین‌کلیک نسخه ۷.۲ (با سیستم کد شارژ، ارتباط با ما، شماره کارت و تیکت با عکس) راه‌اندازی شد!');
+        console.log('✅ زرین‌کلیک نسخه ۷.۳ (با شماره موبایل، نمایش کامل ایمیل در ادمین، همه تیکت‌ها) راه‌اندازی شد!');
         console.log('👑 ادمین:', ADMIN_EMAIL);
     </script>
 </body>
