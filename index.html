@@ -35,6 +35,7 @@
         body.light .rank-item{background:#f6f8fa}
         body.light .popular-ad-item{background:#f6f8fa}
         body.light .week-winner{background:linear-gradient(135deg,#f7971e22,#ffd20022)}
+        body.light .history-item{border-bottom:1px solid #d0d7de}
         .container{max-width:480px;width:100%;background:#141a2b;padding:20px;border-radius:24px;border:1px solid #2a3457;margin-bottom:80px;transition:background .5s,border .5s}
         h1{text-align:center;margin-bottom:20px;background:linear-gradient(135deg,#f7971e,#ffd200);-webkit-background-clip:text;-webkit-text-fill-color:transparent;font-size:28px}
         .page{display:none}.page.active{display:block}
@@ -140,7 +141,6 @@
         .popular-ad-item .ad-title{flex:1;font-size:13px}
         .popular-ad-item .ad-clicks{font-size:13px;color:#92fe9d}
         .history-item{display:flex;justify-content:space-between;font-size:13px;padding:6px 0;border-bottom:1px solid #2a3457}
-        body.light .history-item{border-bottom:1px solid #d0d7de}
         .green{color:#92fe9d}
         .red{color:#ff6b6b}
         .warning-box{background:#ff6b6b22;border:1px solid #ff6b6b;border-radius:12px;padding:12px;margin-bottom:10px;font-size:13px;color:#ff6b6b}
@@ -234,7 +234,6 @@
                 </div>
             </div>
 
-            <!-- ===== بخش نسخه‌های ویژه ===== -->
             <div class="box" style="border:2px solid #f7971e;">
                 <h3 style="color:#ffd200;">⭐ نسخه‌های ویژه</h3>
                 <div style="display:flex;flex-direction:column;gap:10px;">
@@ -245,12 +244,8 @@
                             <li>✅ ۲ برابر کلیک در روز</li>
                             <li>✅ ۲۵٪ تخفیف در ثبت تبلیغ</li>
                             <li>✅ ۲ برابر درآمد از کلیک</li>
-                            <li>✅ امکان خرید اقساطی (۳ قسط)</li>
                         </ul>
-                        <div style="display:flex;gap:6px;flex-wrap:wrap;justify-content:center;">
-                            <button class="btn-sm green" onclick="buyPlan('pro', 'full')">💰 خرید نقدی</button>
-                            <button class="btn-sm blue" onclick="buyPlan('pro', 'installment')">📅 خرید اقساطی</button>
-                        </div>
+                        <button class="btn-sm green" onclick="buyPlan('pro', 'full')">💰 خرید نقدی</button>
                         <div id="planProStatus" style="font-size:12px;color:#92fe9d;margin-top:6px;"></div>
                     </div>
 
@@ -261,16 +256,24 @@
                             <li>✅ ۳ برابر کلیک در روز</li>
                             <li>✅ ۵۰٪ تخفیف در ثبت تبلیغ</li>
                             <li>✅ ۳ برابر درآمد از کلیک</li>
-                            <li>✅ امکان خرید اقساطی (۴ قسط)</li>
                             <li>✅ اولویت در نمایش تبلیغات</li>
                         </ul>
-                        <div style="display:flex;gap:6px;flex-wrap:wrap;justify-content:center;">
-                            <button class="btn-sm green" onclick="buyPlan('ultra', 'full')">💰 خرید نقدی</button>
-                            <button class="btn-sm blue" onclick="buyPlan('ultra', 'installment')">📅 خرید اقساطی</button>
-                        </div>
+                        <button class="btn-sm green" onclick="buyPlan('ultra', 'full')">💰 خرید نقدی</button>
                         <div id="planUltraStatus" style="font-size:12px;color:#92fe9d;margin-top:6px;"></div>
                     </div>
                 </div>
+            </div>
+
+            <div class="box" style="border:2px solid #ffd200;">
+                <h3 style="color:#ffd200;">⭐ فعال‌سازی نسخه ویژه با کد</h3>
+                <p style="font-size:13px;color:#8892b0;margin-bottom:8px;">
+                    کد فعال‌سازی نسخه پرو یا الترا را وارد کنید
+                </p>
+                <div style="display:flex;gap:8px;flex-wrap:wrap;">
+                    <input type="text" id="planCodeInput" placeholder="کد فعال‌سازی را وارد کنید..." style="flex:2;">
+                    <button class="btn-primary" onclick="redeemPlanCode()" style="flex:1;">⭐ فعال‌سازی</button>
+                </div>
+                <p id="planCodeMessage"></p>
             </div>
 
             <div class="gateway-warning">
@@ -284,18 +287,18 @@
                 <h3>🏦 واریز به حساب بانکی</h3>
                 <input type="text" id="bankCardNumber" placeholder="شماره کارت (۱۶ رقم)" maxlength="16">
                 <input type="text" id="bankIban" placeholder="شماره شبا (۲۴ رقم)">
-                <input type="number" id="bankWithdrawAmount" placeholder="مبلغ (حداقل ۱۰۰,۰۰۰ تومان)" min="100000">
+                <input type="number" id="bankWithdrawAmount" placeholder="مبلغ (حداقل ۱۰۰٬۰۰۰ تومان)" min="100000">
                 <button class="btn-primary" onclick="withdrawToBank()">🏦 واریز به بانک</button>
                 <p id="bankMessage"></p>
-                <p style="font-size:12px;color:#8892b0;">کارمزد ۱۰٪ | حداقل ۱۰۰,۰۰۰ تومان</p>
+                <p style="font-size:12px;color:#8892b0;">کارمزد ۱۰٪ | حداقل ۱۰۰٬۰۰۰ تومان</p>
             </div>
 
             <div class="box">
                 <h3>🎡 گردونه شانس</h3>
                 <div class="wheel-container"><div class="wheel" id="wheel" onclick="spinWheel()"><div class="wheel-pointer">🎯</div></div></div>
                 <div class="wheel-legend">
-                    <span><span class="dot" style="background:#f7971e;"></span> ۵,۰۰۰</span>
-                    <span><span class="dot" style="background:#ffd200;"></span> ۱,۰۰۰</span>
+                    <span><span class="dot" style="background:#f7971e;"></span> ۵٬۰۰۰</span>
+                    <span><span class="dot" style="background:#ffd200;"></span> ۱٬۰۰۰</span>
                     <span><span class="dot" style="background:#f7971e;"></span> ۵۰۰</span>
                     <span><span class="dot" style="background:#ffd200;"></span> پوچ</span>
                     <span><span class="dot" style="background:#f7971e;"></span> پوچ</span>
@@ -326,12 +329,7 @@
                 <div><div style="font-size:13px;color:#8892b0;">سکه‌ها</div><div class="balance-amount" id="walletCoins2" style="color:#ffd200;">0 <small>سکه</small></div></div>
             </div>
         </div>
-        <div class="gateway-warning">
-            ⚠️ درگاه پرداخت با مشکل مواجه شده است.<br>
-            لطفاً از طریق <strong>کد شارژ</strong> کیف پول خود را شارژ کنید.<br>
-            <div class="card-number">💳 شماره کارت: ۶۲۱۹۸۶۱۸۴۵۱۱۳۳۷۱</div>
-            <div style="font-size:12px;color:#8892b0;">به نام مجتبی جلیلی</div>
-        </div>
+
         <div class="box">
             <h3>🎫 کد شارژ</h3>
             <div style="display:flex;gap:8px;flex-wrap:wrap;">
@@ -340,20 +338,40 @@
             </div>
             <p id="chargeCodeMessage"></p>
         </div>
+
+        <div class="box" style="border:2px solid #ffd200;">
+            <h3 style="color:#ffd200;">⭐ فعال‌سازی نسخه ویژه</h3>
+            <p style="font-size:13px;color:#8892b0;margin-bottom:8px;">
+                کد فعال‌سازی نسخه پرو یا الترا را وارد کنید
+            </p>
+            <div style="display:flex;gap:8px;flex-wrap:wrap;">
+                <input type="text" id="planCodeInputWallet" placeholder="کد فعال‌سازی را وارد کنید..." style="flex:2;">
+                <button class="btn-primary" onclick="redeemPlanCodeFromWallet()" style="flex:1;">⭐ فعال‌سازی</button>
+            </div>
+            <p id="planCodeWalletMessage"></p>
+        </div>
+
+        <div class="gateway-warning">
+            ⚠️ درگاه پرداخت با مشکل مواجه شده است.<br>
+            لطفاً از طریق <strong>کد شارژ</strong> کیف پول خود را شارژ کنید.<br>
+            <div class="card-number">💳 شماره کارت: ۶۲۱۹۸۶۱۸۴۵۱۱۳۳۷۱</div>
+            <div style="font-size:12px;color:#8892b0;">به نام مجتبی جلیلی</div>
+        </div>
+
         <div class="box">
             <h3>🏦 واریز به حساب بانکی</h3>
             <input type="text" id="bankCardNumber2" placeholder="شماره کارت (۱۶ رقم)" maxlength="16">
             <input type="text" id="bankIban2" placeholder="شماره شبا (۲۴ رقم)">
-            <input type="number" id="bankWithdrawAmount2" placeholder="مبلغ (حداقل ۱۰۰,۰۰۰ تومان)" min="100000">
+            <input type="number" id="bankWithdrawAmount2" placeholder="مبلغ (حداقل ۱۰۰٬۰۰۰ تومان)" min="100000">
             <button class="btn-primary" onclick="withdrawToBank2()">🏦 واریز به بانک</button>
             <p id="bankMessage2"></p>
-            <p style="font-size:12px;color:#8892b0;">کارمزد ۱۰٪ | حداقل ۱۰۰,۰۰۰ تومان</p>
+            <p style="font-size:12px;color:#8892b0;">کارمزد ۱۰٪ | حداقل ۱۰۰٬۰۰۰ تومان</p>
         </div>
         <div class="box">
             <button class="btn-secondary" onclick="transferToMain()">⬅️ انتقال به کیف پول اصلی</button>
-            <p style="font-size:13px;color:#8892b0;margin-top:4px;">حداقل ۲۰,۰۰۰ تومان | کارمزد ۱۰٪</p>
+            <p style="font-size:13px;color:#8892b0;margin-top:4px;">حداقل ۲۰٬۰۰۰ تومان | کارمزد ۱۰٪</p>
             <button class="btn-primary" onclick="withdrawFromAds()" style="margin-top:10px;">🏦 برداشت از کیف پول تبلیغ</button>
-            <p style="font-size:13px;color:#8892b0;margin-top:4px;">حداقل ۱۰۰,۰۰۰ تومان | کارمزد ۱۰٪</p>
+            <p style="font-size:13px;color:#8892b0;margin-top:4px;">حداقل ۱۰۰٬۰۰۰ تومان | کارمزد ۱۰٪</p>
         </div>
         <div class="box" style="max-height:150px;overflow-y:auto;">
             <div style="font-size:13px;color:#8892b0;">📜 تاریخچه</div>
@@ -509,7 +527,6 @@
             </div>
             <div id="adminDetailView"></div>
 
-            <!-- ===== بخش ساخت کد شارژ (اضافه شده) ===== -->
             <div class="box" style="border:2px solid #92fe9d;">
                 <h4 style="color:#92fe9d;">🎫 ساخت کد شارژ جدید</h4>
                 <input type="number" id="chargeAmount" placeholder="مبلغ شارژ (تومان)" min="1000">
@@ -519,6 +536,20 @@
                 </div>
                 <div id="chargeCodeResult" class="code-box" style="display:none;color:#ffd200;">کد ساخته شده در اینجا نمایش داده می‌شود</div>
                 <p id="chargeCodeAdminMessage"></p>
+            </div>
+
+            <div class="box" style="border:2px solid #ffd200;">
+                <h4 style="color:#ffd200;">⭐ ساخت کد فعال‌سازی نسخه ویژه</h4>
+                <select id="planType" style="width:100%;padding:12px;margin:6px 0;border-radius:12px;border:none;background:#0f1422;color:#fff;font-size:15px;">
+                    <option value="pro">⭐ نسخه پرو</option>
+                    <option value="ultra">🔥 نسخه الترا</option>
+                </select>
+                <div style="display:flex;gap:6px;margin:6px 0;">
+                    <button class="btn-sm green" onclick="generatePlanCode()" style="flex:1;">✅ تولید کد</button>
+                    <button class="btn-sm blue" onclick="copyLastPlanCode()" style="flex:1;">📋 کپی کد</button>
+                </div>
+                <div id="planCodeResult" class="code-box" style="display:none;color:#ffd200;">کد ساخته شده در اینجا نمایش داده می‌شود</div>
+                <p id="planCodeAdminMessage"></p>
             </div>
 
             <div class="box" style="border-color:#f7971e;">
@@ -553,9 +584,11 @@
             <h4 style="margin-top:10px;">🎫 تیکت‌های پشتیبانی</h4>
             <div id="adminTickets"><p style="color:#8892b0;">هیچ تیکتی وجود ندارد</p></div>
 
-            <!-- ===== لیست کدهای شارژ (اضافه شده) ===== -->
             <h4 style="margin-top:10px;">📋 کدهای شارژ ساخته شده</h4>
             <div id="adminChargeCodes"><p style="color:#8892b0;">هیچ کد شارژی ساخته نشده است</p></div>
+
+            <h4 style="margin-top:10px;">📋 کدهای فعال‌سازی ساخته شده</h4>
+            <div id="adminPlanCodes"><p style="color:#8892b0;">هیچ کد فعال‌سازی ساخته نشده است</p></div>
 
             <button class="btn-secondary" onclick="loadAdminData()" style="margin-top:10px;">🔄 بارگذاری مجدد</button>
             <button class="btn-danger" onclick="navigateTo('home')">⬅️ بازگشت به خانه</button>
@@ -572,9 +605,9 @@
     <button class="nav-item" onclick="navigateTo('profile')"><span class="icon">👤</span><span>حساب</span></button>
     <button class="nav-item" onclick="navigateTo('contact')"><span class="icon">📞</span><span>ارتباط</span></button>
     <button class="nav-item" onclick="navigateTo('admin')" id="adminNavBtn" style="display:none;"><span class="icon">👑</span><span>ادمین</span></button>
-                        </div>
-                        <script type="module">
-        import { createClient } from '@supabase/supabase-js';
+    </div>
+    <script type="module">
+        import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.42.0';
 
         const supabaseClient = createClient(
             'https://fpogciahtzacgrglhmnx.supabase.co',
@@ -590,6 +623,7 @@
         let currentHomeTab = 'home';
         let adminDetailMode = false;
         let lastGeneratedCode = '';
+        let lastGeneratedPlanCode = '';
 
         function showToast(msg, type = 'success') {
             const t = document.getElementById('toast');
@@ -615,6 +649,24 @@
             return 'REF' + Math.floor(1000 + Math.random() * 9000);
         }
 
+        function generateChargeCodeString() {
+            const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+            let code = '';
+            for (let i = 0; i < 12; i++) {
+                code += chars.charAt(Math.floor(Math.random() * chars.length));
+            }
+            return code;
+        }
+
+        function generatePlanCodeString(plan) {
+            const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+            let code = plan.toUpperCase() + '-FREE-';
+            for (let i = 0; i < 6; i++) {
+                code += chars.charAt(Math.floor(Math.random() * chars.length));
+            }
+            return code;
+        }
+
         function copyToClipboard(text) {
             navigator.clipboard.writeText(text).then(() => {
                 showToast('📋 کپی شد!', 'success');
@@ -634,16 +686,6 @@
             return regex.test(email);
         }
 
-        // ===== تولید کد شارژ (اضافه شده) =====
-        function generateChargeCodeString() {
-            const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
-            let code = '';
-            for (let i = 0; i < 12; i++) {
-                code += chars.charAt(Math.floor(Math.random() * chars.length));
-            }
-            return code;
-        }
-
         window.toggleTheme = function() {
             document.body.classList.toggle('light');
             const btn = document.getElementById('themeBtn');
@@ -661,7 +703,7 @@
             document.getElementById('loginForm').classList.remove('hidden');
         };
 
-        // ===== ثبت‌نام (با lang) =====
+        // ===== ثبت‌نام =====
         window.registerUser = async function() {
             const email = document.getElementById('regEmail').value.trim();
             const password = document.getElementById('regPassword').value.trim();
@@ -824,7 +866,7 @@
             }
         };
 
-        // ===== ورود (با lang) =====
+        // ===== ورود =====
         window.loginUser = async function() {
             const email = document.getElementById('loginEmail').value.trim();
             const password = document.getElementById('loginPassword').value.trim();
@@ -1007,7 +1049,6 @@
             loadUserRatings();
             loadWeekWinners();
             loadPopularAds();
-            // به‌روزرسانی وضعیت نسخه‌ها
             updatePlanStatus();
         }
 
@@ -1066,7 +1107,8 @@
                 renderHistory();
                 updatePlanStatus(); } else if (tab === 'ranking') loadRanking();
         };
-                                    function renderAll() {
+
+        function renderAll() {
             renderWallet();
             renderAds();
             renderHistory();
@@ -1102,7 +1144,6 @@
             document.getElementById('maxClicksDisplay').textContent = maxClicks;
         }
 
-        // ===== به‌روزرسانی وضعیت نسخه‌ها =====
         function updatePlanStatus() {
             if (!currentUser) return;
             
@@ -1553,6 +1594,63 @@
             }, 4000);
         };
 
+        // ===== خرید نسخه‌های ویژه =====
+        window.buyPlan = async function(plan, method) {
+            if (!currentUser) { showToast('❌ وارد شوید', 'error'); return; }
+
+            const planName = plan === 'pro' ? 'پرو' : 'الترا';
+            const price = plan === 'pro' ? 299 : 399;
+
+            if (currentUser.balance < price) {
+                showToast(`❌ موجودی کیف پول اصلی برای خرید ${planName} کافی نیست`, 'error');
+                return;
+            }
+
+            if (method === 'full') {
+                if (confirm(`آیا از خرید نسخه ${planName} به مبلغ ${price} تومان از کیف پول اصلی مطمئن هستید؟`)) {
+                    try {
+                        const newBalance = currentUser.balance - price;
+                        const updateField = plan === 'pro' ? 'is_pro' : 'is_ultra';
+                        
+                        const { error } = await supabaseClient
+                            .from('users')
+                            .update({ 
+                                balance: newBalance,
+                                [updateField]: true
+                            })
+                            .eq('email', currentUser.email);
+
+                        if (error) { showToast('❌ خطا: ' + error.message, 'error'); return; }
+
+                        currentUser.balance = newBalance;
+                        currentUser[updateField] = true;
+                        
+                        const history = currentUser.history || [];
+                        history.push({
+                            desc: `خرید نسخه ${planName} (نقدی)`,
+                            amount: `-${price}`,
+                            type: 'red',
+                            time: new Date().toLocaleTimeString('fa-IR')
+                        });
+                        await supabaseClient
+                            .from('users')
+                            .update({ history: history })
+                            .eq('email', currentUser.email);
+                        currentUser.history = history;
+
+                        renderAll();
+                        renderWallet();
+                        updatePlanStatus();
+                        showToast(`✅ نسخه ${planName} با موفقیت خریداری شد`, 'success');
+                    } catch (err) {
+                        showToast('❌ خطا: ' + err.message, 'error');
+                    }
+                }
+            }
+        };
+    </script>
+    <script type="module">
+        // ===== ادامه از بخش قبلی =====
         // ===== کد شارژ (استفاده کاربر) =====
         window.redeemChargeCode = async function() {
             if (!currentUser) {
@@ -1621,115 +1719,208 @@
             }
         };
 
-        // ===== خرید نسخه‌های ویژه =====
-        window.buyPlan = async function(plan, method) {
-            if (!currentUser) { showToast('❌ وارد شوید', 'error'); return; }
-
-            const planName = plan === 'pro' ? 'پرو' : 'الترا';
-            const price = plan === 'pro' ? 299 : 399;
-            const installments = plan === 'pro' ? 3 : 4;
-            const installmentPrice = Math.round(price / installments);
-
-            if (currentUser.balance < price) {
-                showToast(`❌ موجودی کیف پول اصلی برای خرید ${planName} کافی نیست`, 'error');
+        // ===== کد فعال‌سازی نسخه ویژه (استفاده کاربر) =====
+        window.redeemPlanCode = async function() {
+            if (!currentUser) {
+                showToast('❌ ابتدا وارد شوید', 'error');
                 return;
             }
 
-            if (method === 'full') {
-                if (confirm(`آیا از خرید نسخه ${planName} به مبلغ ${price} تومان از کیف پول اصلی مطمئن هستید؟`)) {
-                    try {
-                        const newBalance = currentUser.balance - price;
-                        const updateField = plan === 'pro' ? 'is_pro' : 'is_ultra';
-                        
-                        const { error } = await supabaseClient
-                            .from('users')
-                            .update({ 
-                                balance: newBalance,
-                                [updateField]: true
-                            })
-                            .eq('email', currentUser.email);
-
-                        if (error) { showToast('❌ خطا: ' + error.message, 'error'); return; }
-
-                        currentUser.balance = newBalance;
-                        currentUser[updateField] = true;
-                        
-                        const history = currentUser.history || [];
-                        history.push({
-                            desc: `خرید نسخه ${planName} (نقدی)`,
-                            amount: `-${price}`,
-                            type: 'red',
-                            time: new Date().toLocaleTimeString('fa-IR')
-                        });
-                        await supabaseClient
-                            .from('users')
-                            .update({ history: history })
-                            .eq('email', currentUser.email);
-                        currentUser.history = history;
-
-                        renderAll();
-                        renderWallet();
-                        updatePlanStatus();
-                        showToast(`✅ نسخه ${planName} با موفقیت خریداری شد`, 'success');
-                    } catch (err) {
-                        showToast('❌ خطا: ' + err.message, 'error');
-                    }
-                }
-            } else if (method === 'installment') {
-                if (confirm(`آیا از خرید نسخه ${planName} به صورت ${installments} قسط ماهانه ${installmentPrice} تومانی (از کیف پول) مطمئن هستید؟`)) {
-                    try {
-                        if (currentUser.balance < installmentPrice) {
-                            showToast(`❌ موجودی کیف پول برای پرداخت قسط اول کافی نیست`, 'error');
-                            return;
-                        }
-                        const newBalance = currentUser.balance - installmentPrice;
-                        const updateField = plan === 'pro' ? 'is_pro' : 'is_ultra';
-                        const installmentsField = plan === 'pro' ? 'pro_installments' : 'ultra_installments';
-                        
-                        const currentInstallments = currentUser[installmentsField] || [];
-                        currentInstallments.push({
-                            amount: installmentPrice,
-                            paid_at: new Date().toISOString(),
-                            remaining: installments - 1
-                        });
-
-                        const { error } = await supabaseClient
-                            .from('users')
-                            .update({ 
-                                balance: newBalance,
-                                [updateField]: true,
-                                [installmentsField]: currentInstallments
-                            })
-                            .eq('email', currentUser.email);
-
-                        if (error) { showToast('❌ خطا: ' + error.message, 'error'); return; }
-
-                        currentUser.balance = newBalance;
-                        currentUser[updateField] = true;
-                        currentUser[installmentsField] = currentInstallments;
-
-                        const history = currentUser.history || [];
-                        history.push({
-                            desc: `قسط اول نسخه ${planName} (${installments} قسط)`,
-                            amount: `-${installmentPrice}`,
-                            type: 'red',
-                            time: new Date().toLocaleTimeString('fa-IR')
-                        });
-                        await supabaseClient
-                            .from('users')
-                            .update({ history: history })
-                            .eq('email', currentUser.email);
-                        currentUser.history = history;
-
-                        renderAll();
-                        renderWallet();
-                        updatePlanStatus();
-                        showToast(`✅ قسط اول ${planName} پرداخت شد (${installments-1} قسط باقی مانده)`, 'success');
-                    } catch (err) {
-                        showToast('❌ خطا: ' + err.message, 'error');
-                    }
-                }
+            const code = document.getElementById('planCodeInput').value.trim().toUpperCase();
+            if (!code) {
+                document.getElementById('planCodeMessage').innerHTML = '<span class="error">کد فعال‌سازی را وارد کنید</span>';
+                return;
             }
+
+            try {
+                const { data: planCode, error: codeError } = await supabaseClient
+                    .from('plan_codes')
+                    .select('*')
+                    .eq('code', code)
+                    .eq('used', false)
+                    .single();
+
+                if (codeError || !planCode) {
+                    document.getElementById('planCodeMessage').innerHTML = 
+                        '<span class="error">❌ کد نامعتبر، منقضی شده یا قبلاً استفاده شده</span>';
+                    return;
+                }
+
+                if (planCode.expires_at && new Date(planCode.expires_at) < new Date()) {
+                    document.getElementById('planCodeMessage').innerHTML = 
+                        '<span class="error">❌ کد منقضی شده است</span>';
+                    return;
+                }
+
+                const updateField = planCode.plan === 'pro' ? 'is_pro' : 'is_ultra';
+                const planName = planCode.plan === 'pro' ? 'پرو' : 'الترا';
+
+                const { error: updateError } = await supabaseClient
+                    .from('users')
+                    .update({ [updateField]: true })
+                    .eq('email', currentUser.email);
+
+                if (updateError) {
+                    document.getElementById('planCodeMessage').innerHTML = 
+                        '<span class="error">' + updateError.message + '</span>';
+                    return;
+                }
+
+                await supabaseClient
+                    .from('plan_codes')
+                    .update({
+                        used: true,
+                        used_by: currentUser.email,
+                        used_at: new Date().toISOString()
+                    })
+                    .eq('code', code);
+
+                currentUser[updateField] = true;
+
+                const history = currentUser.history || [];
+                history.push({
+                    desc: `فعال‌سازی نسخه ${planName} با کد`,
+                    amount: `✅ فعال شد`,
+                    type: 'green',
+                    time: new Date().toLocaleTimeString('fa-IR')
+                });
+
+                await supabaseClient
+                    .from('users')
+                    .update({ history: history })
+                    .eq('email', currentUser.email);
+                
+                currentUser.history = history;
+
+                document.getElementById('planCodeMessage').innerHTML = 
+                    `<span class="success">✅ نسخه ${planName} با موفقیت فعال شد!</span>`;
+                document.getElementById('planCodeInput').value = '';
+                
+                showToast(`✅ نسخه ${planName} فعال شد! 🎉`, 'success');
+                
+                updatePlanStatus();
+                renderAll();
+                renderWallet();
+
+            } catch (err) {
+                document.getElementById('planCodeMessage').innerHTML = '<span class="error">' + err.message + '</span>';
+            }
+        };
+
+        // ===== کد فعال‌سازی از کیف پول =====
+        window.redeemPlanCodeFromWallet = async function() {
+            const code = document.getElementById('planCodeInputWallet').value.trim().toUpperCase();
+            document.getElementById('planCodeInput').value = code;
+            await window.redeemPlanCode();
+            document.getElementById('planCodeWalletMessage').innerHTML = document.getElementById('planCodeMessage').innerHTML;
+            document.getElementById('planCodeInputWallet').value = '';
+        };
+
+        // ===== تولید کد شارژ توسط ادمین =====
+        window.generateChargeCode = async function() {
+            if (!currentUser || currentUser.email !== ADMIN_EMAIL) {
+                showToast('⛔ فقط ادمین', 'error');
+                return;
+            }
+
+            const amount = parseInt(document.getElementById('chargeAmount').value);
+            if (!amount || amount < 1000) {
+                document.getElementById('chargeCodeAdminMessage').innerHTML = '<span class="error">مبلغ را به درستی وارد کنید (حداقل ۱۰۰۰ تومان)</span>';
+                return;
+            }
+
+            const code = generateChargeCodeString();
+            lastGeneratedCode = code;
+
+            try {
+                const { error } = await supabaseClient
+                    .from('charge_codes')
+                    .insert([{
+                        code: code,
+                        amount: amount,
+                        used: false,
+                        created_at: new Date().toISOString(),
+                        created_by: currentUser.email,
+                        expires_at: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString()
+                    }]);
+
+                if (error) {
+                    document.getElementById('chargeCodeAdminMessage').innerHTML = '<span class="error">خطا در ساخت کد: ' + error.message + '</span>';
+                    return;
+                }
+
+                const resultDiv = document.getElementById('chargeCodeResult');
+                resultDiv.style.display = 'block';
+                resultDiv.textContent = '🎫 کد شارژ: ' + code + ' | مبلغ: ' + amount.toLocaleString() + ' تومان';
+                resultDiv.style.color = '#92fe9d';
+                
+                document.getElementById('chargeCodeAdminMessage').innerHTML = '<span class="success">✅ کد شارژ با موفقیت ساخته شد</span>';
+                document.getElementById('chargeAmount').value = '';
+                showToast('✅ کد شارژ ساخته شد!', 'success');
+                
+                loadAdminData();
+            } catch (err) {
+                document.getElementById('chargeCodeAdminMessage').innerHTML = '<span class="error">' + err.message + '</span>';
+            }
+        };
+
+        window.copyLastChargeCode = function() {
+            if (!lastGeneratedCode) {
+                showToast('❌ ابتدا یک کد شارژ بسازید', 'error');
+                return;
+            }
+            copyToClipboard(lastGeneratedCode);
+        };
+
+        // ===== تولید کد فعال‌سازی نسخه توسط ادمین =====
+        window.generatePlanCode = async function() {
+            if (!currentUser || currentUser.email !== ADMIN_EMAIL) {
+                showToast('⛔ فقط ادمین', 'error');
+                return;
+            }
+
+            const plan = document.getElementById('planType').value;
+            const planName = plan === 'pro' ? 'پرو' : 'الترا';
+            
+            const code = generatePlanCodeString(plan);
+            lastGeneratedPlanCode = code;
+
+            try {
+                const { error } = await supabaseClient
+                    .from('plan_codes')
+                    .insert([{
+                        code: code,
+                        plan: plan,
+                        used: false,
+                        created_by: currentUser.email,
+                        expires_at: new Date(Date.now() + 90 * 24 * 60 * 60 * 1000).toISOString()
+                    }]);
+
+                if (error) {
+                    document.getElementById('planCodeAdminMessage').innerHTML = '<span class="error">خطا در ساخت کد: ' + error.message + '</span>';
+                    return;
+                }
+
+                const resultDiv = document.getElementById('planCodeResult');
+                resultDiv.style.display = 'block';
+                resultDiv.textContent = '🎫 کد فعال‌سازی ' + planName + ': ' + code;
+                resultDiv.style.color = '#92fe9d';
+                
+                document.getElementById('planCodeAdminMessage').innerHTML = '<span class="success">✅ کد فعال‌سازی ' + planName + ' ساخته شد</span>';
+                showToast('✅ کد فعال‌سازی ' + planName + ' ساخته شد!', 'success');
+                
+                loadAdminData();
+            } catch (err) {
+                document.getElementById('planCodeAdminMessage').innerHTML = '<span class="error">' + err.message + '</span>';
+            }
+        };
+
+        window.copyLastPlanCode = function() {
+            if (!lastGeneratedPlanCode) {
+                showToast('❌ ابتدا یک کد فعال‌سازی بسازید', 'error');
+                return;
+            }
+            copyToClipboard(lastGeneratedPlanCode);
         };
 
         // ===== تبلیغات =====
@@ -2066,11 +2257,6 @@
                 return;
             }
 
-            if (oldPass !== currentUser.password) {
-                document.getElementById('passwordMessage').innerHTML = '<span class="error">رمز فعلی اشتباه است</span>';
-                return;
-            }
-
             if (newPass.length < 6) {
                 document.getElementById('passwordMessage').innerHTML =
                     '<span class="error">رمز جدید حداقل ۶ کاراکتر</span>';
@@ -2083,15 +2269,13 @@
             }
 
             try {
-                const { error } = await supabaseClient
-                    .from('users')
-                    .update({ password: newPass })
-                    .eq('email', currentUser.email);
+                const { error } = await supabaseClient.auth.updateUser({
+                    password: newPass
+                });
 
                 if (error) {
                     document.getElementById('passwordMessage').innerHTML = '<span class="error">' + error.message + '</span>';
                 } else {
-                    currentUser.password = newPass;
                     document.getElementById('passwordMessage').innerHTML =
                         '<span class="success">✅ رمز عبور تغییر کرد</span>';
                     document.getElementById('oldPassword').value = '';
@@ -2453,63 +2637,6 @@
             }
         };
 
-        // ===== توابع کد شارژ (اضافه شده) =====
-        window.generateChargeCode = async function() {
-            if (!currentUser || currentUser.email !== ADMIN_EMAIL) {
-                showToast('⛔ فقط ادمین', 'error');
-                return;
-            }
-
-            const amount = parseInt(document.getElementById('chargeAmount').value);
-            if (!amount || amount < 1000) {
-                document.getElementById('chargeCodeAdminMessage').innerHTML = '<span class="error">مبلغ را به درستی وارد کنید (حداقل ۱۰۰۰ تومان)</span>';
-                return;
-            }
-
-            const code = generateChargeCodeString();
-            lastGeneratedCode = code;
-
-            try {
-                const { error } = await supabaseClient
-                    .from('charge_codes')
-                    .insert([{
-                        code: code,
-                        amount: amount,
-                        used: false,
-                        created_at: new Date().toISOString(),
-                        created_by: currentUser.email,
-                        expires_at: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString() // 30 روز اعتبار
-                    }]);
-
-                if (error) {
-                    document.getElementById('chargeCodeAdminMessage').innerHTML = '<span class="error">خطا در ساخت کد: ' + error.message + '</span>';
-                    return;
-                }
-
-                const resultDiv = document.getElementById('chargeCodeResult');
-                resultDiv.style.display = 'block';
-                resultDiv.textContent = '🎫 کد شارژ: ' + code + ' | مبلغ: ' + amount.toLocaleString() + ' تومان';
-                resultDiv.style.color = '#92fe9d';
-                
-                document.getElementById('chargeCodeAdminMessage').innerHTML = '<span class="success">✅ کد شارژ با موفقیت ساخته شد</span>';
-                document.getElementById('chargeAmount').value = '';
-                showToast('✅ کد شارژ ساخته شد!', 'success');
-                
-                // بارگذاری مجدد لیست کدها
-                loadAdminData();
-            } catch (err) {
-                document.getElementById('chargeCodeAdminMessage').innerHTML = '<span class="error">' + err.message + '</span>';
-            }
-        };
-
-        window.copyLastChargeCode = function() {
-            if (!lastGeneratedCode) {
-                showToast('❌ ابتدا یک کد شارژ بسازید', 'error');
-                return;
-            }
-            copyToClipboard(lastGeneratedCode);
-        };
-
         // ===== پنل ادمین =====
         window.showAdminDetail = function(type) {
             adminDetailMode = true;
@@ -2763,7 +2890,7 @@
                         '<p style="color:#8892b0;font-size:13px;">هیچ تیکتی ثبت نشده</p>';
                 }
 
-                // ===== لیست کدهای شارژ (اضافه شده) =====
+                // کدهای شارژ
                 const { data: chargeCodes } = await supabaseClient
                     .from('charge_codes')
                     .select('*')
@@ -2786,6 +2913,32 @@
                     codesContainer.innerHTML = cHtml;
                 } else {
                     codesContainer.innerHTML = '<p style="color:#8892b0;font-size:13px;">هیچ کد شارژی ساخته نشده است</p>';
+                }
+
+                // کدهای فعال‌سازی نسخه
+                const { data: planCodes } = await supabaseClient
+                    .from('plan_codes')
+                    .select('*')
+                    .order('created_at', { ascending: false })
+                    .limit(20);
+
+                const planContainer = document.getElementById('adminPlanCodes');
+                if (planCodes && planCodes.length > 0) {
+                    let pHtml = '';
+                    planCodes.forEach(c => {
+                        const usedStatus = c.used ? '✅ استفاده شده' : '❌ استفاده نشده';
+                        const usedBy = c.used_by ? ` | استفاده شده توسط: ${c.used_by}` : '';
+                        const planEmoji = c.plan === 'pro' ? '⭐' : '🔥';
+                        pHtml += `
+                                    <div style="background:#0f1422;padding:8px;border-radius:8px;margin-bottom:6px;font-size:13px;border-right:3px solid ${c.used ? '#ff6b6b' : '#92fe9d'};">
+                                        <div><strong>${planEmoji} ${c.code}</strong> - ${c.plan === 'pro' ? 'پرو' : 'الترا'}</div>
+                                        <div style="font-size:11px;color:#8892b0;">${usedStatus}${usedBy} | ${new Date(c.created_at).toLocaleDateString('fa-IR')}</div>
+                                    </div>
+                                `;
+                    });
+                    planContainer.innerHTML = pHtml;
+                } else {
+                    planContainer.innerHTML = '<p style="color:#8892b0;font-size:13px;">هیچ کد فعال‌سازی ساخته نشده است</p>';
                 }
 
             } catch (err) {
@@ -2977,7 +3130,6 @@
                         .eq('id', session.user.id)
                         .single();
 
-                    // اگر کاربر وجود نداشت یا خطای lang داشت، بازسازی کن
                     if (error || !userData) {
                         console.log('🔄 بازسازی خودکار پروفایل کاربر...');
                         
@@ -3006,10 +3158,8 @@
                             lang: 'fa'
                         };
                         
-                        // حذف پروفایل خراب
                         await supabaseClient.from('users').delete().eq('id', session.user.id);
                         
-                        // ساخت پروفایل جدید
                         await supabaseClient.from('users').insert([newProfile]);
                         
                         const { data: fixedUser } = await supabaseClient
@@ -3043,8 +3193,8 @@
             document.getElementById('bottomNav').style.display = 'none';
         })();
 
-        console.log('✅ زرین‌کلیک نسخه ۷.۷ نهایی (با کد شارژ) راه‌اندازی شد!');
+        console.log('✅ زرین‌کلیک نسخه نهایی (با کد شارژ و کد نسخه) راه‌اندازی شد!');
         console.log('👑 ادمین:', ADMIN_EMAIL);
-    </script>
+</script>
 </body>
-</html>
+    </html>
