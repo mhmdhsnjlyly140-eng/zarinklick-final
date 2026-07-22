@@ -274,9 +274,8 @@
                     <button class="btn-primary" onclick="redeemPlanCode()" style="flex:1;">⭐ فعال‌سازی</button>
                 </div>
                 <p id="planCodeMessage"></p>
-            </div>
-
-            <div class="gateway-warning">
+                                                                      </div>
+                                                                                  <div class="gateway-warning">
                 ⚠️ درگاه پرداخت با مشکل مواجه شده است.<br>
                 لطفاً از طریق <strong>کد شارژ</strong> کیف پول خود را شارژ کنید.<br>
                 <div class="card-number">💳 شماره کارت: ۶۲۱۹۸۶۱۸۴۵۱۱۳۳۷۱</div>
@@ -378,7 +377,8 @@
             <div id="historyList2"><div style="color:#4a5a7a;">هیچ تراکنشی ثبت نشده</div></div>
         </div>
     </div>
-        <!-- ===== صفحه ثبت تبلیغ ===== -->
+
+    <!-- ===== صفحه ثبت تبلیغ ===== -->
     <div id="createAdPage" class="page">
         <div class="box">
             <h3>📝 ثبت تبلیغ</h3>
@@ -604,8 +604,8 @@
     <button class="nav-item" onclick="navigateTo('profile')"><span class="icon">👤</span><span>حساب</span></button>
     <button class="nav-item" onclick="navigateTo('contact')"><span class="icon">📞</span><span>ارتباط</span></button>
     <button class="nav-item" onclick="navigateTo('admin')" id="adminNavBtn" style="display:none;"><span class="icon">👑</span><span>ادمین</span></button>
-                                                                                  </div>
-                                                                                  <script type="module">
+                    </div>
+                    <script type="module">
         import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.42.0';
 
         const supabaseClient = createClient(
@@ -692,26 +692,22 @@
             localStorage.setItem('theme', document.body.classList.contains('light') ? 'light' : 'dark');
         };
 
-        // ===== نمایش فرم ثبت‌نام =====
         window.showRegisterForm = function() {
             document.getElementById('loginForm').classList.add('hidden');
             document.getElementById('registerForm').classList.remove('hidden');
         };
 
-        // ===== نمایش فرم ورود =====
         window.showLoginForm = function() {
             document.getElementById('registerForm').classList.add('hidden');
             document.getElementById('loginForm').classList.remove('hidden');
         };
 
-        // ===== ثبت‌نام =====
+        // ===== ثبت‌نام (اصلاح شده) =====
         window.registerUser = async function() {
             const email = document.getElementById('regEmail').value.trim();
             const password = document.getElementById('regPassword').value.trim();
             const phone = document.getElementById('regPhone').value.trim() || null;
             const ref = document.getElementById('regRef').value.trim().toUpperCase() || '';
-
-            console.log('📝 شروع ثبت‌نام:', { email, phone, ref });
 
             if (!email || !password) {
                 document.getElementById('regMessage').innerHTML = '<span class="error">❌ ایمیل و رمز را پر کنید</span>';
@@ -741,14 +737,11 @@
                 });
 
                 if (error) {
-                    console.error('❌ خطا در ثبت‌نام:', error);
                     document.getElementById('regMessage').innerHTML = '<span class="error">❌ ' + error.message + '</span>';
                     return;
                 }
 
                 if (data.user) {
-                    console.log('✅ کاربر در Auth ساخته شد:', data.user.id);
-
                     // ۲. ذخیره در جدول users
                     const newUser = {
                         id: data.user.id,
@@ -787,13 +780,11 @@
                         .insert([newUser]);
 
                     if (insertError) {
-                        console.error('❌ خطا در ذخیره کاربر در دیتابیس:', insertError);
+                        console.error('❌ خطا در ذخیره کاربر:', insertError);
                         document.getElementById('regMessage').innerHTML = 
                             '<span class="error">❌ خطا در ذخیره اطلاعات: ' + insertError.message + '</span>';
                         return;
                     }
-
-                    console.log('✅ کاربر در دیتابیس ذخیره شد');
 
                     document.getElementById('regMessage').innerHTML = 
                         '<span class="success">✅ ایمیل تأیید به ایمیل شما ارسال شد. لطفاً ایمیل خود را بررسی کنید.</span>';
@@ -801,12 +792,10 @@
                     document.getElementById('regPassword').value = '';
                     document.getElementById('regPhone').value = '';
                     document.getElementById('regRef').value = '';
-
                     showToast('✅ لینک تأیید به ایمیل شما ارسال شد', 'success');
                 }
 
             } catch (err) {
-                console.error('❌ خطا در ثبت‌نام:', err);
                 document.getElementById('regMessage').innerHTML = '<span class="error">❌ ' + err.message + '</span>';
             }
         };
@@ -835,12 +824,10 @@
             }
         };
 
-        // ===== ورود =====
+        // ===== ورود (اصلاح شده) =====
         window.loginUser = async function() {
             const email = document.getElementById('loginEmail').value.trim();
             const password = document.getElementById('loginPassword').value.trim();
-
-            console.log('🔑 شروع ورود:', { email });
 
             if (!email || !password) {
                 document.getElementById('loginMessage').innerHTML = '<span class="error">❌ ایمیل و رمز را پر کنید</span>';
@@ -852,43 +839,35 @@
             }
 
             try {
-                // ۱. لاگین با Supabase
                 const { data, error } = await supabaseClient.auth.signInWithPassword({
                     email: email,
                     password: password
                 });
 
                 if (error) {
-                    console.error('❌ خطا در ورود:', error);
                     document.getElementById('loginMessage').innerHTML = '<span class="error">❌ ' + error.message + '</span>';
                     return;
                 }
 
                 if (data.user) {
-                    console.log('✅ کاربر لاگین کرد:', data.user.id);
-
-                    // ۲. چک کردن تأیید ایمیل
                     if (!data.user.email_confirmed_at) {
-                        document.getElementById('loginMessage').innerHTML = 
+                        document.getElementById('loginMessage').innerHTML =
                             '<span class="error">❌ ایمیل شما تأیید نشده است. لطفاً ایمیل خود را بررسی کنید.</span>';
                         return;
                     }
 
-                    // ۳. گرفتن اطلاعات کاربر از دیتابیس
                     let { data: userData, error: userError } = await supabaseClient
                         .from('users')
                         .select('*')
-                        .eq('id', data.user.id)
+                        .eq('email', email)  // ← اصلاح شد: با email پیدا کن
                         .single();
 
                     if (userError && userError.code === 'PGRST116') {
-                        console.log('🔄 کاربر در دیتابیس نیست، میسازیم...');
-                        
                         const newUser = {
                             id: data.user.id,
                             email: data.user.email,
                             phone: data.user.user_metadata?.phone || null,
-                            ref_code: 'REF' + Math.floor(1000 + Math.random() * 9000),
+                            ref_code: generateRefCode(),
                             balance: 0,
                             ad_balance: 0,
                             coins: 0,
@@ -908,30 +887,24 @@
                             total_earnings: 0,
                             lang: 'fa'
                         };
-                        
                         const { error: insertError } = await supabaseClient
                             .from('users')
                             .insert([newUser]);
-                            
                         if (insertError) {
-                            console.error('❌ خطا در ساخت کاربر:', insertError);
-                            document.getElementById('loginMessage').innerHTML = 
+                            document.getElementById('loginMessage').innerHTML =
                                 '<span class="error">❌ خطا در ایجاد کاربر: ' + insertError.message + '</span>';
                             return;
                         }
-                        
                         const { data: newUserData } = await supabaseClient
                             .from('users')
                             .select('*')
-                            .eq('id', data.user.id)
+                            .eq('email', email)  // ← اصلاح شد
                             .single();
-                            
                         if (newUserData) {
                             userData = newUserData;
                         }
                     } else if (userError) {
-                        console.error('❌ خطا در دریافت کاربر:', userError);
-                        document.getElementById('loginMessage').innerHTML = 
+                        document.getElementById('loginMessage').innerHTML =
                             '<span class="error">❌ خطا در دریافت اطلاعات کاربر</span>';
                         return;
                     }
@@ -950,7 +923,6 @@
                 }
 
             } catch (err) {
-                console.error('❌ خطا در ورود:', err);
                 document.getElementById('loginMessage').innerHTML = '<span class="error">❌ ' + err.message + '</span>';
             }
         };
@@ -3103,7 +3075,7 @@
             }
         };
 
-        // ===== شروع برنامه =====
+        // ===== شروع برنامه (اصلاح شده) =====
         (async function init() {
             try {
                 const { data: { session } } = await supabaseClient.auth.getSession();
@@ -3114,7 +3086,7 @@
                     let { data: userData, error } = await supabaseClient
                         .from('users')
                         .select('*')
-                        .eq('id', session.user.id)
+                        .eq('email', session.user.email)  // ← اصلاح شد: با email پیدا کن
                         .single();
 
                     if (error || !userData) {
@@ -3124,7 +3096,7 @@
                             id: session.user.id,
                             email: session.user.email,
                             phone: session.user.user_metadata?.phone || null,
-                            ref_code: 'REF' + Math.floor(1000 + Math.random() * 9000),
+                            ref_code: generateRefCode(),
                             balance: 0,
                             ad_balance: 0,
                             coins: 0,
@@ -3158,7 +3130,7 @@
                         const { data: fixedUser } = await supabaseClient
                             .from('users')
                             .select('*')
-                            .eq('id', session.user.id)
+                            .eq('email', session.user.email)  // ← اصلاح شد
                             .single();
                             
                         if (fixedUser) {
