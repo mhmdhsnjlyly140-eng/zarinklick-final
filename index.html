@@ -377,9 +377,8 @@
             <div style="font-size:13px;color:#8892b0;">📜 تاریخچه</div>
             <div id="historyList2"><div style="color:#4a5a7a;">هیچ تراکنشی ثبت نشده</div></div>
         </div>
-    </div>
-
-    <!-- ===== صفحه ثبت تبلیغ ===== -->
+                        </div>
+                            <!-- ===== صفحه ثبت تبلیغ ===== -->
     <div id="createAdPage" class="page">
         <div class="box">
             <h3>📝 ثبت تبلیغ</h3>
@@ -605,8 +604,8 @@
     <button class="nav-item" onclick="navigateTo('profile')"><span class="icon">👤</span><span>حساب</span></button>
     <button class="nav-item" onclick="navigateTo('contact')"><span class="icon">📞</span><span>ارتباط</span></button>
     <button class="nav-item" onclick="navigateTo('admin')" id="adminNavBtn" style="display:none;"><span class="icon">👑</span><span>ادمین</span></button>
-    </div>
-    <script type="module">
+                    </div>
+                    <script type="module">
         import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.42.0';
 
         const supabaseClient = createClient(
@@ -1648,9 +1647,7 @@
                 }
             }
         };
-    </script>
-    <script type="module">
-        // ===== ادامه از بخش قبلی =====
+
         // ===== کد شارژ (استفاده کاربر) =====
         window.redeemChargeCode = async function() {
             if (!currentUser) {
@@ -1929,7 +1926,8 @@
                 const { data, error } = await supabaseClient
                     .from('ads')
                     .select('*')
-                    .eq('status', 'active');
+                    .eq('status', 'active')
+                    .limit(50);
 
                 if (error) {
                     document.getElementById('adFeed').innerHTML = '<div style="color:#8892b0;">خطا در بارگذاری</div>';
@@ -3118,12 +3116,14 @@
             }
         };
 
-        // ===== شروع برنامه =====
+        // ===== شروع برنامه (نسخه اصلاح شده با ماندن لاگین) =====
         (async function init() {
             try {
                 const { data: { session } } = await supabaseClient.auth.getSession();
-
+                
                 if (session) {
+                    console.log('✅ سشن فعال پیدا شد برای:', session.user.email);
+                    
                     let { data: userData, error } = await supabaseClient
                         .from('users')
                         .select('*')
@@ -3131,7 +3131,7 @@
                         .single();
 
                     if (error || !userData) {
-                        console.log('🔄 بازسازی خودکار پروفایل کاربر...');
+                        console.log('🔄 کاربر در دیتابیس نیست، میسازیم...');
                         
                         const newProfile = {
                             id: session.user.id,
@@ -3160,7 +3160,13 @@
                         
                         await supabaseClient.from('users').delete().eq('id', session.user.id);
                         
-                        await supabaseClient.from('users').insert([newProfile]);
+                        const { error: insertError } = await supabaseClient
+                            .from('users')
+                            .insert([newProfile]);
+                            
+                        if (insertError) {
+                            console.error('❌ خطا در ساخت کاربر:', insertError);
+                        }
                         
                         const { data: fixedUser } = await supabaseClient
                             .from('users')
@@ -3172,7 +3178,7 @@
                             currentUser = fixedUser;
                             localStorage.setItem('currentUserEmail', fixedUser.email);
                             enterApp();
-                            showToast('✅ حساب کاربری شما بازسازی شد', 'success');
+                            showToast('✅ خوش آمدید ' + fixedUser.email, 'success');
                             return;
                         }
                     }
@@ -3181,17 +3187,37 @@
                         currentUser = userData;
                         localStorage.setItem('currentUserEmail', userData.email);
                         enterApp();
+                        showToast('✅ خوش آمدید ' + userData.email, 'success');
                         return;
                     }
+                } else {
+                    console.log('❌ سشنی پیدا نشد، کاربر باید وارد شود');
                 }
+
             } catch (err) {
-                console.error('خطا در راه‌اندازی:', err);
-                showToast('❌ خطا در بارگذاری برنامه، صفحه را دوباره بارگذاری کنید', 'error');
+                console.error('❌ خطا در راه‌اندازی:', err);
+                showToast('❌ خطا در بارگذاری برنامه', 'error');
             }
 
             document.getElementById('authPage').classList.add('active');
             document.getElementById('bottomNav').style.display = 'none';
         })();
+
+        // ===== گوش دادن به تغییرات لاگین =====
+        supabaseClient.auth.onAuthStateChange((event, session) => {
+            console.log('🔄 وضعیت لاگین تغییر کرد:', event);
+            
+            if (event === 'SIGNED_IN' && session) {
+                window.location.reload();
+            } else if (event === 'SIGNED_OUT') {
+                localStorage.removeItem('currentUserEmail');
+                currentUser = null;
+                document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+                document.getElementById('authPage').classList.add('active');
+                document.getElementById('bottomNav').style.display = 'none';
+                showToast('🚪 خارج شدید', 'success');
+            }
+        });
 
         console.log('✅ زرین‌کلیک نسخه نهایی (با کد شارژ و کد نسخه) راه‌اندازی شد!');
         console.log('👑 ادمین:', ADMIN_EMAIL);
