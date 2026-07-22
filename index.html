@@ -377,8 +377,8 @@
             <div style="font-size:13px;color:#8892b0;">📜 تاریخچه</div>
             <div id="historyList2"><div style="color:#4a5a7a;">هیچ تراکنشی ثبت نشده</div></div>
         </div>
-                        </div>
-                            <!-- ===== صفحه ثبت تبلیغ ===== -->
+    </div>
+        <!-- ===== صفحه ثبت تبلیغ ===== -->
     <div id="createAdPage" class="page">
         <div class="box">
             <h3>📝 ثبت تبلیغ</h3>
@@ -604,8 +604,8 @@
     <button class="nav-item" onclick="navigateTo('profile')"><span class="icon">👤</span><span>حساب</span></button>
     <button class="nav-item" onclick="navigateTo('contact')"><span class="icon">📞</span><span>ارتباط</span></button>
     <button class="nav-item" onclick="navigateTo('admin')" id="adminNavBtn" style="display:none;"><span class="icon">👑</span><span>ادمین</span></button>
-                    </div>
-                    <script type="module">
+                                                                                  </div>
+                                                                                  <script type="module">
         import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.42.0';
 
         const supabaseClient = createClient(
@@ -692,11 +692,13 @@
             localStorage.setItem('theme', document.body.classList.contains('light') ? 'light' : 'dark');
         };
 
+        // ===== نمایش فرم ثبت‌نام =====
         window.showRegisterForm = function() {
             document.getElementById('loginForm').classList.add('hidden');
             document.getElementById('registerForm').classList.remove('hidden');
         };
 
+        // ===== نمایش فرم ورود =====
         window.showLoginForm = function() {
             document.getElementById('registerForm').classList.add('hidden');
             document.getElementById('loginForm').classList.remove('hidden');
@@ -709,8 +711,10 @@
             const phone = document.getElementById('regPhone').value.trim() || null;
             const ref = document.getElementById('regRef').value.trim().toUpperCase() || '';
 
+            console.log('📝 شروع ثبت‌نام:', { email, phone, ref });
+
             if (!email || !password) {
-                document.getElementById('regMessage').innerHTML = '<span class="error">ایمیل و رمز را پر کنید</span>';
+                document.getElementById('regMessage').innerHTML = '<span class="error">❌ ایمیل و رمز را پر کنید</span>';
                 return;
             }
             if (!isValidEmail(email)) {
@@ -718,126 +722,92 @@
                 return;
             }
             if (password.length < 6) {
-                document.getElementById('regMessage').innerHTML = '<span class="error">رمز حداقل ۶ کاراکتر</span>';
+                document.getElementById('regMessage').innerHTML = '<span class="error">❌ رمز حداقل ۶ کاراکتر</span>';
                 return;
             }
 
             try {
-                let referrer = null;
-                if (ref) {
-                    const { data: found } = await supabaseClient
-                        .from('users')
-                        .select('email, referrals')
-                        .eq('ref_code', ref)
-                        .single();
-                    if (found) referrer = found;
-                }
-
-                const { data: authData, error: authError } = await supabaseClient.auth.signUp({
+                // ۱. ثبت‌نام در Supabase Auth
+                const { data, error } = await supabaseClient.auth.signUp({
                     email: email,
                     password: password,
                     options: {
                         emailRedirectTo: window.location.origin,
                         data: {
-                            ref_code: generateRefCode(),
-                            referred_by: referrer ? referrer.email : null,
                             phone: phone,
-                            balance: 0,
-                            ad_balance: 0,
-                            coins: 0,
-                            role: (email === ADMIN_EMAIL) ? 'admin' : 'user',
-                            join_date: Date.now(),
-                            lang: 'fa'
+                            ref_code: generateRefCode()
                         }
                     }
                 });
 
-                if (authError) {
-                    document.getElementById('regMessage').innerHTML = '<span class="error">' + authError.message + '</span>';
+                if (error) {
+                    console.error('❌ خطا در ثبت‌نام:', error);
+                    document.getElementById('regMessage').innerHTML = '<span class="error">❌ ' + error.message + '</span>';
                     return;
                 }
 
-                if (authData.user) {
+                if (data.user) {
+                    console.log('✅ کاربر در Auth ساخته شد:', data.user.id);
+
+                    // ۲. ذخیره در جدول users
+                    const newUser = {
+                        id: data.user.id,
+                        email: email,
+                        phone: phone,
+                        ref_code: generateRefCode(),
+                        referred_by: null,
+                        referrals: [],
+                        referrals_level2: [],
+                        balance: 0,
+                        ad_balance: 0,
+                        coins: 0,
+                        daily_click_count: 0,
+                        last_click_date: null,
+                        history: [],
+                        role: (email === ADMIN_EMAIL) ? 'admin' : 'user',
+                        total_earnings: 0,
+                        total_ads_created: 0,
+                        is_pro: false,
+                        is_ultra: false,
+                        pro_installments: [],
+                        ultra_installments: [],
+                        ad_click_counts: {},
+                        join_date: Date.now(),
+                        ratings: {},
+                        last_spin: null,
+                        created_at: new Date().toISOString(),
+                        card_number: '',
+                        iban: '',
+                        first_click_bonus: false,
+                        lang: 'fa'
+                    };
+
                     const { error: insertError } = await supabaseClient
                         .from('users')
-                        .insert([{
-                            id: authData.user.id,
-                            email: email,
-                            phone: phone,
-                            ref_code: generateRefCode(),
-                            referred_by: referrer ? referrer.email : null,
-                            referrals: [],
-                            referrals_level2: [],
-                            balance: 0,
-                            ad_balance: 0,
-                            coins: 0,
-                            daily_click_count: 0,
-                            last_click_date: null,
-                            history: [],
-                            role: (email === ADMIN_EMAIL) ? 'admin' : 'user',
-                            total_earnings: 0,
-                            total_ads_created: 0,
-                            is_pro: false,
-                            is_ultra: false,
-                            pro_installments: [],
-                            ultra_installments: [],
-                            ad_click_counts: {},
-                            join_date: Date.now(),
-                            ratings: {},
-                            last_spin: null,
-                            created_at: new Date().toISOString(),
-                            card_number: '',
-                            iban: '',
-                            first_click_bonus: false,
-                            lang: 'fa'
-                        }]);
+                        .insert([newUser]);
 
                     if (insertError) {
-                        console.error('خطا در ذخیره‌سازی اطلاعات کاربر:', insertError);
+                        console.error('❌ خطا در ذخیره کاربر در دیتابیس:', insertError);
+                        document.getElementById('regMessage').innerHTML = 
+                            '<span class="error">❌ خطا در ذخیره اطلاعات: ' + insertError.message + '</span>';
+                        return;
                     }
+
+                    console.log('✅ کاربر در دیتابیس ذخیره شد');
+
+                    document.getElementById('regMessage').innerHTML = 
+                        '<span class="success">✅ ایمیل تأیید به ایمیل شما ارسال شد. لطفاً ایمیل خود را بررسی کنید.</span>';
+                    document.getElementById('regEmail').value = '';
+                    document.getElementById('regPassword').value = '';
+                    document.getElementById('regPhone').value = '';
+                    document.getElementById('regRef').value = '';
+
+                    showToast('✅ لینک تأیید به ایمیل شما ارسال شد', 'success');
                 }
-
-                if (referrer) {
-                    const currentReferrals = referrer.referrals || [];
-                    if (!currentReferrals.includes(email)) {
-                        currentReferrals.push(email);
-                    }
-                    await supabaseClient
-                        .from('users')
-                        .update({ referrals: currentReferrals })
-                        .eq('email', referrer.email);
-
-                    if (referrer.referred_by) {
-                        const { data: level2User } = await supabaseClient
-                            .from('users')
-                            .select('email, referrals_level2')
-                            .eq('email', referrer.referred_by)
-                            .single();
-                        if (level2User) {
-                            const level2Refs = level2User.referrals_level2 || [];
-                            if (!level2Refs.includes(email)) {
-                                level2Refs.push(email);
-                            }
-                            await supabaseClient
-                                .from('users')
-                                .update({ referrals_level2: level2Refs })
-                                .eq('email', referrer.referred_by);
-                        }
-                    }
-                }
-
-                document.getElementById('regMessage').innerHTML =
-                    '<span class="success">✅ ایمیل تأیید به ایمیل شما ارسال شد. لطفاً ایمیل خود را بررسی کنید.</span>';
-                document.getElementById('regEmail').value = '';
-                document.getElementById('regPassword').value = '';
-                document.getElementById('regPhone').value = '';
-                document.getElementById('regRef').value = '';
-
-                showToast('✅ لینک تأیید به ایمیل شما ارسال شد', 'success');
 
             } catch (err) {
-                document.getElementById('regMessage').innerHTML = '<span class="error">' + err.message + '</span>';
-                console.error('خطا در ثبت‌نام:', err);
+                console.error('❌ خطا در ثبت‌نام:', err);
+                document.getElementById('regMessage').innerHTML = '<span class="error">❌ ' + err.message + '</span>';
             }
         };
 
@@ -870,8 +840,10 @@
             const email = document.getElementById('loginEmail').value.trim();
             const password = document.getElementById('loginPassword').value.trim();
 
+            console.log('🔑 شروع ورود:', { email });
+
             if (!email || !password) {
-                document.getElementById('loginMessage').innerHTML = '<span class="error">ایمیل و رمز را پر کنید</span>';
+                document.getElementById('loginMessage').innerHTML = '<span class="error">❌ ایمیل و رمز را پر کنید</span>';
                 return;
             }
             if (!isValidEmail(email)) {
@@ -880,30 +852,38 @@
             }
 
             try {
+                // ۱. لاگین با Supabase
                 const { data, error } = await supabaseClient.auth.signInWithPassword({
                     email: email,
                     password: password
                 });
 
                 if (error) {
-                    document.getElementById('loginMessage').innerHTML = '<span class="error">' + error.message + '</span>';
+                    console.error('❌ خطا در ورود:', error);
+                    document.getElementById('loginMessage').innerHTML = '<span class="error">❌ ' + error.message + '</span>';
                     return;
                 }
 
                 if (data.user) {
+                    console.log('✅ کاربر لاگین کرد:', data.user.id);
+
+                    // ۲. چک کردن تأیید ایمیل
                     if (!data.user.email_confirmed_at) {
-                        document.getElementById('loginMessage').innerHTML =
+                        document.getElementById('loginMessage').innerHTML = 
                             '<span class="error">❌ ایمیل شما تأیید نشده است. لطفاً ایمیل خود را بررسی کنید.</span>';
                         return;
                     }
 
+                    // ۳. گرفتن اطلاعات کاربر از دیتابیس
                     let { data: userData, error: userError } = await supabaseClient
                         .from('users')
                         .select('*')
-                        .eq('email', email)
+                        .eq('id', data.user.id)
                         .single();
 
                     if (userError && userError.code === 'PGRST116') {
+                        console.log('🔄 کاربر در دیتابیس نیست، میسازیم...');
+                        
                         const newUser = {
                             id: data.user.id,
                             email: data.user.email,
@@ -928,43 +908,50 @@
                             total_earnings: 0,
                             lang: 'fa'
                         };
+                        
                         const { error: insertError } = await supabaseClient
                             .from('users')
                             .insert([newUser]);
+                            
                         if (insertError) {
-                            document.getElementById('loginMessage').innerHTML =
-                                '<span class="error">خطا در ایجاد کاربر: ' + insertError.message + '</span>';
+                            console.error('❌ خطا در ساخت کاربر:', insertError);
+                            document.getElementById('loginMessage').innerHTML = 
+                                '<span class="error">❌ خطا در ایجاد کاربر: ' + insertError.message + '</span>';
                             return;
                         }
-                        const { data: newUserData, error: newUserError } = await supabaseClient
+                        
+                        const { data: newUserData } = await supabaseClient
                             .from('users')
                             .select('*')
-                            .eq('email', email)
+                            .eq('id', data.user.id)
                             .single();
-                        if (newUserError || !newUserData) {
-                            document.getElementById('loginMessage').innerHTML =
-                                '<span class="error">خطا در دریافت اطلاعات کاربر</span>';
-                            return;
+                            
+                        if (newUserData) {
+                            userData = newUserData;
                         }
-                        userData = newUserData;
                     } else if (userError) {
-                        document.getElementById('loginMessage').innerHTML =
-                            '<span class="error">خطا در دریافت اطلاعات کاربر</span>';
+                        console.error('❌ خطا در دریافت کاربر:', userError);
+                        document.getElementById('loginMessage').innerHTML = 
+                            '<span class="error">❌ خطا در دریافت اطلاعات کاربر</span>';
                         return;
                     }
 
-                    currentUser = userData;
-                    localStorage.setItem('currentUserEmail', email);
-                    document.getElementById('loginMessage').innerHTML = '';
-                    showToast('✅ خوش آمدید', 'success');
+                    if (userData) {
+                        currentUser = userData;
+                        localStorage.setItem('currentUserEmail', email);
+                        document.getElementById('loginMessage').innerHTML = '';
+                        document.getElementById('loginMessage').innerHTML = 
+                            '<span class="success">✅ خوش آمدید!</span>';
+                        showToast('✅ خوش آمدید ' + email, 'success');
 
-                    checkClickAlert();
-                    enterApp();
+                        checkClickAlert();
+                        enterApp();
+                    }
                 }
 
             } catch (err) {
-                document.getElementById('loginMessage').innerHTML = '<span class="error">' + err.message + '</span>';
-                console.error('خطا در ورود:', err);
+                console.error('❌ خطا در ورود:', err);
+                document.getElementById('loginMessage').innerHTML = '<span class="error">❌ ' + err.message + '</span>';
             }
         };
 
@@ -3116,7 +3103,7 @@
             }
         };
 
-        // ===== شروع برنامه (نسخه اصلاح شده با ماندن لاگین) =====
+        // ===== شروع برنامه =====
         (async function init() {
             try {
                 const { data: { session } } = await supabaseClient.auth.getSession();
