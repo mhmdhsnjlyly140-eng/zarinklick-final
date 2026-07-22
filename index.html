@@ -153,6 +153,7 @@
         .phone-hint{font-size:12px;color:#8892b0;text-align:center;margin:-2px 0 8px 0}
         .gateway-warning{background:#f7971e22;border:1px solid #f7971e;border-radius:12px;padding:12px;margin-bottom:10px;font-size:13px;color:#ffd200;text-align:center}
         .gateway-warning .card-number{font-size:18px;color:#92fe9d;direction:ltr;margin:6px 0}
+        .code-box{background:#0f1422;border:1px solid #2a3457;border-radius:8px;padding:10px;font-family:monospace;font-size:14px;color:#92fe9d;text-align:center;margin:8px 0;word-break:break-all}
         @media(max-width:480px){.container{padding:15px}.balance-amount{font-size:26px}.wheel{width:160px;height:160px}.wheel-pointer{font-size:30px}.top-nav button{font-size:12px;padding:6px}.theme-toggle{top:10px;right:10px;width:40px;height:40px;font-size:20px}}
     </style>
 </head>
@@ -163,6 +164,7 @@
 
     <div class="container" id="app">
         <h1>💰 زرین‌کلیک</h1>
+
     <!-- ===== صفحه ورود/ثبت‌نام ===== -->
     <div id="authPage" class="page active">
         <div class="auth-container">
@@ -209,23 +211,21 @@
             <span id="userEmailDisplay" style="font-size:14px;color:#8892b0;">---</span>
             <span id="userProBadge"></span>
         </div>
-        <!-- ===== منوی بالا (خانه + داشبورد + رده‌بندی) ===== -->
         <div class="top-nav">
             <button class="active" onclick="switchHomeTab('home')">🏠 خانه</button>
             <button onclick="switchHomeTab('dashboard')">📊 داشبورد</button>
             <button onclick="switchHomeTab('ranking')">🏆 رده‌بندی</button>
         </div>
 
-        <!-- ===== تب خانه ===== -->
         <div id="homeTab" class="home-tab">
             <div class="box"><h3>🔥 محبوب‌ترین تبلیغات</h3><div id="popularAds"><p style="color:#8892b0;">در حال بارگذاری...</p></div></div>
             <div class="box" id="specialAdsSection"><h3>⭐ تبلیغات ویژه</h3><div id="specialAdFeed"><div style="color:#8892b0;">در حال بارگذاری...</div></div></div>
             <div class="box"><h3>📢 تبلیغات</h3><div id="adFeed"><div style="color:#8892b0;">در حال بارگذاری...</div></div></div>
         </div>
 
-        <!-- ===== تب داشبورد ===== -->
         <div id="dashboardTab" class="home-tab hidden">
             <div style="text-align:center;font-size:14px;color:#8892b0;margin-bottom:10px;">📊 کلیک‌های امروز: <span id="todayClicks" style="color:#ffd200;">0</span> از <span id="maxClicksDisplay" style="color:#92fe9d;">10</span></div>
+            
             <div class="box">
                 <div style="display:flex;justify-content:space-between;flex-wrap:wrap;gap:10px;">
                     <div><div style="font-size:13px;color:#8892b0;">کیف پول اصلی</div><div class="balance-amount" id="walletMain">0 <small>تومان</small></div></div>
@@ -233,13 +233,53 @@
                     <div><div style="font-size:13px;color:#8892b0;">سکه‌ها</div><div class="balance-amount" id="walletCoins" style="color:#ffd200;">0 <small>سکه</small></div></div>
                 </div>
             </div>
-            <!-- ===== پیام درگاه + شماره کارت (آپدیت ۲۶) ===== -->
+
+            <!-- ===== بخش نسخه‌های ویژه ===== -->
+            <div class="box" style="border:2px solid #f7971e;">
+                <h3 style="color:#ffd200;">⭐ نسخه‌های ویژه</h3>
+                <div style="display:flex;flex-direction:column;gap:10px;">
+                    <div class="plan-card pro" id="planPro">
+                        <div class="plan-name">⭐ نسخه پرو</div>
+                        <div class="plan-price">۲۹۹ <small>تومان</small></div>
+                        <ul class="plan-features">
+                            <li>✅ ۲ برابر کلیک در روز</li>
+                            <li>✅ ۲۵٪ تخفیف در ثبت تبلیغ</li>
+                            <li>✅ ۲ برابر درآمد از کلیک</li>
+                            <li>✅ امکان خرید اقساطی (۳ قسط)</li>
+                        </ul>
+                        <div style="display:flex;gap:6px;flex-wrap:wrap;justify-content:center;">
+                            <button class="btn-sm green" onclick="buyPlan('pro', 'full')">💰 خرید نقدی</button>
+                            <button class="btn-sm blue" onclick="buyPlan('pro', 'installment')">📅 خرید اقساطی</button>
+                        </div>
+                        <div id="planProStatus" style="font-size:12px;color:#92fe9d;margin-top:6px;"></div>
+                    </div>
+
+                    <div class="plan-card ultra" id="planUltra">
+                        <div class="plan-name">🔥 نسخه الترا</div>
+                        <div class="plan-price">۳۹۹ <small>تومان</small></div>
+                        <ul class="plan-features">
+                            <li>✅ ۳ برابر کلیک در روز</li>
+                            <li>✅ ۵۰٪ تخفیف در ثبت تبلیغ</li>
+                            <li>✅ ۳ برابر درآمد از کلیک</li>
+                            <li>✅ امکان خرید اقساطی (۴ قسط)</li>
+                            <li>✅ اولویت در نمایش تبلیغات</li>
+                        </ul>
+                        <div style="display:flex;gap:6px;flex-wrap:wrap;justify-content:center;">
+                            <button class="btn-sm green" onclick="buyPlan('ultra', 'full')">💰 خرید نقدی</button>
+                            <button class="btn-sm blue" onclick="buyPlan('ultra', 'installment')">📅 خرید اقساطی</button>
+                        </div>
+                        <div id="planUltraStatus" style="font-size:12px;color:#92fe9d;margin-top:6px;"></div>
+                    </div>
+                </div>
+            </div>
+
             <div class="gateway-warning">
                 ⚠️ درگاه پرداخت با مشکل مواجه شده است.<br>
                 لطفاً از طریق <strong>کد شارژ</strong> کیف پول خود را شارژ کنید.<br>
                 <div class="card-number">💳 شماره کارت: ۶۲۱۹۸۶۱۸۴۵۱۱۳۳۷۱</div>
                 <div style="font-size:12px;color:#8892b0;">به نام مجتبی جلیلی</div>
             </div>
+
             <div class="box">
                 <h3>🏦 واریز به حساب بانکی</h3>
                 <input type="text" id="bankCardNumber" placeholder="شماره کارت (۱۶ رقم)" maxlength="16">
@@ -249,6 +289,7 @@
                 <p id="bankMessage"></p>
                 <p style="font-size:12px;color:#8892b0;">کارمزد ۱۰٪ | حداقل ۱۰۰,۰۰۰ تومان</p>
             </div>
+
             <div class="box">
                 <h3>🎡 گردونه شانس</h3>
                 <div class="wheel-container"><div class="wheel" id="wheel" onclick="spinWheel()"><div class="wheel-pointer">🎯</div></div></div>
@@ -263,13 +304,13 @@
                 <div id="prizeResult" class="prize-display">برای چرخش کلیک کنید</div>
                 <button class="btn-secondary" onclick="spinWheel()">🔄 چرخش گردونه</button>
             </div>
+
             <div class="box" style="max-height:150px;overflow-y:auto;">
                 <div style="font-size:13px;color:#8892b0;">📜 تاریخچه</div>
                 <div id="historyList"><div style="color:#4a5a7a;">هیچ تراکنشی ثبت نشده</div></div>
             </div>
         </div>
 
-        <!-- ===== تب رده‌بندی ===== -->
         <div id="rankingTab" class="home-tab hidden">
             <div class="box"><h3>🏆 رده‌بندی کاربران</h3><div id="rankingList"><p style="color:#8892b0;">در حال بارگذاری...</p></div></div>
             <div id="weekWinners"></div>
@@ -285,7 +326,6 @@
                 <div><div style="font-size:13px;color:#8892b0;">سکه‌ها</div><div class="balance-amount" id="walletCoins2" style="color:#ffd200;">0 <small>سکه</small></div></div>
             </div>
         </div>
-        <!-- ===== پیام درگاه + شماره کارت (آپدیت ۲۶) ===== -->
         <div class="gateway-warning">
             ⚠️ درگاه پرداخت با مشکل مواجه شده است.<br>
             لطفاً از طریق <strong>کد شارژ</strong> کیف پول خود را شارژ کنید.<br>
@@ -418,24 +458,19 @@
                 <button class="btn-primary" onclick="changePassword()">🔑 تغییر رمز</button>
                 <p id="passwordMessage"></p>
             </div>
-            <!-- ===== بخش تیکت با آپلود عکس ===== -->
             <div style="margin-top:15px;border-top:1px solid #2a3457;padding-top:15px;">
                 <h4 style="font-size:14px;color:#8892b0;">🎫 پشتیبانی (تیکت)</h4>
-                
                 <div class="warning-box">
                     ⚠️ لطفاً رسید پرداخت خود را همراه با مشکل ارسال کنید.<br>
                     <strong>هرگونه رسید فیک پیگرد قانونی دارد.</strong>
                 </div>
-                
                 <input type="text" id="ticketSubject" placeholder="موضوع تیکت">
                 <textarea id="ticketMessage" placeholder="متن پیام..." rows="3"></textarea>
-                
                 <div style="margin:6px 0;">
                     <label style="color:#8892b0;font-size:13px;display:block;margin-bottom:4px;">📎 پیوست عکس (اختیاری)</label>
                     <input type="file" id="ticketImage" accept="image/*" style="padding:8px;background:#0f1422;border-radius:8px;border:1px solid #2a3457;width:100%;color:#fff;">
                     <div id="ticketImagePreview" style="margin-top:6px;text-align:center;"></div>
                 </div>
-                
                 <button class="btn-success" onclick="submitTicket()">📨 ارسال تیکت</button>
                 <p id="ticketMessageStatus"></p>
                 <div id="ticketList" style="margin-top:10px;"></div>
@@ -443,26 +478,20 @@
         </div>
     </div>
 
-    <!-- ===== صفحه ارتباط با ما (آپدیت ۲۹: ساعت ۹ تا ۱۷) ===== -->
+    <!-- ===== صفحه ارتباط با ما ===== -->
     <div id="contactPage" class="page">
         <div class="box">
             <h3>📞 ارتباط با ما</h3>
             <div class="contact-card">
                 <div class="label">📱 شماره تماس</div>
                 <div class="value"><a href="tel:09052380706">۰۹۰۵۲۳۸۰۷۰۶</a></div>
-                
                 <div class="divider"></div>
-                
                 <div class="label">📱 تلگرام</div>
                 <div class="value"><a href="https://t.me/Zarinklick_iran1" target="_blank">@Zarinklick_iran1</a></div>
-                
                 <div class="divider"></div>
-                
                 <div class="label">📷 اینستاگرام</div>
                 <div class="value"><a href="https://instagram.com/Zarinklick_iran1" target="_blank">@Zarinklick_iran1</a></div>
-                
                 <div class="divider"></div>
-                
                 <div class="sub">🕐 ساعات پاسخگویی: ۹ صبح تا ۱۷ عصر</div>
             </div>
         </div>
@@ -479,6 +508,19 @@
                 <div class="admin-stat-card" onclick="showAdminDetail('revenue')"><div class="number" id="statRevenue">0</div><div class="label">درآمد کل</div></div>
             </div>
             <div id="adminDetailView"></div>
+
+            <!-- ===== بخش ساخت کد شارژ (اضافه شده) ===== -->
+            <div class="box" style="border:2px solid #92fe9d;">
+                <h4 style="color:#92fe9d;">🎫 ساخت کد شارژ جدید</h4>
+                <input type="number" id="chargeAmount" placeholder="مبلغ شارژ (تومان)" min="1000">
+                <div style="display:flex;gap:6px;margin:6px 0;">
+                    <button class="btn-sm green" onclick="generateChargeCode()" style="flex:1;">✅ تولید کد</button>
+                    <button class="btn-sm blue" onclick="copyLastChargeCode()" style="flex:1;">📋 کپی کد</button>
+                </div>
+                <div id="chargeCodeResult" class="code-box" style="display:none;color:#ffd200;">کد ساخته شده در اینجا نمایش داده می‌شود</div>
+                <p id="chargeCodeAdminMessage"></p>
+            </div>
+
             <div class="box" style="border-color:#f7971e;">
                 <h4 style="color:#ffd200;">📢 ثبت تبلیغ رایگان (ادمین)</h4>
                 <input type="text" id="adminAdTitle" placeholder="عنوان تبلیغ">
@@ -501,12 +543,20 @@
                 <button class="btn-primary" onclick="submitFreeAd()">✅ ثبت رایگان</button>
                 <p id="adminAdMessage"></p>
             </div>
+
             <h4>✅ تایید تبلیغات</h4>
             <div id="adminPendingAds"><p style="color:#8892b0;">هیچ تبلیغ در انتظار تأییدی وجود ندارد</p></div>
+
             <h4 style="margin-top:10px;">🏦 درخواست‌های برداشت</h4>
             <div id="adminWithdrawals"><p style="color:#8892b0;">هیچ درخواست برداشتی وجود ندارد</p></div>
+
             <h4 style="margin-top:10px;">🎫 تیکت‌های پشتیبانی</h4>
             <div id="adminTickets"><p style="color:#8892b0;">هیچ تیکتی وجود ندارد</p></div>
+
+            <!-- ===== لیست کدهای شارژ (اضافه شده) ===== -->
+            <h4 style="margin-top:10px;">📋 کدهای شارژ ساخته شده</h4>
+            <div id="adminChargeCodes"><p style="color:#8892b0;">هیچ کد شارژی ساخته نشده است</p></div>
+
             <button class="btn-secondary" onclick="loadAdminData()" style="margin-top:10px;">🔄 بارگذاری مجدد</button>
             <button class="btn-danger" onclick="navigateTo('home')">⬅️ بازگشت به خانه</button>
         </div>
@@ -522,24 +572,15 @@
     <button class="nav-item" onclick="navigateTo('profile')"><span class="icon">👤</span><span>حساب</span></button>
     <button class="nav-item" onclick="navigateTo('contact')"><span class="icon">📞</span><span>ارتباط</span></button>
     <button class="nav-item" onclick="navigateTo('admin')" id="adminNavBtn" style="display:none;"><span class="icon">👑</span><span>ادمین</span></button>
-                    </div>
-                    <script type="module">
-        // ================================================================
-        // ۱. import کتابخانه Supabase
-        // ================================================================
+                        </div>
+                        <script type="module">
         import { createClient } from '@supabase/supabase-js';
 
-        // ================================================================
-        // ۲. اتصال به Supabase
-        // ================================================================
         const supabaseClient = createClient(
             'https://fpogciahtzacgrglhmnx.supabase.co',
             'sb_publishable_Gb3p43CBeX1VFOOzVtdI0w_IqNrVuEm'
         );
 
-        // ================================================================
-        // ۳. متغیرها
-        // ================================================================
         let currentUser = null;
         const ADMIN_EMAIL = 'mhmdhsnjlyly140@gmail.com';
         let wheelSpinning = false;
@@ -548,10 +589,8 @@
         let adStep = 1;
         let currentHomeTab = 'home';
         let adminDetailMode = false;
+        let lastGeneratedCode = '';
 
-        // ================================================================
-        // ۴. توابع کمکی
-        // ================================================================
         function showToast(msg, type = 'success') {
             const t = document.getElementById('toast');
             t.textContent = msg;
@@ -595,9 +634,16 @@
             return regex.test(email);
         }
 
-        // ================================================================
-        // ۵. توابع (همه به window متصل میشن برای onclick)
-        // ================================================================
+        // ===== تولید کد شارژ (اضافه شده) =====
+        function generateChargeCodeString() {
+            const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+            let code = '';
+            for (let i = 0; i < 12; i++) {
+                code += chars.charAt(Math.floor(Math.random() * chars.length));
+            }
+            return code;
+        }
+
         window.toggleTheme = function() {
             document.body.classList.toggle('light');
             const btn = document.getElementById('themeBtn');
@@ -615,9 +661,7 @@
             document.getElementById('loginForm').classList.remove('hidden');
         };
 
-        // ================================================================
-        // ۶. ثبت‌نام (با شماره موبایل) - ✅ اضافه شدن lang: 'fa'
-        // ================================================================
+        // ===== ثبت‌نام (با lang) =====
         window.registerUser = async function() {
             const email = document.getElementById('regEmail').value.trim();
             const password = document.getElementById('regPassword').value.trim();
@@ -662,7 +706,7 @@
                             coins: 0,
                             role: (email === ADMIN_EMAIL) ? 'admin' : 'user',
                             join_date: Date.now(),
-                            lang: 'fa'   // ✅ اضافه شد
+                            lang: 'fa'
                         }
                     }
                 });
@@ -704,7 +748,7 @@
                             card_number: '',
                             iban: '',
                             first_click_bonus: false,
-                            lang: 'fa'   // ✅ اضافه شد
+                            lang: 'fa'
                         }]);
 
                     if (insertError) {
@@ -756,9 +800,6 @@
             }
         };
 
-        // ================================================================
-        // ۷. ارسال مجدد ایمیل
-        // ================================================================
         window.resendConfirmation = async function() {
             const email = document.getElementById('regEmail').value.trim();
             if (!email) {
@@ -783,9 +824,7 @@
             }
         };
 
-        // ================================================================
-        // ۸. ورود - ✅ اضافه شدن lang: 'fa'
-        // ================================================================
+        // ===== ورود (با lang) =====
         window.loginUser = async function() {
             const email = document.getElementById('loginEmail').value.trim();
             const password = document.getElementById('loginPassword').value.trim();
@@ -846,7 +885,7 @@
                             is_pro: false,
                             is_ultra: false,
                             total_earnings: 0,
-                            lang: 'fa'   // ✅ اضافه شد
+                            lang: 'fa'
                         };
                         const { error: insertError } = await supabaseClient
                             .from('users')
@@ -888,9 +927,6 @@
             }
         };
 
-        // ================================================================
-        // ۹. خروج
-        // ================================================================
         window.logoutUser = async function() {
             await supabaseClient.auth.signOut();
             localStorage.removeItem('currentUserEmail');
@@ -901,9 +937,6 @@
             showToast('🚪 خارج شدید', 'success');
         };
 
-        // ================================================================
-        // ۱۰. بازیابی رمز
-        // ================================================================
         window.resetPassword = async function() {
             const email = prompt('لطفاً ایمیل خود را وارد کنید:');
             if (!email) return;
@@ -928,9 +961,6 @@
             }
         };
 
-        // ================================================================
-        // ۱۱. هشدار کلیک
-        // ================================================================
         function checkClickAlert() {
             if (!currentUser) return;
             const referralsCount = (currentUser.referrals || []).length;
@@ -944,9 +974,6 @@
             }
         }
 
-        // ================================================================
-        // ۱۲. ورود به برنامه
-        // ================================================================
         function enterApp() {
             document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
             document.getElementById('homePage').classList.add('active');
@@ -980,11 +1007,10 @@
             loadUserRatings();
             loadWeekWinners();
             loadPopularAds();
+            // به‌روزرسانی وضعیت نسخه‌ها
+            updatePlanStatus();
         }
 
-        // ================================================================
-        // ۱۳. ناوبری
-        // ================================================================
         window.navigateTo = function(page) {
             if (page === 'admin' && (!currentUser || currentUser.email !== ADMIN_EMAIL)) {
                 showToast('⛔ دسترسی غیرمجاز', 'error');
@@ -1020,9 +1046,6 @@
                 loadTickets(); } else if (page === 'admin') loadAdminData();
         };
 
-        // ================================================================
-        // ۱۴. منوی بالا (خانه + داشبورد + رده‌بندی) - آپدیت ۲۵
-        // ================================================================
         window.switchHomeTab = function(tab) {
             currentHomeTab = tab;
 
@@ -1040,12 +1063,10 @@
             if (tab === 'home') { renderAds();
                 loadWeekWinners();
                 loadPopularAds(); } else if (tab === 'dashboard') { renderWallet();
-                renderHistory(); } else if (tab === 'ranking') loadRanking();
+                renderHistory();
+                updatePlanStatus(); } else if (tab === 'ranking') loadRanking();
         };
-                                // ================================================================
-        // ۱۵. رندر همه
-        // ================================================================
-        function renderAll() {
+                                    function renderAll() {
             renderWallet();
             renderAds();
             renderHistory();
@@ -1053,11 +1074,9 @@
             loadWeekWinners();
             loadUserRatings();
             loadPopularAds();
+            updatePlanStatus();
         }
 
-        // ================================================================
-        // ۱۶. کیف پول
-        // ================================================================
         function renderWallet() {
             if (!currentUser) return;
             const main = currentUser.balance || 0;
@@ -1073,9 +1092,6 @@
             document.getElementById('walletCoins2').innerHTML = coins.toLocaleString() + ' <small>سکه</small>';
         }
 
-        // ================================================================
-        // ۱۷. اطلاعات کلیک
-        // ================================================================
         function updateClickInfo() {
             if (!currentUser) return;
             const referralsCount = (currentUser.referrals || []).length;
@@ -1086,9 +1102,31 @@
             document.getElementById('maxClicksDisplay').textContent = maxClicks;
         }
 
-        // ================================================================
-        // ۱۸. کلیک روی تبلیغ
-        // ================================================================
+        // ===== به‌روزرسانی وضعیت نسخه‌ها =====
+        function updatePlanStatus() {
+            if (!currentUser) return;
+            
+            const proStatus = document.getElementById('planProStatus');
+            const ultraStatus = document.getElementById('planUltraStatus');
+            
+            if (currentUser.is_pro) {
+                proStatus.innerHTML = '✅ نسخه پرو فعال است';
+                document.getElementById('planPro').style.borderColor = '#92fe9d';
+            } else {
+                proStatus.innerHTML = '❌ نسخه پرو غیرفعال';
+                document.getElementById('planPro').style.borderColor = '#2a3457';
+            }
+            
+            if (currentUser.is_ultra) {
+                ultraStatus.innerHTML = '✅ نسخه الترا فعال است';
+                document.getElementById('planUltra').style.borderColor = '#92fe9d';
+            } else {
+                ultraStatus.innerHTML = '❌ نسخه الترا غیرفعال';
+                document.getElementById('planUltra').style.borderColor = '#2a3457';
+            }
+        }
+
+        // ===== کلیک روی تبلیغ =====
         window.clickAd = async function(adId, cpc, isSpecial = false) {
             if (!currentUser) { showToast('❌ وارد شوید', 'error'); return; }
 
@@ -1195,9 +1233,7 @@
             }
         };
 
-        // ================================================================
-        // ۱۹. انتقال به کیف پول اصلی
-        // ================================================================
+        // ===== انتقال به کیف پول اصلی =====
         window.transferToMain = async function() {
             if (!currentUser) { showToast('❌ وارد شوید', 'error'); return; }
 
@@ -1258,9 +1294,7 @@
             }
         };
 
-        // ================================================================
-        // ۲۰. برداشت از کیف پول تبلیغ
-        // ================================================================
+        // ===== برداشت از کیف پول تبلیغ =====
         window.withdrawFromAds = async function() {
             if (!currentUser) { showToast('❌ وارد شوید', 'error'); return; }
 
@@ -1341,9 +1375,7 @@
             }
         };
 
-        // ================================================================
-        // ۲۱. واریز به حساب بانکی
-        // ================================================================
+        // ===== واریز به حساب بانکی =====
         window.withdrawToBank = async function() {
             if (!currentUser) { showToast('❌ وارد شوید', 'error'); return; }
 
@@ -1435,9 +1467,7 @@
             await window.withdrawToBank();
         };
 
-        // ================================================================
-        // ۲۲. گردونه شانس
-        // ================================================================
+        // ===== گردونه شانس =====
         window.spinWheel = async function() {
             if (!currentUser) { showToast('❌ وارد شوید', 'error'); return; }
             if (wheelSpinning) return;
@@ -1523,9 +1553,7 @@
             }, 4000);
         };
 
-        // ================================================================
-        // ۲۳. کد شارژ
-        // ================================================================
+        // ===== کد شارژ (استفاده کاربر) =====
         window.redeemChargeCode = async function() {
             if (!currentUser) {
                 showToast('❌ ابتدا وارد شوید', 'error');
@@ -1593,9 +1621,7 @@
             }
         };
 
-        // ================================================================
-        // ۲۴. خرید نسخه‌های ویژه (با کیف پول - آپدیت ۲۷)
-        // ================================================================
+        // ===== خرید نسخه‌های ویژه =====
         window.buyPlan = async function(plan, method) {
             if (!currentUser) { showToast('❌ وارد شوید', 'error'); return; }
 
@@ -1604,7 +1630,6 @@
             const installments = plan === 'pro' ? 3 : 4;
             const installmentPrice = Math.round(price / installments);
 
-            // فقط خرید با کیف پول (درگاه غیرفعال)
             if (currentUser.balance < price) {
                 showToast(`❌ موجودی کیف پول اصلی برای خرید ${planName} کافی نیست`, 'error');
                 return;
@@ -1644,6 +1669,7 @@
 
                         renderAll();
                         renderWallet();
+                        updatePlanStatus();
                         showToast(`✅ نسخه ${planName} با موفقیت خریداری شد`, 'success');
                     } catch (err) {
                         showToast('❌ خطا: ' + err.message, 'error');
@@ -1651,7 +1677,6 @@
                 }
             } else if (method === 'installment') {
                 if (confirm(`آیا از خرید نسخه ${planName} به صورت ${installments} قسط ماهانه ${installmentPrice} تومانی (از کیف پول) مطمئن هستید؟`)) {
-                    // ثبت قسط اول
                     try {
                         if (currentUser.balance < installmentPrice) {
                             showToast(`❌ موجودی کیف پول برای پرداخت قسط اول کافی نیست`, 'error');
@@ -1698,6 +1723,7 @@
 
                         renderAll();
                         renderWallet();
+                        updatePlanStatus();
                         showToast(`✅ قسط اول ${planName} پرداخت شد (${installments-1} قسط باقی مانده)`, 'success');
                     } catch (err) {
                         showToast('❌ خطا: ' + err.message, 'error');
@@ -1706,9 +1732,7 @@
             }
         };
 
-        // ================================================================
-        // ۲۵. تبلیغات
-        // ================================================================
+        // ===== تبلیغات =====
         window.renderAds = async function() {
             try {
                 const { data, error } = await supabaseClient
@@ -1805,9 +1829,6 @@
             }
         };
 
-        // ================================================================
-        // ۲۶. اشتراک‌گذاری
-        // ================================================================
         window.shareAd = function(title, desc, link) {
             const text = `🔥 ${title}\n${desc}\n\nلینک: ${link}\n\n💰 با کلیک روی این لینک درآمد کسب کنید!`;
             if (navigator.share) {
@@ -1822,9 +1843,6 @@
             }
         };
 
-        // ================================================================
-        // ۲۷. محبوب‌ترین تبلیغات
-        // ================================================================
         async function loadPopularAds() {
             try {
                 const { data, error } = await supabaseClient
@@ -1858,9 +1876,6 @@
             }
         }
 
-        // ================================================================
-        // ۲۸. امتیازدهی
-        // ================================================================
         window.rateAd = async function(adId, rating) {
             if (!currentUser) { showToast('❌ وارد شوید', 'error'); return; }
 
@@ -1897,9 +1912,6 @@
             loadUserRatings();
         };
 
-        // ================================================================
-        // ۲۹. بارگذاری امتیازها
-        // ================================================================
         async function loadUserRatings() {
             if (!currentUser) return;
             const container = document.getElementById('userRatings');
@@ -1930,9 +1942,6 @@
             container.innerHTML = html;
         }
 
-        // ================================================================
-        // ۳۰. کاربران برتر هفته
-        // ================================================================
         async function loadWeekWinners() {
             try {
                 const { data: users } = await supabaseClient
@@ -1964,9 +1973,6 @@
             }
         }
 
-        // ================================================================
-        // ۳۱. تاریخچه
-        // ================================================================
         function renderHistory() {
             if (!currentUser) return;
             const hist = currentUser.history || [];
@@ -1995,9 +2001,6 @@
             container2.innerHTML = html;
         }
 
-        // ================================================================
-        // ۳۲. حساب کاربری
-        // ================================================================
         function renderProfile() {
             if (!currentUser) return;
             document.getElementById('profileEmail').textContent = currentUser.email;
@@ -2101,9 +2104,6 @@
             }
         };
 
-        // ================================================================
-        // ۳۳. سیستم تیکت (با آپلود عکس)
-        // ================================================================
         window.submitTicket = async function() {
             if (!currentUser) { showToast('❌ وارد شوید', 'error'); return; }
 
@@ -2194,9 +2194,6 @@
             } catch (err) { /* ignore */ }
         }
 
-        // ================================================================
-        // ۳۴. ثبت تبلیغ
-        // ================================================================
         document.getElementById('adCpc').addEventListener('input', calcBudget);
         document.getElementById('adMaxViews').addEventListener('input', calcBudget);
 
@@ -2393,9 +2390,7 @@
             }
         };
 
-        // ================================================================
-        // ۳۵. ثبت تبلیغ رایگان برای ادمین
-        // ================================================================
+        // ===== ثبت تبلیغ رایگان برای ادمین =====
         window.submitFreeAd = async function() {
             if (!currentUser || currentUser.email !== ADMIN_EMAIL) {
                 showToast('⛔ فقط ادمین', 'error');
@@ -2458,9 +2453,64 @@
             }
         };
 
-        // ================================================================
-        // ۳۶. پنل ادمین (با نمایش کامل ایمیل‌ها + حذف تبلیغ - آپدیت ۲۸)
-        // ================================================================
+        // ===== توابع کد شارژ (اضافه شده) =====
+        window.generateChargeCode = async function() {
+            if (!currentUser || currentUser.email !== ADMIN_EMAIL) {
+                showToast('⛔ فقط ادمین', 'error');
+                return;
+            }
+
+            const amount = parseInt(document.getElementById('chargeAmount').value);
+            if (!amount || amount < 1000) {
+                document.getElementById('chargeCodeAdminMessage').innerHTML = '<span class="error">مبلغ را به درستی وارد کنید (حداقل ۱۰۰۰ تومان)</span>';
+                return;
+            }
+
+            const code = generateChargeCodeString();
+            lastGeneratedCode = code;
+
+            try {
+                const { error } = await supabaseClient
+                    .from('charge_codes')
+                    .insert([{
+                        code: code,
+                        amount: amount,
+                        used: false,
+                        created_at: new Date().toISOString(),
+                        created_by: currentUser.email,
+                        expires_at: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString() // 30 روز اعتبار
+                    }]);
+
+                if (error) {
+                    document.getElementById('chargeCodeAdminMessage').innerHTML = '<span class="error">خطا در ساخت کد: ' + error.message + '</span>';
+                    return;
+                }
+
+                const resultDiv = document.getElementById('chargeCodeResult');
+                resultDiv.style.display = 'block';
+                resultDiv.textContent = '🎫 کد شارژ: ' + code + ' | مبلغ: ' + amount.toLocaleString() + ' تومان';
+                resultDiv.style.color = '#92fe9d';
+                
+                document.getElementById('chargeCodeAdminMessage').innerHTML = '<span class="success">✅ کد شارژ با موفقیت ساخته شد</span>';
+                document.getElementById('chargeAmount').value = '';
+                showToast('✅ کد شارژ ساخته شد!', 'success');
+                
+                // بارگذاری مجدد لیست کدها
+                loadAdminData();
+            } catch (err) {
+                document.getElementById('chargeCodeAdminMessage').innerHTML = '<span class="error">' + err.message + '</span>';
+            }
+        };
+
+        window.copyLastChargeCode = function() {
+            if (!lastGeneratedCode) {
+                showToast('❌ ابتدا یک کد شارژ بسازید', 'error');
+                return;
+            }
+            copyToClipboard(lastGeneratedCode);
+        };
+
+        // ===== پنل ادمین =====
         window.showAdminDetail = function(type) {
             adminDetailMode = true;
             const container = document.getElementById('adminDetailView');
@@ -2563,9 +2613,6 @@
             }
         }
 
-        // ================================================================
-        // حذف تبلیغ توسط ادمین (آپدیت ۲۸)
-        // ================================================================
         window.deleteAd = async function(id) {
             if (!confirm('آیا از حذف این تبلیغ مطمئن هستید؟')) return;
             try {
@@ -2580,7 +2627,6 @@
                 loadAdminData();
                 renderAds();
                 loadPopularAds();
-                // بستن نمای جزئیات اگر باز باشد
                 if (adminDetailMode) {
                     closeAdminDetail();
                 }
@@ -2618,7 +2664,7 @@
                 document.getElementById('statClicks').textContent = totalClicks;
                 document.getElementById('statRevenue').textContent = totalRevenue.toLocaleString();
 
-                // ----- تبلیغات در انتظار تأیید (با دکمه حذف) -----
+                // تبلیغات در انتظار تأیید
                 const { data: pendingAds } = await supabaseClient
                     .from('ads')
                     .select('*')
@@ -2648,7 +2694,7 @@
                         '<p style="color:#8892b0;font-size:13px;">هیچ تبلیغ در انتظار تأییدی وجود ندارد</p>';
                 }
 
-                // ----- درخواست‌های برداشت (ایمیل کامل) -----
+                // درخواست‌های برداشت
                 const { data: withdraws } = await supabaseClient
                     .from('withdraw_requests')
                     .select('*')
@@ -2677,7 +2723,7 @@
                         '<p style="color:#8892b0;font-size:13px;">هیچ درخواست برداشتی وجود ندارد</p>';
                 }
 
-                // ----- تیکت‌ها (همه تیکت‌ها) (ایمیل کامل) -----
+                // تیکت‌ها
                 const { data: tickets } = await supabaseClient
                     .from('tickets')
                     .select('*')
@@ -2717,14 +2763,38 @@
                         '<p style="color:#8892b0;font-size:13px;">هیچ تیکتی ثبت نشده</p>';
                 }
 
+                // ===== لیست کدهای شارژ (اضافه شده) =====
+                const { data: chargeCodes } = await supabaseClient
+                    .from('charge_codes')
+                    .select('*')
+                    .order('created_at', { ascending: false })
+                    .limit(20);
+
+                const codesContainer = document.getElementById('adminChargeCodes');
+                if (chargeCodes && chargeCodes.length > 0) {
+                    let cHtml = '';
+                    chargeCodes.forEach(c => {
+                        const usedStatus = c.used ? '✅ استفاده شده' : '❌ استفاده نشده';
+                        const usedBy = c.used_by ? ` | استفاده شده توسط: ${c.used_by}` : '';
+                        cHtml += `
+                                    <div style="background:#0f1422;padding:8px;border-radius:8px;margin-bottom:6px;font-size:13px;border-right:3px solid ${c.used ? '#ff6b6b' : '#92fe9d'};">
+                                        <div><strong>${c.code}</strong> - ${c.amount.toLocaleString()} تومان</div>
+                                        <div style="font-size:11px;color:#8892b0;">${usedStatus}${usedBy} | ${new Date(c.created_at).toLocaleDateString('fa-IR')}</div>
+                                    </div>
+                                `;
+                    });
+                    codesContainer.innerHTML = cHtml;
+                } else {
+                    codesContainer.innerHTML = '<p style="color:#8892b0;font-size:13px;">هیچ کد شارژی ساخته نشده است</p>';
+                }
+
             } catch (err) {
                 showToast('❌ خطا در بارگذاری', 'error');
+                console.error(err);
             }
         };
 
-        // ================================================================
-        // ۳۷. عملیات ادمین
-        // ================================================================
+        // ===== عملیات ادمین =====
         window.approveAd = async function(id) {
             if (!confirm('تأیید تبلیغ؟')) return;
             try {
@@ -2863,9 +2933,7 @@
             } catch (err) { showToast('❌ خطا', 'error'); }
         };
 
-        // ================================================================
-        // ۳۸. رده‌بندی (ایمیل مخفی)
-        // ================================================================
+        // ===== رده‌بندی =====
         window.loadRanking = async function() {
             try {
                 const { data: users } = await supabaseClient
@@ -2897,40 +2965,85 @@
             }
         };
 
-        // ================================================================
-        // ۳۹. شروع برنامه
-        // ================================================================
+        // ===== شروع برنامه =====
         (async function init() {
-            const { data: { session } } = await supabaseClient.auth.getSession();
+            try {
+                const { data: { session } } = await supabaseClient.auth.getSession();
 
-            if (session) {
-                const { data: userData, error } = await supabaseClient
-                    .from('users')
-                    .select('*')
-                    .eq('id', session.user.id)
-                    .single();
+                if (session) {
+                    let { data: userData, error } = await supabaseClient
+                        .from('users')
+                        .select('*')
+                        .eq('id', session.user.id)
+                        .single();
 
-                if (!error && userData) {
-                    currentUser = userData;
-                    localStorage.setItem('currentUserEmail', userData.email);
-                    
-                    // تنظیم تم
-                    const hour = new Date().getHours();
-                    if (hour >= 6 && hour < 18) {
-                        document.body.classList.add('light');
-                        document.getElementById('themeBtn').textContent = '🌙';
+                    // اگر کاربر وجود نداشت یا خطای lang داشت، بازسازی کن
+                    if (error || !userData) {
+                        console.log('🔄 بازسازی خودکار پروفایل کاربر...');
+                        
+                        const newProfile = {
+                            id: session.user.id,
+                            email: session.user.email,
+                            phone: session.user.user_metadata?.phone || null,
+                            ref_code: 'REF' + Math.floor(1000 + Math.random() * 9000),
+                            balance: 0,
+                            ad_balance: 0,
+                            coins: 0,
+                            role: (session.user.email === ADMIN_EMAIL) ? 'admin' : 'user',
+                            join_date: Date.now(),
+                            created_at: new Date().toISOString(),
+                            referrals: [],
+                            referrals_level2: [],
+                            history: [],
+                            ratings: {},
+                            ad_click_counts: {},
+                            card_number: '',
+                            iban: '',
+                            first_click_bonus: false,
+                            is_pro: false,
+                            is_ultra: false,
+                            total_earnings: 0,
+                            lang: 'fa'
+                        };
+                        
+                        // حذف پروفایل خراب
+                        await supabaseClient.from('users').delete().eq('id', session.user.id);
+                        
+                        // ساخت پروفایل جدید
+                        await supabaseClient.from('users').insert([newProfile]);
+                        
+                        const { data: fixedUser } = await supabaseClient
+                            .from('users')
+                            .select('*')
+                            .eq('id', session.user.id)
+                            .single();
+                            
+                        if (fixedUser) {
+                            currentUser = fixedUser;
+                            localStorage.setItem('currentUserEmail', fixedUser.email);
+                            enterApp();
+                            showToast('✅ حساب کاربری شما بازسازی شد', 'success');
+                            return;
+                        }
                     }
-                    
-                    enterApp();
-                    return;
+
+                    if (!error && userData) {
+                        currentUser = userData;
+                        localStorage.setItem('currentUserEmail', userData.email);
+                        enterApp();
+                        return;
+                    }
                 }
+            } catch (err) {
+                console.error('خطا در راه‌اندازی:', err);
+                showToast('❌ خطا در بارگذاری برنامه، صفحه را دوباره بارگذاری کنید', 'error');
             }
 
             document.getElementById('authPage').classList.add('active');
             document.getElementById('bottomNav').style.display = 'none';
         })();
 
-        console.log('✅ زرین‌کلیک نسخه ۷.۶ (اصلاح lang) راه‌اندازی شد!');
+        console.log('✅ زرین‌کلیک نسخه ۷.۷ نهایی (با کد شارژ) راه‌اندازی شد!');
         console.log('👑 ادمین:', ADMIN_EMAIL);
     </script>
 </body>
