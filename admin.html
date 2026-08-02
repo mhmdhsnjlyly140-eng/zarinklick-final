@@ -1,0 +1,1228 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>پنل مدیریت - زرین‌کلیک</title>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.39.0/dist/umd/supabase.min.js">
+    </script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: Tahoma, sans-serif;
+        }
+        body {
+            background: #0b0e1a;
+            color: #fff;
+            display: flex;
+            justify-content: center;
+            padding: 20px;
+            min-height: 100vh;
+        }
+        .container {
+            max-width: 600px;
+            width: 100%;
+            background: #141a2b;
+            padding: 20px;
+            border-radius: 24px;
+            border: 1px solid #2a3457;
+        }
+        h1 {
+            text-align: center;
+            color: #ffd200;
+            margin-bottom: 20px;
+            font-size: 24px;
+        }
+        h1 small {
+            display: block;
+            font-size: 14px;
+            color: #8892b0;
+        }
+        .box {
+            background: #1f2942;
+            padding: 16px;
+            border-radius: 16px;
+            margin-bottom: 15px;
+            border: 1px solid #2a3457;
+        }
+        .box h3 {
+            color: #ffd200;
+            margin-bottom: 10px;
+            font-size: 16px;
+        }
+        .box h4 {
+            color: #8892b0;
+            margin-bottom: 8px;
+            font-size: 14px;
+        }
+        input,
+        textarea,
+        select {
+            width: 100%;
+            padding: 12px;
+            margin: 6px 0;
+            border-radius: 12px;
+            border: none;
+            background: #0f1422;
+            color: #fff;
+            font-size: 14px;
+            outline: 1px solid #2a3457;
+        }
+        input:focus,
+        textarea:focus,
+        select:focus {
+            outline: 2px solid #f7971e;
+        }
+        button {
+            width: 100%;
+            padding: 12px;
+            margin: 6px 0;
+            border: none;
+            border-radius: 12px;
+            font-size: 15px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: .2s;
+        }
+        .btn-primary {
+            background: linear-gradient(135deg, #f7971e, #ffd200);
+            color: #0b0e1a;
+        }
+        .btn-success {
+            background: #92fe9d;
+            color: #0b0e1a;
+        }
+        .btn-danger {
+            background: #ff6b6b;
+            color: #fff;
+        }
+        .btn-secondary {
+            background: #2a3457;
+            color: #fff;
+        }
+        .btn-sm {
+            padding: 6px 12px;
+            font-size: 12px;
+            width: auto;
+            margin: 2px;
+            border-radius: 8px;
+        }
+        .hidden {
+            display: none !important;
+        }
+        .admin-stats {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+        .admin-stat-card {
+            background: #0f1422;
+            padding: 14px;
+            border-radius: 12px;
+            text-align: center;
+            border: 1px solid #2a3457;
+        }
+        .admin-stat-card .number {
+            font-size: 24px;
+            font-weight: 900;
+            color: #ffd200;
+        }
+        .admin-stat-card .label {
+            font-size: 12px;
+            color: #8892b0;
+            margin-top: 4px;
+        }
+        .admin-tabs {
+            display: flex;
+            gap: 6px;
+            margin-bottom: 15px;
+            flex-wrap: wrap;
+        }
+        .admin-tab {
+            flex: 1;
+            padding: 8px 12px;
+            border-radius: 10px;
+            border: 1px solid #2a3457;
+            background: #0f1422;
+            color: #8892b0;
+            font-weight: 700;
+            font-size: 13px;
+            cursor: pointer;
+            transition: all .3s ease;
+            min-width: 50px;
+            text-align: center;
+        }
+        .admin-tab.active {
+            background: #f7971e;
+            color: #0b0e1a;
+            border-color: #f7971e;
+        }
+        .admin-tab:hover:not(.active) {
+            border-color: #f7971e;
+        }
+        .admin-tab-content {
+            margin-top: 10px;
+        }
+        .admin-item {
+            background: #0f1422;
+            padding: 12px;
+            border-radius: 12px;
+            margin-bottom: 8px;
+            border-right: 3px solid #f7971e;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+        .admin-item .info {
+            flex: 1;
+            min-width: 150px;
+        }
+        .admin-item .info .title {
+            font-weight: 700;
+            font-size: 14px;
+        }
+        .admin-item .info .sub {
+            font-size: 12px;
+            color: #8892b0;
+        }
+        .admin-item .actions {
+            display: flex;
+            gap: 4px;
+            flex-wrap: wrap;
+        }
+        .admin-item .actions button {
+            padding: 4px 12px;
+            border-radius: 20px;
+            border: none;
+            font-weight: 700;
+            font-size: 11px;
+            cursor: pointer;
+            transition: all .2s ease;
+            width: auto;
+            margin: 0;
+        }
+        .admin-item .actions .approve {
+            background: #92fe9d;
+            color: #0b0e1a;
+        }
+        .admin-item .actions .reject {
+            background: #ff6b6b;
+            color: #fff;
+        }
+        .admin-item .actions .delete {
+            background: #ff6b6b;
+            color: #fff;
+        }
+        .admin-item .actions .reply {
+            background: #00c9ff;
+            color: #0b0e1a;
+        }
+        .admin-item .status {
+            font-size: 11px;
+            padding: 2px 12px;
+            border-radius: 20px;
+            display: inline-block;
+        }
+        .admin-item .status.pending {
+            background: #ffd20033;
+            color: #ffd200;
+        }
+        .admin-item .status.active {
+            background: #92fe9d33;
+            color: #92fe9d;
+        }
+        .admin-item .status.rejected {
+            background: #ff6b6b33;
+            color: #ff6b6b;
+        }
+        .admin-item .status.completed {
+            background: #00c9ff33;
+            color: #00c9ff;
+        }
+        .admin-item .reply-input {
+            width: 100%;
+            padding: 6px;
+            border-radius: 6px;
+            border: none;
+            background: #0f1422;
+            color: #fff;
+            font-size: 12px;
+            margin: 4px 0;
+            outline: 1px solid #2a3457;
+        }
+        .admin-item .reply-input:focus {
+            outline: 2px solid #f7971e;
+        }
+        .toast {
+            position: fixed;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: #1f2942;
+            color: #fff;
+            padding: 12px 24px;
+            border-radius: 16px;
+            border: 2px solid #f7971e;
+            z-index: 9999;
+            font-weight: 700;
+            display: none;
+            max-width: 90%;
+            text-align: center;
+        }
+        .toast.show {
+            display: block;
+        }
+        .charge-code-result {
+            background: #0f1422;
+            padding: 10px;
+            border-radius: 8px;
+            font-family: monospace;
+            color: #92fe9d;
+            text-align: center;
+            margin: 8px 0;
+            display: none;
+            font-size: 18px;
+            letter-spacing: 2px;
+        }
+        .login-box {
+            max-width: 400px;
+            margin: 0 auto;
+        }
+        .login-box h3 {
+            text-align: center;
+            color: #ffd200;
+            margin-bottom: 15px;
+        }
+        .auth-divider {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin: 12px 0;
+            color: #4a5a7a;
+            font-size: 12px;
+        }
+        .auth-divider::before,
+        .auth-divider::after {
+            content: '';
+            flex: 1;
+            height: 1px;
+            background: #2a3457;
+        }
+        @media(max-width:480px) {
+            .container {
+                padding: 15px;
+            }
+            .admin-stats {
+                grid-template-columns: 1fr 1fr;
+            }
+            .admin-tab {
+                font-size: 11px;
+                padding: 6px 8px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <div id="toast" class="toast"></div>
+
+    <div class="container">
+
+        <h1>👑 پنل مدیریت <small>زرین‌کلیک</small></h1>
+
+        <!-- ===== صفحه ورود ===== -->
+        <div id="loginPage" class="page">
+            <div class="box login-box">
+                <h3>🔐 ورود به پنل مدیریت</h3>
+                <input type="email" id="adminLoginEmail" placeholder="ایمیل ادمین" value="mhmdhsnjlyly140@gmail.com">
+                <input type="password" id="adminLoginPassword" placeholder="رمز عبور">
+                <button class="btn-primary" onclick="adminLogin()">ورود</button>
+                <div id="adminLoginMessage" style="margin-top:10px;font-size:14px;text-align:center;"></div>
+                <div class="auth-divider">یا</div>
+                <button class="btn-secondary" onclick="window.location.href='/'">⬅️ بازگشت به سایت اصلی</button>
+            </div>
+        </div>
+
+        <!-- ===== پنل مدیریت ===== -->
+        <div id="adminPanelPage" class="page hidden">
+
+            <!-- آمار -->
+            <div class="admin-stats" id="adminStats">
+                <div class="admin-stat-card"><div class="number" id="statUsers">0</div><div class="label">👥 کاربران</div></div>
+                <div class="admin-stat-card"><div class="number" id="statAds">0</div><div class="label">📢 تبلیغات</div></div>
+                <div class="admin-stat-card"><div class="number" id="statClicks">0</div><div class="label">🖱️ کلیک‌ها</div></div>
+                <div class="admin-stat-card"><div class="number" id="statRevenue">0</div><div class="label">💰 درآمد کل</div></div>
+            </div>
+
+            <!-- ===== تنظیمات بانکی ===== -->
+            <div class="box" style="border:2px solid #ffd200;">
+                <h3>🏦 تنظیمات بانکی</h3>
+                <input type="text" id="adminCardNumber" placeholder="شماره کارت (۱۶ رقم)" maxlength="16" value="6219861845113371">
+                <input type="text" id="adminCardHolder" placeholder="نام صاحب حساب" value="مجتبی جلیلی">
+                <button class="btn-primary" onclick="updateBankSettings()">💾 ذخیره تنظیمات</button>
+                <p id="adminBankMessage" style="font-size:13px;margin-top:6px;"></p>
+            </div>
+
+            <!-- ===== ساخت کد شارژ ===== -->
+            <div class="box" style="border:2px solid #92fe9d;">
+                <h3>🎫 ساخت کد شارژ</h3>
+                <input type="number" id="chargeAmount" placeholder="مبلغ شارژ (تومان)" min="1000">
+                <div style="display:flex;gap:6px;margin:6px 0;">
+                    <button class="btn-success" onclick="generateChargeCode()" style="flex:1;">✅ تولید کد</button>
+                    <button class="btn-secondary" onclick="copyLastChargeCode()" style="flex:1;">📋 کپی کد</button>
+                </div>
+                <div id="chargeCodeResult" class="charge-code-result"></div>
+                <p id="chargeCodeAdminMessage" style="font-size:13px;"></p>
+            </div>
+
+            <!-- ===== ارسال خبر ===== -->
+            <div class="box" style="border:2px solid #00c9ff;">
+                <h3>📢 ارسال خبر مهم</h3>
+                <input type="text" id="adminNotifTitle" placeholder="عنوان خبر *">
+                <textarea id="adminNotifMessage" placeholder="متن خبر *" rows="3"></textarea>
+                <select id="adminNotifType">
+                    <option value="info">ℹ️ اطلاعیه</option>
+                    <option value="success">✅ موفقیت</option>
+                    <option value="warning">⚠️ هشدار</option>
+                    <option value="danger">🔴 مهم</option>
+                </select>
+                <button class="btn-primary" onclick="sendGlobalNotification()">📨 ارسال به همه</button>
+                <p id="adminNotifMessageStatus" style="font-size:13px;margin-top:6px;"></p>
+            </div>
+
+            <!-- ===== تبلیغ رایگان ===== -->
+            <div class="box" style="border:2px solid #f7971e;">
+                <h3>📢 ثبت تبلیغ رایگان</h3>
+                <input type="text" id="adminAdTitle" placeholder="عنوان تبلیغ">
+                <textarea id="adminAdDesc" placeholder="توضیحات" rows="2"></textarea>
+                <input type="number" id="adminAdCpc" placeholder="مبلغ هر کلیک" value="100">
+                <input type="number" id="adminAdMaxViews" placeholder="تعداد کلیک مجاز" value="100">
+                <button class="btn-primary" onclick="submitFreeAd()">✅ ثبت رایگان</button>
+                <p id="adminAdMessage" style="font-size:13px;margin-top:6px;"></p>
+            </div>
+
+            <!-- ===== تب‌ها ===== -->
+            <div class="admin-tabs">
+                <button class="admin-tab active" onclick="switchAdminTab('ads')">📢 تبلیغات</button>
+                <button class="admin-tab" onclick="switchAdminTab('withdraws')">🏦 برداشت‌ها</button>
+                <button class="admin-tab" onclick="switchAdminTab('users')">👥 کاربران</button>
+                <button class="admin-tab" onclick="switchAdminTab('tickets')">🎫 تیکت‌ها</button>
+            </div>
+
+            <div id="adminAdsTab" class="admin-tab-content">
+                <h4 style="color:#ffd200;">📢 تبلیغات در انتظار تأیید</h4>
+                <div id="adminPendingAds"><p style="color:#8892b0;">در حال بارگذاری...</p></div>
+                <h4 style="color:#92fe9d;">✅ تبلیغات فعال</h4>
+                <div id="adminActiveAds"><p style="color:#8892b0;">در حال بارگذاری...</p></div>
+                <h4 style="color:#ff6b6b;">❌ تبلیغات رد شده</h4>
+                <div id="adminRejectedAds"><p style="color:#8892b0;">در حال بارگذاری...</p></div>
+            </div>
+
+            <div id="adminWithdrawsTab" class="admin-tab-content hidden">
+                <h4 style="color:#ffd200;">🏦 درخواست‌های برداشت</h4>
+                <div id="adminWithdrawals"><p style="color:#8892b0;">در حال بارگذاری...</p></div>
+                <h4 style="color:#92fe9d;">✅ برداشت‌های تکمیل شده</h4>
+                <div id="adminCompletedWithdrawals"><p style="color:#8892b0;">در حال بارگذاری...</p></div>
+            </div>
+
+            <div id="adminUsersTab" class="admin-tab-content hidden">
+                <h4 style="color:#ffd200;">👥 لیست کاربران</h4>
+                <div id="adminUsersList"><p style="color:#8892b0;">در حال بارگذاری...</p></div>
+            </div>
+
+            <div id="adminTicketsTab" class="admin-tab-content hidden">
+                <h4 style="color:#ffd200;">🎫 تیکت‌ها</h4>
+                <div id="adminTicketsList"><p style="color:#8892b0;">در حال بارگذاری...</p></div>
+            </div>
+
+            <div style="display:flex;gap:8px;margin-top:10px;">
+                <button class="btn-secondary" onclick="loadAdminData()" style="flex:1;">🔄 بارگذاری مجدد</button>
+                <button class="btn-danger" onclick="adminLogout()" style="flex:1;">🚪 خروج</button>
+            </div>
+        </div>
+
+    </div>
+
+    <script>
+        // ============================================
+        // تنظیمات Supabase
+        // ============================================
+        const SUPABASE_URL = 'https://fpogciahtzacgrglhmnx.supabase.co';
+        const SUPABASE_KEY = 'sb_publishable_dBU6pJG43Shh0cYk9l_I3g_-3SjzzUd';
+
+        let supabase = null;
+        let currentAdmin = null;
+        let lastChargeCode = '';
+
+        // ============================================
+        // توابع کمکی
+        // ============================================
+        function showToast(msg, type) {
+            const t = document.getElementById('toast');
+            if (!t) { alert(msg); return; }
+            t.textContent = msg;
+            t.style.display = 'block';
+            t.style.borderColor = type === 'success' ? '#92fe9d' : type === 'error' ? '#ff6b6b' : '#f7971e';
+            setTimeout(() => { t.style.display = 'none'; }, 3500);
+        }
+
+        function generateId() {
+            return Date.now().toString(36) + '_' + Math.random().toString(36).slice(2, 8);
+        }
+
+        // ============================================
+        // اتصال به Supabase
+        // ============================================
+        function initSupabase() {
+            try {
+                if (typeof window.supabase !== 'undefined' && window.supabase.createClient) {
+                    supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+                    console.log('✅ Supabase متصل شد');
+                    return true;
+                }
+                return false;
+            } catch (e) {
+                console.error('❌ خطا:', e);
+                return false;
+            }
+        }
+
+        // ============================================
+        // احراز هویت ادمین
+        // ============================================
+        async function adminLogin() {
+            const email = document.getElementById('adminLoginEmail').value.trim();
+            const password = document.getElementById('adminLoginPassword').value;
+            const msg = document.getElementById('adminLoginMessage');
+
+            if (!email || !password) {
+                msg.textContent = '❌ ایمیل و رمز عبور را وارد کنید';
+                msg.style.color = '#ff6b6b';
+                return;
+            }
+
+            if (email !== 'mhmdhsnjlyly140@gmail.com') {
+                msg.textContent = '⛔ دسترسی غیرمجاز! فقط ادمین می‌تواند وارد شود.';
+                msg.style.color = '#ff6b6b';
+                return;
+            }
+
+            if (!supabase) {
+                msg.textContent = '❌ خطا در اتصال به سرور';
+                msg.style.color = '#ff6b6b';
+                return;
+            }
+
+            msg.textContent = '⏳ در حال ورود...';
+            msg.style.color = '#ffd200';
+
+            try {
+                const { data, error } = await supabase.auth.signInWithPassword({ email, password });
+
+                if (error) {
+                    msg.textContent = '❌ ' + error.message;
+                    msg.style.color = '#ff6b6b';
+                    return;
+                }
+
+                if (data.user) {
+                    currentAdmin = data.user;
+                    localStorage.setItem('admin_session', JSON.stringify(data.user));
+                    msg.textContent = '✅ ورود موفق!';
+                    msg.style.color = '#92fe9d';
+                    showToast('✅ به پنل مدیریت خوش آمدید!', 'success');
+                    setTimeout(() => {
+                        document.getElementById('loginPage').classList.add('hidden');
+                        document.getElementById('adminPanelPage').classList.remove('hidden');
+                        loadAdminData();
+                        loadBankSettings();
+                    }, 500);
+                }
+            } catch (e) {
+                msg.textContent = '❌ خطا در اتصال به سرور';
+                msg.style.color = '#ff6b6b';
+            }
+        }
+
+        function adminLogout() {
+            localStorage.removeItem('admin_session');
+            currentAdmin = null;
+            if (supabase) supabase.auth.signOut();
+            document.getElementById('adminPanelPage').classList.add('hidden');
+            document.getElementById('loginPage').classList.remove('hidden');
+            document.getElementById('adminLoginMessage').textContent = '';
+            showToast('✅ با موفقیت خارج شدید', 'success');
+        }
+
+        // ============================================
+        // بررسی جلسه ادمین
+        // ============================================
+        async function checkAdminSession() {
+            if (!supabase) return;
+
+            try {
+                const savedSession = localStorage.getItem('admin_session');
+                if (savedSession) {
+                    const user = JSON.parse(savedSession);
+                    if (user && user.email === 'mhmdhsnjlyly140@gmail.com') {
+                        currentAdmin = user;
+                        document.getElementById('loginPage').classList.add('hidden');
+                        document.getElementById('adminPanelPage').classList.remove('hidden');
+                        loadAdminData();
+                        loadBankSettings();
+                        return;
+                    }
+                }
+
+                const { data: { user } } = await supabase.auth.getUser();
+                if (user && user.email === 'mhmdhsnjlyly140@gmail.com') {
+                    currentAdmin = user;
+                    localStorage.setItem('admin_session', JSON.stringify(user));
+                    document.getElementById('loginPage').classList.add('hidden');
+                    document.getElementById('adminPanelPage').classList.remove('hidden');
+                    loadAdminData();
+                    loadBankSettings();
+                }
+            } catch (e) {
+                console.error('خطا در بررسی جلسه:', e);
+            }
+        }
+
+        // ============================================
+        // تنظیمات بانکی
+        // ============================================
+        async function loadBankSettings() {
+            try {
+                const { data, error } = await supabase
+                    .from('settings')
+                    .select('key, value')
+                    .in('key', ['bank_card_number', 'bank_card_holder']);
+
+                if (error) return;
+
+                const cardNumber = data?.find(s => s.key === 'bank_card_number')?.value || '6219861845113371';
+                const cardHolder = data?.find(s => s.key === 'bank_card_holder')?.value || 'مجتبی جلیلی';
+
+                document.getElementById('adminCardNumber').value = cardNumber;
+                document.getElementById('adminCardHolder').value = cardHolder;
+            } catch (e) {
+                console.error('خطا در بارگذاری تنظیمات بانکی:', e);
+            }
+        }
+
+        async function updateBankSettings() {
+            const cardNumber = document.getElementById('adminCardNumber').value.trim();
+            const cardHolder = document.getElementById('adminCardHolder').value.trim();
+            const msg = document.getElementById('adminBankMessage');
+
+            if (!cardNumber || cardNumber.length !== 16) {
+                msg.textContent = '❌ شماره کارت ۱۶ رقمی وارد کنید';
+                msg.style.color = '#ff6b6b';
+                return;
+            }
+
+            if (!cardHolder) {
+                msg.textContent = '❌ نام صاحب حساب را وارد کنید';
+                msg.style.color = '#ff6b6b';
+                return;
+            }
+
+            try {
+                await supabase
+                    .from('settings')
+                    .upsert([
+                        { key: 'bank_card_number', value: cardNumber },
+                        { key: 'bank_card_holder', value: cardHolder }
+                    ], { onConflict: 'key' });
+
+                msg.textContent = '✅ تنظیمات بانکی ذخیره شد!';
+                msg.style.color = '#92fe9d';
+                showToast('✅ تنظیمات بانکی به‌روزرسانی شد', 'success');
+            } catch (e) {
+                msg.textContent = '❌ خطا در ذخیره تنظیمات';
+                msg.style.color = '#ff6b6b';
+            }
+        }
+
+        // ============================================
+        // کد شارژ
+        // ============================================
+        async function generateChargeCode() {
+            const amount = parseInt(document.getElementById('chargeAmount').value);
+            const msg = document.getElementById('chargeCodeAdminMessage');
+
+            if (!amount || amount < 1000) {
+                msg.textContent = '❌ مبلغ را به درستی وارد کنید (حداقل ۱۰۰۰)';
+                msg.style.color = '#ff6b6b';
+                return;
+            }
+
+            try {
+                const code = 'CH' + Math.random().toString(36).slice(2, 10).toUpperCase();
+                lastChargeCode = code;
+
+                const { error } = await supabase
+                    .from('charge_codes')
+                    .insert({
+                        code: code,
+                        amount: amount,
+                        created_by: currentAdmin?.id || null,
+                        used: false
+                    });
+
+                if (error) {
+                    msg.textContent = '❌ خطا در تولید کد: ' + error.message;
+                    msg.style.color = '#ff6b6b';
+                } else {
+                    const resultDiv = document.getElementById('chargeCodeResult');
+                    resultDiv.style.display = 'block';
+                    resultDiv.textContent = code;
+                    msg.textContent = `✅ کد ${amount.toLocaleString()} تومانی ساخته شد!`;
+                    msg.style.color = '#92fe9d';
+                    document.getElementById('chargeAmount').value = '';
+                    showToast(`✅ کد ${amount.toLocaleString()} تومانی ساخته شد`, 'success');
+                }
+            } catch (e) {
+                msg.textContent = '❌ خطا در تولید کد';
+                msg.style.color = '#ff6b6b';
+            }
+        }
+
+        function copyLastChargeCode() {
+            if (!lastChargeCode) {
+                showToast('❌ کدی ساخته نشده است', 'error');
+                return;
+            }
+            navigator.clipboard.writeText(lastChargeCode).then(() => {
+                showToast('✅ کد کپی شد: ' + lastChargeCode, 'success');
+            }).catch(() => {
+                showToast('❌ کپی نشد، دستی کپی کنید', 'error');
+            });
+        }
+
+        // ============================================
+        // ارسال خبر
+        // ============================================
+        async function sendGlobalNotification() {
+            const title = document.getElementById('adminNotifTitle').value.trim();
+            const message = document.getElementById('adminNotifMessage').value.trim();
+            const type = document.getElementById('adminNotifType').value;
+            const msg = document.getElementById('adminNotifMessageStatus');
+
+            if (!title || !message) {
+                msg.textContent = '❌ عنوان و متن خبر را وارد کنید';
+                msg.style.color = '#ff6b6b';
+                return;
+            }
+
+            try {
+                const { data: users } = await supabase
+                    .from('users')
+                    .select('id');
+
+                if (!users || users.length === 0) {
+                    msg.textContent = '❌ هیچ کاربری یافت نشد';
+                    msg.style.color = '#ff6b6b';
+                    return;
+                }
+
+                const notifications = users.map(u => ({
+                    user_id: u.id,
+                    title: title,
+                    message: message,
+                    type: type,
+                    is_global: true,
+                    sender_id: currentAdmin?.id || null
+                }));
+
+                const batchSize = 100;
+                for (let i = 0; i < notifications.length; i += batchSize) {
+                    const batch = notifications.slice(i, i + batchSize);
+                    await supabase.from('notifications').insert(batch);
+                }
+
+                msg.textContent = `✅ خبر به ${users.length} کاربر ارسال شد!`;
+                msg.style.color = '#92fe9d';
+                document.getElementById('adminNotifTitle').value = '';
+                document.getElementById('adminNotifMessage').value = '';
+                showToast(`✅ خبر به ${users.length} کاربر ارسال شد`, 'success');
+
+            } catch (e) {
+                msg.textContent = '❌ خطا در ارسال خبر';
+                msg.style.color = '#ff6b6b';
+            }
+        }
+
+        // ============================================
+        // تبلیغ رایگان
+        // ============================================
+        async function submitFreeAd() {
+            const title = document.getElementById('adminAdTitle').value.trim();
+            const desc = document.getElementById('adminAdDesc').value.trim();
+            const cpc = parseInt(document.getElementById('adminAdCpc').value);
+            const maxViews = parseInt(document.getElementById('adminAdMaxViews').value);
+            const msg = document.getElementById('adminAdMessage');
+
+            if (!title || !desc || !cpc || !maxViews) {
+                msg.textContent = '❌ همه فیلدها را پر کنید';
+                msg.style.color = '#ff6b6b';
+                return;
+            }
+
+            try {
+                const { error } = await supabase
+                    .from('ads')
+                    .insert({
+                        id: generateId(),
+                        title,
+                        description: desc,
+                        cpc,
+                        max_views: maxViews,
+                        remaining_views: maxViews,
+                        owner: currentAdmin?.id || null,
+                        status: 'active',
+                        clicks: 0
+                    });
+
+                if (error) {
+                    msg.textContent = '❌ خطا در ثبت تبلیغ: ' + error.message;
+                    msg.style.color = '#ff6b6b';
+                } else {
+                    msg.textContent = '✅ تبلیغ رایگان با موفقیت ثبت شد!';
+                    msg.style.color = '#92fe9d';
+                    document.getElementById('adminAdTitle').value = '';
+                    document.getElementById('adminAdDesc').value = '';
+                    loadAdminData();
+                    showToast('✅ تبلیغ رایگان ثبت شد', 'success');
+                }
+            } catch (e) {
+                msg.textContent = '❌ خطا در ثبت تبلیغ';
+                msg.style.color = '#ff6b6b';
+            }
+        }
+
+        // ============================================
+        // مدیریت تب‌ها
+        // ============================================
+        function switchAdminTab(tab) {
+            document.querySelectorAll('.admin-tab').forEach(t => t.classList.remove('active'));
+            document.querySelectorAll('.admin-tab-content').forEach(c => c.classList.add('hidden'));
+
+            const tabMap = {
+                'ads': 'adminAdsTab',
+                'withdraws': 'adminWithdrawsTab',
+                'users': 'adminUsersTab',
+                'tickets': 'adminTicketsTab'
+            };
+
+            document.getElementById(tabMap[tab]).classList.remove('hidden');
+            document.querySelectorAll('.admin-tab').forEach(t => {
+                const textMap = {
+                    'ads': 'تبلیغات',
+                    'withdraws': 'برداشت',
+                    'users': 'کاربران',
+                    'tickets': 'تیکت'
+                };
+                if (t.textContent.includes(textMap[tab])) {
+                    t.classList.add('active');
+                }
+            });
+
+            if (tab === 'withdraws') {
+                loadCompletedWithdrawals();
+            }
+        }
+
+        // ============================================
+        // بارگذاری داده‌ها
+        // ============================================
+        async function loadAdminData() {
+            if (!supabase) { showToast('❌ خطا در اتصال', 'error'); return; }
+            try {
+                await Promise.all([
+                    loadAdminStats(),
+                    loadPendingAds(),
+                    loadActiveAds(),
+                    loadRejectedAds(),
+                    loadWithdrawals(),
+                    loadUsers(),
+                    loadAdminTickets()
+                ]);
+                showToast('✅ داده‌ها بارگذاری شدند', 'success');
+            } catch (e) {
+                console.error('❌ خطا در بارگذاری:', e);
+                showToast('❌ خطا در بارگذاری داده‌ها', 'error');
+            }
+        }
+
+        async function loadAdminStats() {
+            try {
+                const [users, ads, clicks] = await Promise.all([
+                    supabase.from('users').select('*', { count: 'exact', head: true }),
+                    supabase.from('ads').select('*', { count: 'exact', head: true }),
+                    supabase.from('clicks').select('*', { count: 'exact', head: true })
+                ]);
+
+                document.getElementById('statUsers').textContent = users.count || 0;
+                document.getElementById('statAds').textContent = ads.count || 0;
+                document.getElementById('statClicks').textContent = clicks.count || 0;
+
+                const { data: wallets } = await supabase
+                    .from('wallets')
+                    .select('balance');
+
+                const totalRevenue = wallets?.reduce((sum, w) => sum + (w.balance || 0), 0) || 0;
+                document.getElementById('statRevenue').textContent = totalRevenue.toLocaleString();
+            } catch (e) {
+                console.error('❌ خطا در بارگذاری آمار:', e);
+            }
+        }
+
+        // ===== تبلیغات =====
+        async function loadPendingAds() {
+            try {
+                const { data: ads, error } = await supabase
+                    .from('ads')
+                    .select('*')
+                    .eq('status', 'pending')
+                    .order('created_at', { ascending: false });
+
+                const container = document.getElementById('adminPendingAds');
+                if (error || !ads || ads.length === 0) {
+                    container.innerHTML = '<p style="color:#8892b0;">✅ هیچ تبلیغ در انتظار تأییدی نیست</p>';
+                    return;
+                }
+
+                container.innerHTML = ads.map(ad => `
+                    <div class="admin-item">
+                        <div class="info">
+                            <div class="title">${ad.title || 'بدون عنوان'}</div>
+                            <div class="sub">💰 ${ad.cpc || 0} تومان / کلیک • ${ad.clicks || 0} کلیک</div>
+                            <div class="sub">📅 ${new Date(ad.created_at).toLocaleDateString('fa-IR')}</div>
+                            <span class="status pending">⏳ در انتظار</span>
+                        </div>
+                        <div class="actions">
+                            <button class="approve" onclick="approveAd('${ad.id}')">✅ تأیید</button>
+                            <button class="reject" onclick="rejectAd('${ad.id}')">❌ رد</button>
+                        </div>
+                    </div>
+                `).join('');
+            } catch (e) {
+                console.error('❌ خطا در بارگذاری تبلیغات:', e);
+            }
+        }
+
+        async function loadActiveAds() {
+            try {
+                const { data: ads, error } = await supabase
+                    .from('ads')
+                    .select('*')
+                    .eq('status', 'active')
+                    .order('created_at', { ascending: false })
+                    .limit(50);
+
+                const container = document.getElementById('adminActiveAds');
+                if (error || !ads || ads.length === 0) {
+                    container.innerHTML = '<p style="color:#8892b0;">هیچ تبلیغ فعالی وجود ندارد</p>';
+                    return;
+                }
+
+                container.innerHTML = ads.map(ad => `
+                    <div class="admin-item">
+                        <div class="info">
+                            <div class="title">${ad.title || 'بدون عنوان'}</div>
+                            <div class="sub">💰 ${ad.cpc || 0} تومان / کلیک • ${ad.clicks || 0} کلیک</div>
+                            <div class="sub">📅 ${new Date(ad.created_at).toLocaleDateString('fa-IR')}</div>
+                            <span class="status active">✅ فعال</span>
+                        </div>
+                        <div class="actions">
+                            <button class="delete" onclick="deleteAd('${ad.id}')">🗑️ حذف</button>
+                        </div>
+                    </div>
+                `).join('');
+            } catch (e) {
+                console.error('❌ خطا در بارگذاری تبلیغات فعال:', e);
+            }
+        }
+
+        async function loadRejectedAds() {
+            try {
+                const { data: ads, error } = await supabase
+                    .from('ads')
+                    .select('*')
+                    .eq('status', 'rejected')
+                    .order('created_at', { ascending: false })
+                    .limit(20);
+
+                const container = document.getElementById('adminRejectedAds');
+                if (error || !ads || ads.length === 0) {
+                    container.innerHTML = '<p style="color:#8892b0;">هیچ تبلیغ رد شده‌ای وجود ندارد</p>';
+                    return;
+                }
+
+                container.innerHTML = ads.map(ad => `
+                    <div class="admin-item">
+                        <div class="info">
+                            <div class="title">${ad.title || 'بدون عنوان'}</div>
+                            <div class="sub">💰 ${ad.cpc || 0} تومان / کلیک</div>
+                            <span class="status rejected">❌ رد شده</span>
+                        </div>
+                        <div class="actions">
+                            <button class="delete" onclick="deleteAd('${ad.id}')">🗑️ حذف</button>
+                        </div>
+                    </div>
+                `).join('');
+            } catch (e) {
+                console.error('❌ خطا در بارگذاری تبلیغات رد شده:', e);
+            }
+        }
+
+        async function approveAd(adId) {
+            try {
+                await supabase.from('ads').update({ status: 'active' }).eq('id', adId);
+                showToast('✅ تبلیغ تأیید شد', 'success');
+                loadAdminData();
+            } catch (e) {
+                showToast('❌ خطا در تأیید تبلیغ', 'error');
+            }
+        }
+
+        async function rejectAd(adId) {
+            try {
+                await supabase.from('ads').update({ status: 'rejected' }).eq('id', adId);
+                showToast('❌ تبلیغ رد شد', 'error');
+                loadAdminData();
+            } catch (e) {
+                showToast('❌ خطا در رد تبلیغ', 'error');
+            }
+        }
+
+        async function deleteAd(adId) {
+            if (!confirm('آیا از حذف این تبلیغ مطمئن هستید؟')) return;
+            try {
+                await supabase.from('ads').delete().eq('id', adId);
+                showToast('🗑️ تبلیغ حذف شد', 'success');
+                loadAdminData();
+            } catch (e) {
+                showToast('❌ خطا در حذف تبلیغ', 'error');
+            }
+        }
+
+        // ===== برداشت‌ها =====
+        async function loadWithdrawals() {
+            try {
+                const { data: withdrawals, error } = await supabase
+                    .from('withdraw_requests')
+                    .select('*')
+                    .eq('status', 'pending')
+                    .order('created_at', { ascending: false });
+
+                const container = document.getElementById('adminWithdrawals');
+                if (error || !withdrawals || withdrawals.length === 0) {
+                    container.innerHTML = '<p style="color:#8892b0;">✅ هیچ درخواست برداشتی وجود ندارد</p>';
+                    return;
+                }
+
+                container.innerHTML = withdrawals.map(w => `
+                    <div class="admin-item">
+                        <div class="info">
+                            <div class="title">💰 ${w.amount.toLocaleString()} تومان</div>
+                            <div class="sub">💳 کارت: ${w.card_number || 'نامشخص'}</div>
+                            <div class="sub">👤 کاربر: ${w.user_email || 'نامشخص'}</div>
+                            <span class="status pending">⏳ در انتظار</span>
+                        </div>
+                        <div class="actions">
+                            <button class="approve" onclick="approveWithdraw('${w.id}')">✅ تأیید</button>
+                            <button class="reject" onclick="rejectWithdraw('${w.id}')">❌ رد</button>
+                        </div>
+                    </div>
+                `).join('');
+            } catch (e) {
+                console.error('❌ خطا در بارگذاری برداشت‌ها:', e);
+            }
+        }
+
+        async function loadCompletedWithdrawals() {
+            try {
+                const { data: withdrawals, error } = await supabase
+                    .from('withdraw_requests')
+                    .select('*')
+                    .eq('status', 'completed')
+                    .order('created_at', { ascending: false })
+                    .limit(20);
+
+                const container = document.getElementById('adminCompletedWithdrawals');
+                if (error || !withdrawals || withdrawals.length === 0) {
+                    container.innerHTML = '<p style="color:#8892b0;">هیچ برداشت تکمیل شده‌ای وجود ندارد</p>';
+                    return;
+                }
+
+                container.innerHTML = withdrawals.map(w => `
+                    <div class="admin-item">
+                        <div class="info">
+                            <div class="title">💰 ${w.amount.toLocaleString()} تومان</div>
+                            <div class="sub">💳 کارت: ${w.card_number || 'نامشخص'}</div>
+                            <div class="sub">👤 کاربر: ${w.user_email || 'نامشخص'}</div>
+                            <span class="status completed">✅ تکمیل شده</span>
+                        </div>
+                    </div>
+                `).join('');
+            } catch (e) {
+                console.error('❌ خطا در بارگذاری برداشت‌های تکمیل شده:', e);
+            }
+        }
+
+        async function approveWithdraw(withdrawId) {
+            try {
+                await supabase.from('withdraw_requests').update({ status: 'completed' }).eq('id', withdrawId);
+                showToast('✅ برداشت تأیید شد', 'success');
+                loadAdminData();
+            } catch (e) {
+                showToast('❌ خطا در تأیید برداشت', 'error');
+            }
+        }
+
+        async function rejectWithdraw(withdrawId) {
+            try {
+                await supabase.from('withdraw_requests').update({ status: 'rejected' }).eq('id', withdrawId);
+                showToast('❌ برداشت رد شد', 'error');
+                loadAdminData();
+            } catch (e) {
+                showToast('❌ خطا در رد برداشت', 'error');
+            }
+        }
+
+        // ===== کاربران =====
+        async function loadUsers() {
+            try {
+                const { data: users, error } = await supabase
+                    .from('users')
+                    .select('id, email, phone, created_at, subscription_type, referrals_count')
+                    .order('created_at', { ascending: false })
+                    .limit(50);
+
+                const container = document.getElementById('adminUsersList');
+                if (error || !users || users.length === 0) {
+                    container.innerHTML = '<p style="color:#8892b0;">هیچ کاربری ثبت نشده</p>';
+                    return;
+                }
+
+                container.innerHTML = users.map((u, i) => {
+                    const subBadge = u.subscription_type === 'pro' ? '⭐' :
+                        u.subscription_type === 'premium' ? '🔥' : '🆓';
+                    return `
+                        <div class="admin-item">
+                            <div class="info">
+                                <div class="title">#${i+1} ${u.email || 'بدون ایمیل'} ${subBadge}</div>
+                                <div class="sub">📱 ${u.phone || 'شماره ثبت نشده'}</div>
+                                <div class="sub">👥 ${u.referrals_count || 0} زیرمجموعه</div>
+                                <div class="sub">📅 ${new Date(u.created_at).toLocaleDateString('fa-IR')}</div>
+                            </div>
+                        </div>
+                    `;
+                }).join('');
+            } catch (e) {
+                console.error('❌ خطا در بارگذاری کاربران:', e);
+            }
+        }
+
+        // ===== تیکت‌ها =====
+        async function loadAdminTickets() {
+            try {
+                const { data: tickets, error } = await supabase
+                    .from('tickets')
+                    .select('*')
+                    .eq('is_closed', false)
+                    .order('created_at', { ascending: false })
+                    .limit(30);
+
+                const container = document.getElementById('adminTicketsList');
+                if (error || !tickets || tickets.length === 0) {
+                    container.innerHTML = '<p style="color:#8892b0;">✅ هیچ تیکت باز وجود ندارد</p>';
+                    return;
+                }
+
+                container.innerHTML = tickets.map(t => `
+                    <div class="admin-item">
+                        <div class="info">
+                            <div class="title">${t.subject || 'بدون موضوع'}</div>
+                            <div class="sub">📧 ${t.user_email || 'نامشخص'}</div>
+                            <div class="sub">📝 ${t.message || ''}</div>
+                            <div class="sub">📅 ${new Date(t.created_at).toLocaleDateString('fa-IR')}</div>
+                            <span class="status pending">🟡 باز</span>
+                            ${t.admin_response ? `<div class="sub" style="color:#92fe9d;">👑 پاسخ: ${t.admin_response}</div>` : ''}
+                        </div>
+                        <div class="actions" style="width:100%;">
+                            <input type="text" id="replyTicket_${t.id}" class="reply-input" placeholder="پاسخ ادمین...">
+                            <button class="reply" onclick="replyTicket('${t.id}')">📨 پاسخ</button>
+                            <button class="approve" onclick="closeTicket('${t.id}')">✅ بستن</button>
+                        </div>
+                    </div>
+                `).join('');
+            } catch (e) {
+                console.error('❌ خطا در بارگذاری تیکت‌ها:', e);
+            }
+        }
+
+        async function replyTicket(ticketId) {
+            const input = document.getElementById(`replyTicket_${ticketId}`);
+            const response = input?.value?.trim();
+
+            if (!response) {
+                showToast('❌ متن پاسخ را وارد کنید', 'error');
+                return;
+            }
+
+            try {
+                await supabase
+                    .from('tickets')
+                    .update({
+                        admin_response: response,
+                        admin_response_at: new Date().toISOString()
+                    })
+                    .eq('id', ticketId);
+
+                showToast('✅ پاسخ ارسال شد', 'success');
+                loadAdminTickets();
+            } catch (e) {
+                showToast('❌ خطا در ارسال پاسخ', 'error');
+            }
+        }
+
+        async function closeTicket(ticketId) {
+            try {
+                await supabase
+                    .from('tickets')
+                    .update({
+                        is_closed: true,
+                        status: 'closed'
+                    })
+                    .eq('id', ticketId);
+
+                showToast('✅ تیکت بسته شد', 'success');
+                loadAdminTickets();
+            } catch (e) {
+                showToast('❌ خطا در بستن تیکت', 'error');
+            }
+        }
+
+        // ============================================
+        // شروع برنامه
+        // ============================================
+        document.addEventListener('DOMContentLoaded', function() {
+            if (initSupabase()) {
+                checkAdminSession();
+            } else {
+                setTimeout(() => {
+                    if (initSupabase()) checkAdminSession();
+                }, 1000);
+            }
+        });
+    </script>
+</body>
+</html>
