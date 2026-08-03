@@ -313,6 +313,20 @@
             height: 1px;
             background: #2a3457;
         }
+        .delete-user-btn {
+            background: #ff6b6b;
+            color: #fff;
+            border: none;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-weight: 700;
+            font-size: 11px;
+            cursor: pointer;
+            width: auto;
+        }
+        .delete-user-btn:hover {
+            opacity: 0.8;
+        }
         @media(max-width:480px) {
             .container {
                 padding: 15px;
@@ -432,6 +446,7 @@
 
             <div id="adminUsersTab" class="admin-tab-content hidden">
                 <h4 style="color:#ffd200;">👥 لیست کاربران</h4>
+                <p style="font-size:12px;color:#8892b0;margin-bottom:10px;">⚠️ با کلیک روی دکمه حذف، همه داده‌های کاربر (کیف پول، کلیک‌ها، تبلیغات و ...) پاک می‌شود.</p>
                 <div id="adminUsersList"><p style="color:#8892b0;">در حال بارگذاری...</p></div>
             </div>
 
@@ -1097,7 +1112,7 @@
             }
         }
 
-        // ===== کاربران =====
+        // ===== کاربران با دکمه حذف =====
         async function loadUsers() {
             try {
                 const { data: users, error } = await supabase
@@ -1115,19 +1130,78 @@
                 container.innerHTML = users.map((u, i) => {
                     const subBadge = u.subscription_type === 'pro' ? '⭐' :
                         u.subscription_type === 'premium' ? '🔥' : '🆓';
+                    
+                    const isAdmin = u.email === 'mhmdhsnjlyly140@gmail.com';
+                    const deleteButton = isAdmin ? 
+                        '<span style="color:#8892b0;font-size:11px;">👑 ادمین</span>' :
+                        `<button class="delete-user-btn" onclick="deleteUser('${u.id}')">🗑️ حذف</button>`;
+                    
                     return `
-                        <div class="admin-item">
+                        <div class="admin-item" id="user_${u.id}">
                             <div class="info">
                                 <div class="title">#${i+1} ${u.email || 'بدون ایمیل'} ${subBadge}</div>
                                 <div class="sub">📱 ${u.phone || 'شماره ثبت نشده'}</div>
                                 <div class="sub">👥 ${u.referrals_count || 0} زیرمجموعه</div>
                                 <div class="sub">📅 ${new Date(u.created_at).toLocaleDateString('fa-IR')}</div>
                             </div>
+                            <div class="actions">
+                                ${deleteButton}
+                            </div>
                         </div>
                     `;
                 }).join('');
             } catch (e) {
                 console.error('❌ خطا در بارگذاری کاربران:', e);
+            }
+        }
+
+        // ============================================
+        // حذف کاربر (فقط ادمین)
+        // ============================================
+        async function deleteUser(userId) {
+            if (!confirm('آیا از حذف این کاربر مطمئن هستید؟ این عمل غیرقابل بازگشت است!')) return;
+
+            try {
+                const { data: user } = await supabase
+                    .from('users')
+                    .select('email')
+                    .eq('id', userId)
+                    .single();
+
+                if (user?.email === 'mhmdhsnjlyly140@gmail.com') {
+                    showToast('⛔ نمی‌توانید ادمین را حذف کنید!', 'error');
+                    return;
+                }
+
+                showToast('⏳ در حال حذف کاربر...', 'info');
+
+                await supabase.from('clicks').delete().eq('user_id', userId);
+                await supabase.from('wallets').delete().eq('user_id', userId);
+                await supabase.from('notifications').delete().eq('user_id', userId);
+                await supabase.from('tickets').delete().eq('user_email', user?.email || '');
+                await supabase.from('referrals').delete().eq('referrer_id', userId);
+                await supabase.from('referrals').delete().eq('referred_id', userId);
+                await supabase.from('ads').delete().eq('owner', userId);
+                await supabase.from('users').delete().eq('id', userId);
+
+                try {
+                    await supabase.auth.admin.deleteUser(userId);
+                } catch (e) {
+                    console.log('⚠️ کاربر در Auth حذف نشد');
+                }
+
+                const userElement = document.getElementById(`user_${userId}`);
+                if (userElement) {
+                    userElement.style.display = 'none';
+                }
+
+                showToast('✅ کاربر با موفقیت حذف شد!', 'success');
+                loadAdminStats();
+                loadUsers();
+
+            } catch (e) {
+                console.error('❌ خطا در حذف کاربر:', e);
+                showToast('❌ خطا در حذف کاربر: ' + e.message, 'error');
             }
         }
 
@@ -1225,4 +1299,4 @@
         });
     </script>
 </body>
-</html>
+    </html>
