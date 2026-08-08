@@ -7,825 +7,140 @@
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.39.0/dist/umd/supabase.min.js">
     </script>
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box
-        }
-        body {
-            font-family: Tahoma, sans-serif;
-            background: #0b0e1a;
-            color: #fff;
-            display: flex;
-            justify-content: center;
-            padding: 20px;
-            min-height: 100vh
-        }
-        .container {
-            max-width: 480px;
-            width: 100%;
-            background: #141a2b;
-            padding: 20px;
-            border-radius: 24px;
-            border: 1px solid #2a3457;
-            margin-bottom: 80px
-        }
-        h1 {
-            text-align: center;
-            margin-bottom: 20px;
-            background: linear-gradient(135deg, #f7971e, #ffd200);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            font-size: 28px
-        }
-        .page {
-            display: none
-        }
-        .page.active {
-            display: block
-        }
-        .box {
-            background: #1f2942;
-            padding: 16px;
-            border-radius: 16px;
-            margin-bottom: 15px;
-            border: 1px solid #2a3457
-        }
-        .box h3 {
-            margin-bottom: 10px;
-            color: #ffd200
-        }
-        input,
-        textarea,
-        select {
-            width: 100%;
-            padding: 12px;
-            margin: 6px 0;
-            border-radius: 12px;
-            border: none;
-            background: #0f1422;
-            color: #fff;
-            font-size: 15px;
-            outline: 1px solid #2a3457
-        }
-        input:focus,
-        textarea:focus,
-        select:focus {
-            outline: 2px solid #f7971e
-        }
-        button {
-            width: 100%;
-            padding: 12px;
-            margin: 6px 0;
-            border: none;
-            border-radius: 12px;
-            font-size: 16px;
-            font-weight: 700;
-            cursor: pointer;
-            transition: .2s
-        }
-        .btn-primary {
-            background: linear-gradient(135deg, #f7971e, #ffd200);
-            color: #0b0e1a
-        }
-        .btn-secondary {
-            background: #2a3457;
-            color: #fff
-        }
-        .btn-success {
-            background: #92fe9d;
-            color: #0b0e1a
-        }
-        .btn-danger {
-            background: #ff6b6b;
-            color: #fff
-        }
-        .btn-google {
-            background: #fff;
-            color: #333;
-            border: 1px solid #ddd;
-            padding: 12px;
-            border-radius: 14px;
-            font-weight: 700;
-            font-size: 16px;
-            cursor: pointer;
-            transition: all .3s ease;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 10px;
-            margin-top: 10px;
-            width: 100%
-        }
-        .btn-google:hover {
-            background: #f1f1f1;
-            transform: scale(1.02)
-        }
-        .btn-google img {
-            width: 20px;
-            height: 20px;
-            vertical-align: middle
-        }
-        .btn-sm {
-            padding: 6px 12px;
-            font-size: 12px;
-            width: auto;
-            border-radius: 8px
-        }
-        .hidden {
-            display: none !important
-        }
-        .bottom-nav {
-            position: fixed;
-            bottom: 0;
-            left: 0;
-            right: 0;
-            background: #0f1422;
-            border-top: 1px solid #2a3457;
-            display: flex;
-            justify-content: space-around;
-            padding: 8px 0 12px 0;
-            max-width: 480px;
-            margin: 0 auto;
-            z-index: 1000;
-            border-radius: 20px 20px 0 0;
-            width: 100%
-        }
-        .nav-item {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 2px;
-            background: 0 0;
-            border: none;
-            color: #8892b0;
-            font-size: 10px;
-            cursor: pointer;
-            padding: 4px 8px;
-            flex: 1;
-            max-width: 70px;
-            position: relative
-        }
-        .nav-item .icon {
-            font-size: 24px;
-            line-height: 1
-        }
-        .nav-item.active {
-            color: #f7971e
-        }
-        .nav-item .badge {
-            background: #ff6b6b;
-            color: #fff;
-            border-radius: 50%;
-            padding: 0 5px;
-            font-size: 9px;
-            min-width: 16px;
-            text-align: center;
-            position: absolute;
-            top: -4px;
-            right: -6px;
-            line-height: 16px
-        }
-        .nav-item .icon-wrap {
-            position: relative;
-            display: inline-block
-        }
-        .auth-card {
-            background: #1f2942;
-            padding: 20px;
-            border-radius: 16px;
-            border: 1px solid #2a3457
-        }
-        .auth-card h3 {
-            text-align: center;
-            color: #ffd200;
-            margin-bottom: 12px
-        }
-        .ad-item {
-            background: #0f1422;
-            padding: 12px;
-            border-radius: 12px;
-            border-right: 4px solid #f7971e;
-            margin-bottom: 10px
-        }
-        .ad-item .title {
-            font-weight: 700;
-            font-size: 16px
-        }
-        .ad-item .desc {
-            font-size: 13px;
-            color: #8892b0
-        }
-        .ad-item .click-btn {
-            background: #00c9ff;
-            color: #0b0e1a;
-            border: none;
-            padding: 6px 16px;
-            border-radius: 30px;
-            cursor: pointer;
-            font-weight: 700;
-            font-size: 14px;
-            margin-top: 8px;
-            width: auto
-        }
-        .ad-item .click-btn:disabled {
-            background: #555;
-            cursor: not-allowed
-        }
-        .ad-item .rating-stars {
-            color: #ffd200;
-            font-size: 16px;
-            margin-top: 4px;
-            display: flex;
-            align-items: center;
-            gap: 4px
-        }
-        .ad-item .rating-stars .star {
-            cursor: pointer;
-            transition: .2s
-        }
-        .ad-item .rating-stars .star:hover {
-            transform: scale(1.2)
-        }
-        .ad-item .ad-image {
-            width: 100%;
-            max-height: 200px;
-            object-fit: cover;
-            border-radius: 10px;
-            margin-top: 6px
-        }
-        .ad-item .ad-rules {
-            background: #1f2942;
-            padding: 10px;
-            border-radius: 8px;
-            margin-top: 6px;
-            font-size: 12px;
-            color: #8892b0
-        }
-        .toast {
-            position: fixed;
-            top: 20px;
-            left: 50%;
-            transform: translateX(-50%);
-            background: #1f2942;
-            color: #fff;
-            padding: 12px 24px;
-            border-radius: 16px;
-            border: 2px solid #f7971e;
-            z-index: 9999;
-            font-weight: 700;
-            display: none;
-            max-width: 90%;
-            text-align: center
-        }
-        .toast.show {
-            display: block
-        }
-        .balance-amount {
-            font-size: 28px;
-            font-weight: 900;
-            color: #ffd200
-        }
-        .balance-amount small {
-            font-size: 14px;
-            color: #8892b0
-        }
-        .profile-avatar {
-            width: 80px;
-            height: 80px;
-            border-radius: 50%;
-            background: linear-gradient(135deg, #f7971e, #ffd200);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 36px;
-            margin: 0 auto 10px;
-            border: 3px solid #f7971e
-        }
-        .ticket-item {
-            background: #0f1422;
-            padding: 12px;
-            border-radius: 12px;
-            margin-bottom: 8px;
-            border-right: 3px solid #f7971e
-        }
-        .ticket-item .admin-response {
-            background: #1f2942;
-            padding: 8px;
-            border-radius: 6px;
-            margin-top: 6px;
-            border-right: 2px solid #00c9ff;
-            font-size: 12px;
-            color: #92fe9d
-        }
-        .top-nav {
-            display: flex;
-            gap: 10px;
-            justify-content: center;
-            margin-bottom: 15px;
-            flex-wrap: wrap
-        }
-        .top-nav button {
-            flex: 1;
-            padding: 8px;
-            border-radius: 12px;
-            border: 2px solid #2a3457;
-            background: #0f1422;
-            color: #8892b0;
-            font-weight: 700;
-            cursor: pointer;
-            transition: .2s;
-            min-width: 60px
-        }
-        .top-nav button.active {
-            border-color: #f7971e;
-            background: #f7971e;
-            color: #0b0e1a
-        }
-        .contact-card {
-            background: #0f1422;
-            padding: 16px;
-            border-radius: 12px;
-            text-align: center
-        }
-        .contact-card .label {
-            font-size: 16px;
-            font-weight: 700;
-            color: #ffd200
-        }
-        .contact-card .value {
-            font-size: 18px;
-            margin: 8px 0;
-            color: #92fe9d
-        }
-        .contact-card .value a {
-            color: #92fe9d;
-            text-decoration: none
-        }
-        .earnings-box {
-            background: #1f2942;
-            padding: 12px;
-            border-radius: 12px;
-            border: 1px solid #f7971e;
-            text-align: center;
-            margin-top: 10px
-        }
-        .earnings-box .amount {
-            font-size: 24px;
-            font-weight: 900;
-            color: #92fe9d
-        }
-        .auth-divider {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            margin: 12px 0;
-            color: #4a5a7a;
-            font-size: 12px
-        }
-        .auth-divider::before,
-        .auth-divider::after {
-            content: '';
-            flex: 1;
-            height: 1px;
-            background: #2a3457
-        }
-        .input-group {
-            position: relative
-        }
-        .input-group .input-icon {
-            position: absolute;
-            right: 14px;
-            top: 50%;
-            transform: translateY(-50%);
-            color: #4a5a7a;
-            font-size: 16px
-        }
-        .input-group input {
-            padding-right: 44px
-        }
-        .ref-status {
-            font-size: 12px;
-            margin: -4px 0 8px 0;
-            padding: 4px 8px;
-            border-radius: 6px;
-            display: none
-        }
-        .ref-status.valid {
-            color: #92fe9d;
-            display: block
-        }
-        .ref-status.invalid {
-            color: #ff6b6b;
-            display: block
-        }
-        .ref-status.checking {
-            color: #ffd200;
-            display: block
-        }
-        .wallet-history {
-            max-height: 200px;
-            overflow-y: auto
-        }
-        .wallet-history .history-item {
-            display: flex;
-            justify-content: space-between;
-            padding: 8px 0;
-            border-bottom: 1px solid #2a3457;
-            font-size: 13px
-        }
-        .wallet-history .history-item .plus {
-            color: #92fe9d
-        }
-        .wallet-history .history-item .minus {
-            color: #ff6b6b
-        }
-        .click-history-item {
-            display: flex;
-            justify-content: space-between;
-            padding: 8px 0;
-            border-bottom: 1px solid #2a3457;
-            font-size: 13px
-        }
-        .click-history-item .amount {
-            color: #92fe9d
-        }
-        .notification-item {
-            background: #0f1422;
-            padding: 10px 12px;
-            border-radius: 10px;
-            margin-bottom: 6px;
-            border-right: 3px solid #f7971e;
-            cursor: pointer;
-            transition: .2s
-        }
-        .notification-item:hover {
-            background: #1f2942
-        }
-        .notification-item .title {
-            font-weight: 700;
-            font-size: 14px
-        }
-        .notification-item .message {
-            font-size: 12px;
-            color: #8892b0;
-            margin-top: 2px
-        }
-        .notification-item .time {
-            font-size: 10px;
-            color: #4a5a7a;
-            margin-top: 4px
-        }
-        .notification-item.unread {
-            border-right-color: #ffd200;
-            background: #1f2942
-        }
-        .notification-item .badge-global {
-            background: #00c9ff;
-            color: #0b0e1a;
-            padding: 0 8px;
-            border-radius: 10px;
-            font-size: 10px;
-            font-weight: 700
-        }
-        .notif-popup {
-            position: fixed;
-            top: 60px;
-            left: 50%;
-            transform: translateX(-50%);
-            background: #141a2b;
-            border: 2px solid #f7971e;
-            border-radius: 16px;
-            padding: 16px;
-            max-width: 400px;
-            width: 90%;
-            max-height: 400px;
-            overflow-y: auto;
-            z-index: 9999;
-            display: none;
-            box-shadow: 0 8px 40px rgba(0, 0, 0, .8)
-        }
-        .notif-popup.show {
-            display: block;
-            animation: slideDown .3s ease
-        }
-        .notif-popup .close-btn {
-            position: sticky;
-            top: 0;
-            background: #141a2b;
-            padding-bottom: 8px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            border-bottom: 1px solid #2a3457;
-            margin-bottom: 10px
-        }
-        .notif-popup .close-btn button {
-            width: auto;
-            padding: 4px 12px;
-            font-size: 12px;
-            border-radius: 8px;
-            margin: 0;
-            background: #ff6b6b;
-            color: #fff;
-            border: none;
-            cursor: pointer
-        }
-        .wallet-balance-box {
-            background: linear-gradient(135deg, #1f2942, #2a3457);
-            border: 2px solid #ffd200;
-            border-radius: 14px;
-            padding: 16px;
-            text-align: center;
-            margin-bottom: 12px
-        }
-        .wallet-balance-box .amount {
-            font-size: 32px;
-            font-weight: 900;
-            color: #ffd200
-        }
-        .wallet-balance-box .label {
-            font-size: 13px;
-            color: #8892b0
-        }
-        .wallet-actions {
-            display: grid;
-            grid-template-columns: 1fr 1fr 1fr;
-            gap: 8px;
-            margin-bottom: 12px
-        }
-        .wallet-actions button {
-            padding: 12px;
-            border-radius: 10px;
-            border: none;
-            font-weight: 700;
-            cursor: pointer;
-            transition: .2s;
-            font-size: 13px
-        }
-        .wallet-actions .deposit-btn {
-            background: linear-gradient(135deg, #92fe9d, #00c9ff);
-            color: #0b0e1a
-        }
-        .wallet-actions .withdraw-btn {
-            background: linear-gradient(135deg, #ff6b6b, #ffd200);
-            color: #0b0e1a
-        }
-        .wallet-actions .history-btn {
-            background: #2a3457;
-            color: #fff
-        }
-        .wallet-actions button:hover {
-            transform: scale(1.02)
-        }
-        .charge-code-box {
-            background: #0f1422;
-            padding: 12px;
-            border-radius: 10px;
-            border: 1px solid #2a3457;
-            margin-top: 8px
-        }
-        .card-number-box {
-            background: linear-gradient(135deg, #1f2942, #0f1422);
-            border: 2px solid #ffd200;
-            border-radius: 12px;
-            padding: 12px;
-            text-align: center;
-            margin-top: 8px
-        }
-        .card-number-box .card-number {
-            font-family: monospace;
-            font-size: 22px;
-            color: #ffd200;
-            direction: ltr;
-            letter-spacing: 3px;
-            font-weight: 900
-        }
-        .subscription-card {
-            background: #0f1422;
-            padding: 16px;
-            border-radius: 16px;
-            border: 2px solid #2a3457;
-            margin-bottom: 12px;
-            transition: all .3s ease
-        }
-        .subscription-card:hover {
-            transform: translateY(-3px)
-        }
-        .subscription-card.pro {
-            border-color: #ffd700
-        }
-        .subscription-card.premium {
-            border-color: #ff6b6b
-        }
-        .subscription-card .name {
-            font-size: 18px;
-            font-weight: 700
-        }
-        .subscription-card .price {
-            font-size: 22px;
-            font-weight: 900;
-            color: #ffd200;
-            margin: 8px 0
-        }
-        .subscription-card .features {
-            list-style: none;
-            padding: 0;
-            margin: 8px 0
-        }
-        .subscription-card .features li {
-            padding: 4px 0;
-            font-size: 13px;
-            color: #8892b0;
-            text-align: right
-        }
-        .subscription-badge {
-            font-size: 12px;
-            padding: 4px 12px;
-            border-radius: 20px
-        }
-        .free-badge {
-            background: #2a3457;
-            color: #8892b0
-        }
-        .pro-badge {
-            background: #ffd700;
-            color: #0b0e1a
-        }
-        .premium-badge {
-            background: #ff6b6b;
-            color: #fff
-        }
-        .dashboard-stats {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 8px;
-            margin-bottom: 12px
-        }
-        .dashboard-stat-card {
-            background: #0f1422;
-            padding: 12px;
-            border-radius: 12px;
-            text-align: center;
-            border: 1px solid #2a3457
-        }
-        .dashboard-stat-card .number {
-            font-size: 20px;
-            font-weight: 900;
-            color: #ffd200
-        }
-        .dashboard-stat-card .label {
-            font-size: 11px;
-            color: #8892b0
-        }
-        .btn-buy {
-            padding: 12px;
-            border-radius: 12px;
-            border: none;
-            font-weight: 700;
-            font-size: 15px;
-            cursor: pointer;
-            transition: all .3s ease;
-            width: 100%;
-            margin-top: 8px
-        }
-        .pro-btn {
-            background: linear-gradient(135deg, #ffd700, #f7971e);
-            color: #0b0e1a
-        }
-        .premium-btn {
-            background: linear-gradient(135deg, #ff6b6b, #ff4444);
-            color: #fff
-        }
-        .btn-buy:hover {
-            transform: scale(1.02)
-        }
-        select option {
-            background: #0f1422;
-            color: #fff
-        }
-        .settings-group {
-            margin-bottom: 12px
-        }
-        .settings-group label {
-            font-size: 13px;
-            color: #8892b0;
-            display: block;
-            margin-bottom: 4px
-        }
-        .hint-text {
-            font-size: 12px;
-            color: #8892b0;
-            margin-top: 8px;
-            text-align: center;
-        }
-        .wallet-box {
-            background: linear-gradient(135deg, #1f2942, #2a3457);
-            border: 2px solid #ffd200;
-            border-radius: 14px;
-            padding: 16px;
-            text-align: center;
-            margin-bottom: 12px
-        }
-        .wallet-box .amount {
-            font-size: 32px;
-            font-weight: 900;
-            color: #ffd200
-        }
-        .wallet-box .label {
-            font-size: 13px;
-            color: #8892b0
-        }
-        @media(max-width:480px) {
-            .container {
-                padding: 15px
-            }
-            .balance-amount {
-                font-size: 24px
-            }
-            .notif-popup {
-                top: 50px;
-                max-height: 300px
-            }
-        }
-        @keyframes slideDown {
-            from {
-                opacity: 0;
-                transform: translateX(-50%) translateY(-20px)
-            }
-            to {
-                opacity: 1;
-                transform: translateX(-50%) translateY(0)
-            }
-        }
-        #paymentModal {
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: rgba(0, 0, 0, 0.8);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            z-index: 10000;
-            padding: 20px;
-        }
-        #paymentModal .modal-content {
-            background: #141a2b;
-            padding: 30px;
-            border-radius: 24px;
-            max-width: 400px;
-            width: 100%;
-            border: 2px solid #ffd200;
-        }
-        #paymentModal h3 {
-            color: #ffd200;
-            text-align: center;
-            margin-bottom: 20px;
-        }
-        #paymentModal .amount-buttons {
-            display: flex;
-            gap: 8px;
-            margin: 10px 0;
-            flex-wrap: wrap;
-        }
-        #paymentModal .amount-buttons button {
-            flex: 1;
-            padding: 8px;
-            border-radius: 8px;
-            border: 1px solid #2a3457;
-            background: #0f1422;
-            color: #fff;
-            cursor: pointer;
-            font-size: 14px;
-            width: auto;
-            min-width: 60px;
-        }
-        #paymentModal .amount-buttons button:hover {
-            background: #1f2942;
-            border-color: #f7971e;
-        }
-        #paymentModal .action-buttons {
-            display: flex;
-            gap: 8px;
-        }
-        #paymentModal .action-buttons .pay-btn {
-            flex: 2;
-        }
-        #paymentModal .action-buttons .cancel-btn {
-            flex: 1;
-        }
-        #paymentModal #paymentModalMessage {
-            font-size: 13px;
-            margin-top: 10px;
-            text-align: center;
-        }
+        *{margin:0;padding:0;box-sizing:border-box}
+        body{font-family:Tahoma,sans-serif;background:#0b0e1a;color:#fff;display:flex;justify-content:center;padding:20px;min-height:100vh}
+        .container{max-width:480px;width:100%;background:#141a2b;padding:20px;border-radius:24px;border:1px solid #2a3457;margin-bottom:80px}
+        h1{text-align:center;margin-bottom:20px;background:linear-gradient(135deg,#f7971e,#ffd200);-webkit-background-clip:text;-webkit-text-fill-color:transparent;font-size:28px}
+        .page{display:none}.page.active{display:block}
+        .box{background:#1f2942;padding:16px;border-radius:16px;margin-bottom:15px;border:1px solid #2a3457}
+        .box h3{margin-bottom:10px;color:#ffd200}
+        input,textarea,select{width:100%;padding:12px;margin:6px 0;border-radius:12px;border:none;background:#0f1422;color:#fff;font-size:15px;outline:1px solid #2a3457}
+        input:focus,textarea:focus,select:focus{outline:2px solid #f7971e}
+        button{width:100%;padding:12px;margin:6px 0;border:none;border-radius:12px;font-size:16px;font-weight:700;cursor:pointer;transition:.2s}
+        .btn-primary{background:linear-gradient(135deg,#f7971e,#ffd200);color:#0b0e1a}
+        .btn-secondary{background:#2a3457;color:#fff}
+        .btn-success{background:#92fe9d;color:#0b0e1a}
+        .btn-danger{background:#ff6b6b;color:#fff}
+        .btn-google{background:#fff;color:#333;border:1px solid #ddd;padding:12px;border-radius:14px;font-weight:700;font-size:16px;cursor:pointer;transition:all .3s ease;display:flex;align-items:center;justify-content:center;gap:10px;margin-top:10px;width:100%}
+        .btn-google:hover{background:#f1f1f1;transform:scale(1.02)}
+        .btn-google img{width:20px;height:20px;vertical-align:middle}
+        .btn-sm{padding:6px 12px;font-size:12px;width:auto;border-radius:8px}
+        .hidden{display:none!important}
+        .bottom-nav{position:fixed;bottom:0;left:0;right:0;background:#0f1422;border-top:1px solid #2a3457;display:flex;justify-content:space-around;padding:8px 0 12px 0;max-width:480px;margin:0 auto;z-index:1000;border-radius:20px 20px 0 0;width:100%}
+        .nav-item{display:flex;flex-direction:column;align-items:center;gap:2px;background:0 0;border:none;color:#8892b0;font-size:10px;cursor:pointer;padding:4px 8px;flex:1;max-width:70px;position:relative}
+        .nav-item .icon{font-size:24px;line-height:1}
+        .nav-item.active{color:#f7971e}
+        .nav-item .badge{background:#ff6b6b;color:#fff;border-radius:50%;padding:0 5px;font-size:9px;min-width:16px;text-align:center;position:absolute;top:-4px;right:-6px;line-height:16px}
+        .nav-item .icon-wrap{position:relative;display:inline-block}
+        .auth-card{background:#1f2942;padding:20px;border-radius:16px;border:1px solid #2a3457}
+        .auth-card h3{text-align:center;color:#ffd200;margin-bottom:12px}
+        .ad-item{background:#0f1422;padding:12px;border-radius:12px;border-right:4px solid #f7971e;margin-bottom:10px}
+        .ad-item .title{font-weight:700;font-size:16px}
+        .ad-item .desc{font-size:13px;color:#8892b0}
+        .ad-item .click-btn{background:#00c9ff;color:#0b0e1a;border:none;padding:6px 16px;border-radius:30px;cursor:pointer;font-weight:700;font-size:14px;margin-top:8px;width:auto}
+        .ad-item .click-btn:disabled{background:#555;cursor:not-allowed}
+        .ad-item .rating-stars{color:#ffd200;font-size:16px;margin-top:4px;display:flex;align-items:center;gap:4px}
+        .ad-item .rating-stars .star{cursor:pointer;transition:.2s}
+        .ad-item .rating-stars .star:hover{transform:scale(1.2)}
+        .ad-item .ad-image{width:100%;max-height:200px;object-fit:cover;border-radius:10px;margin-top:6px}
+        .ad-item .ad-rules{background:#1f2942;padding:10px;border-radius:8px;margin-top:6px;font-size:12px;color:#8892b0}
+        .toast{position:fixed;top:20px;left:50%;transform:translateX(-50%);background:#1f2942;color:#fff;padding:12px 24px;border-radius:16px;border:2px solid #f7971e;z-index:9999;font-weight:700;display:none;max-width:90%;text-align:center}
+        .toast.show{display:block}
+        .balance-amount{font-size:28px;font-weight:900;color:#ffd200}
+        .balance-amount small{font-size:14px;color:#8892b0}
+        .profile-avatar{width:80px;height:80px;border-radius:50%;background:linear-gradient(135deg,#f7971e,#ffd200);display:flex;align-items:center;justify-content:center;font-size:36px;margin:0 auto 10px;border:3px solid #f7971e}
+        .ticket-item{background:#0f1422;padding:12px;border-radius:12px;margin-bottom:8px;border-right:3px solid #f7971e}
+        .ticket-item .admin-response{background:#1f2942;padding:8px;border-radius:6px;margin-top:6px;border-right:2px solid #00c9ff;font-size:12px;color:#92fe9d}
+        .top-nav{display:flex;gap:10px;justify-content:center;margin-bottom:15px;flex-wrap:wrap}
+        .top-nav button{flex:1;padding:8px;border-radius:12px;border:2px solid #2a3457;background:#0f1422;color:#8892b0;font-weight:700;cursor:pointer;transition:.2s;min-width:60px}
+        .top-nav button.active{border-color:#f7971e;background:#f7971e;color:#0b0e1a}
+        .contact-card{background:#0f1422;padding:16px;border-radius:12px;text-align:center}
+        .contact-card .label{font-size:16px;font-weight:700;color:#ffd200}
+        .contact-card .value{font-size:18px;margin:8px 0;color:#92fe9d}
+        .contact-card .value a{color:#92fe9d;text-decoration:none}
+        .earnings-box{background:#1f2942;padding:12px;border-radius:12px;border:1px solid #f7971e;text-align:center;margin-top:10px}
+        .earnings-box .amount{font-size:24px;font-weight:900;color:#92fe9d}
+        .auth-divider{display:flex;align-items:center;gap:10px;margin:12px 0;color:#4a5a7a;font-size:12px}
+        .auth-divider::before,.auth-divider::after{content:'';flex:1;height:1px;background:#2a3457}
+        .input-group{position:relative}
+        .input-group .input-icon{position:absolute;right:14px;top:50%;transform:translateY(-50%);color:#4a5a7a;font-size:16px}
+        .input-group input{padding-right:44px}
+        .ref-status{font-size:12px;margin:-4px 0 8px 0;padding:4px 8px;border-radius:6px;display:none}
+        .ref-status.valid{color:#92fe9d;display:block}
+        .ref-status.invalid{color:#ff6b6b;display:block}
+        .ref-status.checking{color:#ffd200;display:block}
+        .wallet-history{max-height:200px;overflow-y:auto}
+        .wallet-history .history-item{display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid #2a3457;font-size:13px}
+        .wallet-history .history-item .plus{color:#92fe9d}
+        .wallet-history .history-item .minus{color:#ff6b6b}
+        .click-history-item{display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid #2a3457;font-size:13px}
+        .click-history-item .amount{color:#92fe9d}
+        .notification-item{background:#0f1422;padding:10px 12px;border-radius:10px;margin-bottom:6px;border-right:3px solid #f7971e;cursor:pointer;transition:.2s}
+        .notification-item:hover{background:#1f2942}
+        .notification-item .title{font-weight:700;font-size:14px}
+        .notification-item .message{font-size:12px;color:#8892b0;margin-top:2px}
+        .notification-item .time{font-size:10px;color:#4a5a7a;margin-top:4px}
+        .notification-item.unread{border-right-color:#ffd200;background:#1f2942}
+        .notification-item .badge-global{background:#00c9ff;color:#0b0e1a;padding:0 8px;border-radius:10px;font-size:10px;font-weight:700}
+        .notif-popup{position:fixed;top:60px;left:50%;transform:translateX(-50%);background:#141a2b;border:2px solid #f7971e;border-radius:16px;padding:16px;max-width:400px;width:90%;max-height:400px;overflow-y:auto;z-index:9999;display:none;box-shadow:0 8px 40px rgba(0,0,0,.8)}
+        .notif-popup.show{display:block;animation:slideDown .3s ease}
+        .notif-popup .close-btn{position:sticky;top:0;background:#141a2b;padding-bottom:8px;display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid #2a3457;margin-bottom:10px}
+        .notif-popup .close-btn button{width:auto;padding:4px 12px;font-size:12px;border-radius:8px;margin:0;background:#ff6b6b;color:#fff;border:none;cursor:pointer}
+        .wallet-balance-box{background:linear-gradient(135deg,#1f2942,#2a3457);border:2px solid #ffd200;border-radius:14px;padding:16px;text-align:center;margin-bottom:12px}
+        .wallet-balance-box .amount{font-size:32px;font-weight:900;color:#ffd200}
+        .wallet-balance-box .label{font-size:13px;color:#8892b0}
+        .wallet-actions{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:12px}
+        .wallet-actions button{padding:12px;border-radius:10px;border:none;font-weight:700;cursor:pointer;transition:.2s;font-size:13px}
+        .wallet-actions .deposit-btn{background:linear-gradient(135deg,#92fe9d,#00c9ff);color:#0b0e1a}
+        .wallet-actions .withdraw-btn{background:linear-gradient(135deg,#ff6b6b,#ffd200);color:#0b0e1a}
+        .wallet-actions .history-btn{background:#2a3457;color:#fff}
+        .wallet-actions button:hover{transform:scale(1.02)}
+        .charge-code-box{background:#0f1422;padding:12px;border-radius:10px;border:1px solid #2a3457;margin-top:8px}
+        .card-number-box{background:linear-gradient(135deg,#1f2942,#0f1422);border:2px solid #ffd200;border-radius:12px;padding:12px;text-align:center;margin-top:8px}
+        .card-number-box .card-number{font-family:monospace;font-size:22px;color:#ffd200;direction:ltr;letter-spacing:3px;font-weight:900}
+        .subscription-card{background:#0f1422;padding:16px;border-radius:16px;border:2px solid #2a3457;margin-bottom:12px;transition:all .3s ease}
+        .subscription-card:hover{transform:translateY(-3px)}
+        .subscription-card.pro{border-color:#ffd700}
+        .subscription-card.premium{border-color:#ff6b6b}
+        .subscription-card .name{font-size:18px;font-weight:700}
+        .subscription-card .price{font-size:22px;font-weight:900;color:#ffd200;margin:8px 0}
+        .subscription-card .features{list-style:none;padding:0;margin:8px 0}
+        .subscription-card .features li{padding:4px 0;font-size:13px;color:#8892b0;text-align:right}
+        .subscription-badge{font-size:12px;padding:4px 12px;border-radius:20px}
+        .free-badge{background:#2a3457;color:#8892b0}
+        .pro-badge{background:#ffd700;color:#0b0e1a}
+        .premium-badge{background:#ff6b6b;color:#fff}
+        .dashboard-stats{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:12px}
+        .dashboard-stat-card{background:#0f1422;padding:12px;border-radius:12px;text-align:center;border:1px solid #2a3457}
+        .dashboard-stat-card .number{font-size:20px;font-weight:900;color:#ffd200}
+        .dashboard-stat-card .label{font-size:11px;color:#8892b0}
+        .btn-buy{padding:12px;border-radius:12px;border:none;font-weight:700;font-size:15px;cursor:pointer;transition:all .3s ease;width:100%;margin-top:8px}
+        .pro-btn{background:linear-gradient(135deg,#ffd700,#f7971e);color:#0b0e1a}
+        .premium-btn{background:linear-gradient(135deg,#ff6b6b,#ff4444);color:#fff}
+        .btn-buy:hover{transform:scale(1.02)}
+        select option{background:#0f1422;color:#fff}
+        .settings-group{margin-bottom:12px}
+        .settings-group label{font-size:13px;color:#8892b0;display:block;margin-bottom:4px}
+        .hint-text{font-size:12px;color:#8892b0;margin-top:8px;text-align:center}
+        .wallet-box{background:linear-gradient(135deg,#1f2942,#2a3457);border:2px solid #ffd200;border-radius:14px;padding:16px;text-align:center;margin-bottom:12px}
+        .wallet-box .amount{font-size:32px;font-weight:900;color:#ffd200}
+        .wallet-box .label{font-size:13px;color:#8892b0}
+        #paymentModal{position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.8);display:flex;align-items:center;justify-content:center;z-index:10000;padding:20px}
+        #paymentModal .modal-content{background:#141a2b;padding:30px;border-radius:24px;max-width:400px;width:100%;border:2px solid #ffd200}
+        #paymentModal h3{color:#ffd200;text-align:center;margin-bottom:20px}
+        #paymentModal .amount-buttons{display:flex;gap:8px;margin:10px 0;flex-wrap:wrap}
+        #paymentModal .amount-buttons button{flex:1;padding:8px;border-radius:8px;border:1px solid #2a3457;background:#0f1422;color:#fff;cursor:pointer;font-size:14px;width:auto;min-width:60px}
+        #paymentModal .amount-buttons button:hover{background:#1f2942;border-color:#f7971e}
+        #paymentModal .action-buttons{display:flex;gap:8px}
+        #paymentModal .action-buttons .pay-btn{flex:2}
+        #paymentModal .action-buttons .cancel-btn{flex:1}
+        #paymentModal #paymentModalMessage{font-size:13px;margin-top:10px;text-align:center}
+        @media(max-width:480px){.container{padding:15px}.balance-amount{font-size:24px}.notif-popup{top:50px;max-height:300px}}
+        @keyframes slideDown{from{opacity:0;transform:translateX(-50%) translateY(-20px)}to{opacity:1;transform:translateX(-50%) translateY(0)}}
     </style>
 </head>
 <body>
     <div id="toast" class="toast"></div>
-
     <div id="notifPopup" class="notif-popup">
         <div class="close-btn">
             <span style="font-weight:700;color:#ffd200;">🔔 اعلان‌ها</span>
@@ -833,10 +148,10 @@
         </div>
         <div id="notifList"></div>
     </div>
-
     <div class="container">
         <h1>💰 زرین‌کلیک</h1>
 
+        <!-- ===== ورود ===== -->
         <div id="authPage" class="page active">
             <div id="loginForm" class="auth-card">
                 <h3>🔐 خوش آمدید</h3>
@@ -853,26 +168,13 @@
                     <span style="font-size:13px;color:#f7971e;cursor:pointer;" onclick="showRegisterForm()">ثبت نام کنید</span>
                 </div>
             </div>
-
             <div id="registerForm" class="auth-card hidden">
                 <h3>📝 ثبت‌نام</h3>
                 <p style="color:#8892b0;font-size:12px;margin-bottom:10px;">⚠️ همه فیلدها اجباری هستند</p>
-                <div class="input-group">
-                    <span class="input-icon">📧</span>
-                    <input type="email" id="regEmail" placeholder="ایمیل *" required>
-                </div>
-                <div class="input-group">
-                    <span class="input-icon">🔑</span>
-                    <input type="password" id="regPassword" placeholder="رمز عبور (حداقل ۶ کاراکتر) *" required>
-                </div>
-                <div class="input-group">
-                    <span class="input-icon">📱</span>
-                    <input type="tel" id="regPhone" placeholder="شماره موبایل (۱۱ رقم) *" required maxlength="11">
-                </div>
-                <div class="input-group">
-                    <span class="input-icon">🎁</span>
-                    <input type="text" id="regRef" placeholder="کد معرف (اختیاری)">
-                </div>
+                <div class="input-group"><span class="input-icon">📧</span><input type="email" id="regEmail" placeholder="ایمیل *" required></div>
+                <div class="input-group"><span class="input-icon">🔑</span><input type="password" id="regPassword" placeholder="رمز عبور (حداقل ۶ کاراکتر) *" required></div>
+                <div class="input-group"><span class="input-icon">📱</span><input type="tel" id="regPhone" placeholder="شماره موبایل (۱۱ رقم) *" required maxlength="11"></div>
+                <div class="input-group"><span class="input-icon">🎁</span><input type="text" id="regRef" placeholder="کد معرف (اختیاری)"></div>
                 <div id="refCodeStatus" class="ref-status"></div>
                 <button class="btn-secondary" onclick="registerUser()">✅ ثبت‌نام</button>
                 <p class="hint-text">💡 کد معرف اختیاری است. اگر کد معرف ندارید، خالی بگذارید.</p>
@@ -888,13 +190,13 @@
             </div>
         </div>
 
+        <!-- ===== خانه ===== -->
         <div id="homePage" class="page">
             <div class="top-nav">
                 <button class="active" onclick="switchHomeTab('home')">🏠 خانه</button>
                 <button onclick="switchHomeTab('dashboard')">📊 داشبورد</button>
                 <button onclick="switchHomeTab('subscription')">⭐ ویژه</button>
             </div>
-
             <div id="homeTab" class="home-tab">
                 <div class="box"><h3>📢 تبلیغات</h3><div id="adFeed"><div style="color:#8892b0;">در حال بارگذاری...</div></div></div>
                 <div class="wallet-box">
@@ -907,6 +209,7 @@
                 </div>
             </div>
 
+            <!-- ===== داشبورد ===== -->
             <div id="dashboardTab" class="home-tab hidden">
                 <div class="wallet-balance-box" style="margin-bottom:10px;">
                     <div class="label">💰 موجودی کیف پول</div>
@@ -918,14 +221,12 @@
                         <span>📤 کل برداشت: <span id="dashTotalWithdrawn">0</span></span>
                     </div>
                 </div>
-
                 <div class="card-number-box" style="margin-bottom:8px;">
                     <div style="font-size:13px;color:#8892b0;margin-bottom:4px;">💳 شماره کارت برای واریز</div>
                     <div class="card-number" id="bankCardNumber">۶۲۱۹ ۸۶۱۸ ۴۵۱۱ ۳۳۷۱</div>
                     <div style="font-size:12px;color:#8892b0;margin-top:4px;" id="bankCardHolder">به نام: مجتبی جلیلی</div>
                     <div style="font-size:11px;color:#4a5a7a;margin-top:4px;">پس از واریز، کد شارژ را وارد کنید</div>
                 </div>
-
                 <div class="charge-code-box" style="margin-bottom:10px;">
                     <h4 style="color:#ffd200;font-size:14px;margin-bottom:6px;">🎫 کد شارژ</h4>
                     <div style="display:flex;gap:8px;flex-wrap:wrap;">
@@ -934,13 +235,11 @@
                     </div>
                     <div id="dashChargeCodeMessage" style="font-size:13px;margin-top:6px;"></div>
                 </div>
-
                 <div class="wallet-actions" style="margin-bottom:10px;">
                     <button class="deposit-btn" onclick="showPaymentModal()">💰 پرداخت با زرین‌پال</button>
                     <button class="withdraw-btn" onclick="showWithdrawForm()">🏦 برداشت</button>
                     <button class="history-btn" onclick="toggleWalletHistory()">📜 تاریخچه</button>
                 </div>
-
                 <div id="depositForm" class="hidden" style="margin-top:10px;">
                     <div class="box">
                         <h4 style="color:#92fe9d;">💰 واریز به کیف پول</h4>
@@ -951,7 +250,6 @@
                         <p id="dashDepositMessage"></p>
                     </div>
                 </div>
-
                 <div id="withdrawForm" class="hidden" style="margin-top:10px;">
                     <div class="box">
                         <h4 style="color:#ffd200;">🏦 برداشت از کیف پول</h4>
@@ -964,37 +262,28 @@
                         <p id="dashWithdrawMessage"></p>
                     </div>
                 </div>
-
                 <div id="walletHistorySection" style="display:none;margin-top:10px;">
                     <div class="box">
                         <h4 style="color:#8892b0;">📜 تاریخچه تراکنش‌ها</h4>
-                        <div id="dashWalletHistoryList" class="wallet-history">
-                            <div style="color:#8892b0;font-size:13px;">هیچ تراکنشی ثبت نشده</div>
-                        </div>
+                        <div id="dashWalletHistoryList" class="wallet-history"><div style="color:#8892b0;font-size:13px;">هیچ تراکنشی ثبت نشده</div></div>
                     </div>
                 </div>
-
                 <div class="box" style="margin-top:10px;">
                     <h4 style="color:#8892b0;">📜 تاریخچه پرداخت‌ها</h4>
-                    <div id="paymentHistoryList" style="max-height:150px;overflow-y:auto;">
-                        <div style="color:#8892b0;font-size:13px;">در حال بارگذاری...</div>
-                    </div>
+                    <div id="paymentHistoryList" style="max-height:150px;overflow-y:auto;"><div style="color:#8892b0;font-size:13px;">در حال بارگذاری...</div></div>
                 </div>
-
                 <div class="box" style="margin-top:10px;">
                     <div style="display:flex;justify-content:space-between;align-items:center;">
                         <span style="font-size:14px;color:#8892b0;">📊 وضعیت حساب</span>
                         <span id="dashSubscriptionBadge" class="subscription-badge free-badge">🆓 رایگان</span>
                     </div>
                 </div>
-
                 <div class="dashboard-stats">
                     <div class="dashboard-stat-card"><div class="number" id="dashClicks">0</div><div class="label">🖱️ کلیک‌ها</div></div>
                     <div class="dashboard-stat-card"><div class="number" id="dashEarnings">0</div><div class="label">💰 درآمد</div></div>
                     <div class="dashboard-stat-card"><div class="number" id="dashReferrals">0</div><div class="label">👥 زیرمجموعه</div></div>
                     <div class="dashboard-stat-card"><div class="number" id="dashAds">0</div><div class="label">📢 تبلیغات</div></div>
                 </div>
-
                 <div class="box">
                     <div style="display:flex;justify-content:space-between;flex-wrap:wrap;gap:6px;">
                         <div><span style="font-size:12px;color:#8892b0;">نسخه فعلی</span><br><span id="dashSubscription" style="font-weight:700;color:#ffd200;">رایگان</span></div>
@@ -1003,6 +292,7 @@
                 </div>
             </div>
 
+            <!-- ===== نسخه ویژه ===== -->
             <div id="subscriptionTab" class="home-tab hidden">
                 <div style="margin-bottom:10px;font-size:13px;color:#8892b0;text-align:center;">⭐ با خرید نسخه ویژه، درآمد خود را چند برابر کنید</div>
                 <div class="subscription-card pro">
@@ -1021,6 +311,7 @@
             </div>
         </div>
 
+        <!-- ===== ثبت تبلیغ ===== -->
         <div id="createAdPage" class="page">
             <div class="box">
                 <h3>📝 ثبت تبلیغ</h3>
@@ -1046,12 +337,12 @@
             </div>
         </div>
 
+        <!-- ===== حساب کاربری ===== -->
         <div id="profilePage" class="page">
             <div class="box">
                 <div class="profile-avatar">👤</div>
                 <p style="text-align:center;font-size:16px;font-weight:700;" id="profileEmail">---</p>
                 <p style="text-align:center;color:#8892b0;font-size:13px;">نقش: <span id="profileRole">---</span></p>
-
                 <div style="background:#0f1422;padding:12px;border-radius:12px;margin-top:10px;">
                     <div style="display:flex;justify-content:space-between;align-items:center;">
                         <span style="font-size:13px;color:#8892b0;">🔑 کد معرف شما:</span>
@@ -1073,7 +364,6 @@
                         <span style="font-size:12px;color:#8892b0;">⭐ نسخه: <span id="profileSubscription" style="color:#ffd200;font-weight:700;">رایگان</span></span>
                     </div>
                 </div>
-
                 <div style="margin-top:10px;border-top:1px solid #2a3457;padding-top:10px;">
                     <h4 style="font-size:14px;color:#8892b0;">⚙️ تنظیمات حساب</h4>
                     <div class="settings-group">
@@ -1090,7 +380,6 @@
                     </div>
                     <p id="settingsMessage" style="font-size:13px;margin-top:6px;"></p>
                 </div>
-
                 <div style="margin-top:10px;border-top:1px solid #2a3457;padding-top:10px;">
                     <h4 style="font-size:14px;color:#8892b0;">🎫 تیکت</h4>
                     <input type="text" id="ticketSubject" placeholder="موضوع">
@@ -1099,25 +388,21 @@
                     <p id="ticketMessageStatus"></p>
                     <div id="ticketList" style="margin-top:10px;"></div>
                 </div>
-
                 <div style="margin-top:10px;border-top:1px solid #2a3457;padding-top:10px;">
                     <h4 style="font-size:14px;color:#8892b0;">📊 تاریخچه کلیک‌ها</h4>
-                    <div id="clickHistoryList" style="max-height:150px;overflow-y:auto;">
-                        <div style="color:#8892b0;font-size:13px;">در حال بارگذاری...</div>
-                    </div>
+                    <div id="clickHistoryList" style="max-height:150px;overflow-y:auto;"><div style="color:#8892b0;font-size:13px;">در حال بارگذاری...</div></div>
                 </div>
-
                 <div class="earnings-box" style="margin-top:10px;">
                     <div style="font-size:13px;color:#8892b0;">💰 درآمد از کلیک‌ها</div>
                     <div class="amount" id="profileEarningsDisplay">0 تومان</div>
                 </div>
-
                 <div style="margin-top:15px;border-top:1px solid #2a3457;padding-top:15px;">
                     <button class="btn-danger" onclick="logoutUser()">🚪 خروج از حساب</button>
                 </div>
             </div>
         </div>
 
+        <!-- ===== ارتباط با ما ===== -->
         <div id="contactPage" class="page">
             <div class="box">
                 <h3>📞 ارتباط با ما</h3>
@@ -1159,7 +444,7 @@
         // توابع کمکی
         // ============================================
         function generateId() {
-            return Date.now().toString(36) + '_' + Math.random().toString(36).slice(2, 8);
+            return 'ad_' + Date.now() + '_' + Math.random().toString(36).slice(2, 8);
         }
 
         function showToast(msg, type) {
@@ -1211,7 +496,9 @@
                 console.error('❌ خطا:', e);
                 return false;
             }
-        }        // ============================================
+        }
+
+        // ============================================
         // احراز هویت
         // ============================================
         async function loginUser() {
@@ -1539,7 +826,6 @@
         }
 
         async function loadWallet() {
-            if (!supabase) return;
             try {
                 const { data: { user } } = await supabase.auth.getUser();
                 if (!user) {
@@ -1548,39 +834,28 @@
                     return;
                 }
 
-                const wallet = await ensureWallet(user.id);
-                const balance = wallet.balance || 0;
-                const totalDeposited = wallet.total_deposited || 0;
-                const totalWithdrawn = wallet.total_withdrawn || 0;
+                const { data: wallet, error } = await supabase
+                    .from('wallets')
+                    .select('balance')
+                    .eq('user_id', user.id)
+                    .single();
 
-                const walletMain = document.getElementById('walletMain');
-                if (walletMain) {
-                    walletMain.innerHTML = balance.toLocaleString() + ' <small>تومان</small>';
+                if (error) {
+                    console.warn('⚠️ کیف پول پیدا نشد، ایجاد می‌شود...');
+                    await ensureWallet(user.id);
+                    document.getElementById('walletMain').innerHTML = '0 <small>تومان</small>';
+                    document.getElementById('dashWalletBalance').textContent = '0';
+                    return;
                 }
 
-                const dashBalance = document.getElementById('dashWalletBalance');
-                if (dashBalance) {
-                    dashBalance.textContent = balance.toLocaleString();
+                if (wallet) {
+                    const balance = wallet.balance || 0;
+                    document.getElementById('walletMain').innerHTML = balance.toLocaleString() + ' <small>تومان</small>';
+                    document.getElementById('dashWalletBalance').textContent = balance.toLocaleString();
+                    console.log('✅ کیف پول:', balance);
                 }
-
-                const dashPending = document.getElementById('dashPendingBalance');
-                if (dashPending) {
-                    dashPending.textContent = '0';
-                }
-
-                const dashDeposited = document.getElementById('dashTotalDeposited');
-                if (dashDeposited) {
-                    dashDeposited.textContent = totalDeposited.toLocaleString();
-                }
-
-                const dashWithdrawn = document.getElementById('dashTotalWithdrawn');
-                if (dashWithdrawn) {
-                    dashWithdrawn.textContent = totalWithdrawn.toLocaleString();
-                }
-
-                console.log('✅ کیف پول بارگذاری شد:', balance, 'تومان');
             } catch (e) {
-                console.error('❌ خطا در بارگذاری کیف پول:', e);
+                console.error('❌ خطا در کیف پول:', e);
                 document.getElementById('walletMain').innerHTML = '0 <small>تومان</small>';
                 document.getElementById('dashWalletBalance').textContent = '0';
             }
@@ -2117,7 +1392,6 @@
             feed.innerHTML = '<div style="color:#8892b0;">در حال بارگذاری...</div>';
             if (!supabase) return;
             try {
-                // کش کردن
                 const cached = localStorage.getItem('cached_ads');
                 if (cached) {
                     try {
@@ -2141,7 +1415,6 @@
                     return;
                 }
 
-                // ذخیره در کش
                 localStorage.setItem('cached_ads', JSON.stringify({
                     data: ads,
                     timestamp: Date.now()
@@ -2249,6 +1522,7 @@
 
                 const rewardAmount = ad.cpc * multiplier;
 
+                // ثبت کلیک
                 await supabase
                     .from('clicks')
                     .insert([{
@@ -2259,6 +1533,7 @@
                         reward: rewardAmount
                     }]);
 
+                // به‌روزرسانی آمار تبلیغ
                 await supabase
                     .from('ads')
                     .update({
@@ -2267,24 +1542,27 @@
                     })
                     .eq('id', adId);
 
+                // اضافه کردن به کیف پول
                 const wallet = await ensureWallet(user.id);
-
                 await supabase
                     .from('wallets')
-                    .update({ balance: (wallet.balance || 0) + rewardAmount })
+                    .update({ 
+                        balance: (wallet.balance || 0) + rewardAmount,
+                        total_deposited: (wallet.total_deposited || 0) + rewardAmount,
+                        updated_at: new Date().toISOString()
+                    })
                     .eq('user_id', user.id);
 
                 setClickTime(adId, now);
 
                 showToast(`✅ ${rewardAmount.toLocaleString()} تومان به کیف پول شما واریز شد! ${multiplier > 1 ? '⭐ x' + multiplier : ''}`, 'success');
 
-                // بارگذاری مجدد تبلیغات
                 await loadAds();
-                loadWallet();
-                loadTotalEarnings();
-                loadClickHistory();
-                loadNotifications();
-                loadDashboard();
+                await loadWallet();
+                await loadTotalEarnings();
+                await loadClickHistory();
+                await loadNotifications();
+                await loadDashboard();
 
             } catch (e) {
                 console.error('❌ خطای کلیک:', e);
@@ -2391,6 +1669,27 @@
             } catch (e) {
                 console.error('خطا در ثبت امتیاز:', e);
                 showToast('❌ خطا در ثبت امتیاز', 'error');
+            }
+        }
+
+        async function loadAdRatings(adId) {
+            try {
+                const { data: ratings, error } = await supabase
+                    .from('ratings')
+                    .select('rating')
+                    .eq('ad_id', adId);
+
+                if (error || !ratings || ratings.length === 0) {
+                    return { average: 0, count: 0 };
+                }
+
+                const total = ratings.reduce((sum, r) => sum + r.rating, 0);
+                return {
+                    average: total / ratings.length,
+                    count: ratings.length
+                };
+            } catch (e) {
+                return { average: 0, count: 0 };
             }
         }
 
@@ -3076,4 +2375,4 @@
         });
     </script>
 </body>
-</html>
+        </html>
