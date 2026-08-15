@@ -2,6 +2,9 @@
 // چت‌بات هوش مصنوعی زرین‌کلیک
 // ============================================
 
+// ============================================
+// 1. پاسخ‌های از پیش تعیین شده
+// ============================================
 const chatbotResponses = {
     // سوالات عمومی
     "سلام": "سلام! 👋 به زرین‌کلیک خوش آمدید. چطور می‌توانم کمک کنم؟",
@@ -47,6 +50,9 @@ const chatbotResponses = {
     "خدا حافظ": "خداحافظ! 🌟 خوشحالم که کمک کردم.",
 };
 
+// ============================================
+// 2. تابع اصلی چت‌بات
+// ============================================
 function getChatbotResponse(message) {
     const cleanMessage = message.trim().toLowerCase();
     
@@ -56,20 +62,12 @@ function getChatbotResponse(message) {
         }
     }
     
-    const keywords = cleanMessage.split(' ');
-    for (const word of keywords) {
-        if (word.length > 2) {
-            for (const [key, response] of Object.entries(chatbotResponses)) {
-                if (key.includes(word) || word.includes(key)) {
-                    return response;
-                }
-            }
-        }
-    }
-    
     return "🤖 متوجه سوالتون نشدم! لطفاً واضح‌تر بپرسید. می‌تونید از من درباره ثبت نام، کلیک، کیف پول، برداشت، تیکت یا قوانین بپرسید.";
 }
 
+// ============================================
+// 3. نمایش چت‌بات
+// ============================================
 function showChatbot() {
     const existing = document.getElementById('chatbotContainer');
     if (existing) existing.remove();
@@ -124,11 +122,17 @@ function showChatbot() {
     });
 }
 
+// ============================================
+// 4. بستن چت‌بات
+// ============================================
 function closeChatbot() {
     const container = document.getElementById('chatbotContainer');
     if (container) container.remove();
 }
 
+// ============================================
+// 5. ارسال پیام
+// ============================================
 function sendChatMessage() {
     const input = document.getElementById('chatInput');
     const messages = document.getElementById('chatMessages');
@@ -167,6 +171,9 @@ function sendChatMessage() {
     }, 500);
 }
 
+// ============================================
+// 6. دکمه چت‌بات
+// ============================================
 function addChatbotButton() {
     const btn = document.createElement('button');
     btn.id = 'chatbotToggle';
@@ -192,6 +199,9 @@ function addChatbotButton() {
     document.body.appendChild(btn);
 }
 
+// ============================================
+// 7. شروع چت‌بات
+// ============================================
 document.addEventListener('DOMContentLoaded', function() {
     if (window.location.pathname === '/' || window.location.pathname === '/index.html') {
         addChatbotButton();
