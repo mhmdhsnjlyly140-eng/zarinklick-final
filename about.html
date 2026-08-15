@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="enamad" content="26458570">
+    <title>درباره ما - زرین‌کلیک</title>
+    <style>
+        *{margin:0;padding:0;box-sizing:border-box}
+        body{font-family:Tahoma,sans-serif;background:#0b0e1a;color:#fff;display:flex;justify-content:center;padding:20px;min-height:100vh}
+        .container{max-width:480px;width:100%;background:#141a2b;padding:20px;border-radius:24px;border:1px solid #2a3457;margin-bottom:80px}
+        h1{text-align:center;color:#ffd200;margin-bottom:20px;font-size:28px}
+        .box{background:#1f2942;padding:16px;border-radius:16px;margin-bottom:15px;border:1px solid #2a3457}
+        .box h3{color:#ffd200;margin-bottom:10px;font-size:16px}
+        .box p{font-size:14px;color:#8892b0;line-height:1.8}
+        .box ul{padding-right:20px;font-size:14px;color:#8892b0;line-height:2}
+        .box ul li{list-style:disc}
+        .btn-back{width:100%;padding:12px;background:linear-gradient(135deg,#f7971e,#ffd200);color:#0b0e1a;border:none;border-radius:12px;font-weight:700;font-size:16px;cursor:pointer;transition:.2s}
+        .btn-back:hover{transform:scale(1.02)}
+        .bottom-nav{position:fixed;bottom:0;left:0;right:0;background:#0f1422;border-top:1px solid #2a3457;display:flex;justify-content:space-around;padding:8px 0 12px 0;max-width:480px;margin:0 auto;z-index:1000;border-radius:20px 20px 0 0;width:100%}
+        .nav-item{display:flex;flex-direction:column;align-items:center;gap:2px;background:0 0;border:none;color:#8892b0;font-size:10px;cursor:pointer;padding:4px 8px;flex:1;max-width:70px}
+        .nav-item .icon{font-size:24px;line-height:1}
+        .nav-item.active{color:#f7971e}
+        @media(max-width:480px){.container{padding:15px}}
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>💰 زرین‌کلیک</h1>
+
+        <div class="box">
+            <h3>📖 درباره ما</h3>
+            <p>
+                زرین‌کلیک یک پلتفرم تبلیغاتی نوین است که به کاربران امکان کسب درآمد از طریق کلیک روی تبلیغات را می‌دهد.
+                ما با ایجاد یک محیط امن و شفاف، به کسب‌وکارها کمک می‌کنیم تا محصولات خود را به مخاطبان هدف معرفی کنند.
+            </p>
+            <br>
+            <p>
+                <strong>💡 هدف ما:</strong> ایجاد یک اکوسیستم برد-برد برای تبلیغ‌دهندگان و کاربران.
+            </p>
+        </div>
+
+        <div class="box">
+            <h3>📋 قوانین سایت</h3>
+            <ul>
+                <li>✅ هر کاربر فقط یک حساب کاربری می‌تواند داشته باشد</li>
+                <li>✅ کلیک روی تبلیغات باید واقعی و توسط کاربر انجام شود</li>
+                <li>✅ استفاده از ربات یا روش‌های تقلبی ممنوع است</li>
+                <li>✅ تبلیغات خلاف قوانین اسلامی پذیرفته نمی‌شوند</li>
+                <li>✅ برداشت وجه فقط پس از تأیید ادمین انجام می‌شود</li>
+                <li>✅ اطلاعات کاربران محرمانه باقی می‌ماند</li>
+            </ul>
+        </div>
+
+        <div class="box">
+            <h3>📞 ارتباط با ما</h3>
+            <p>📱 شماره تماس: <span style="color:#92fe9d;"><a href="tel:09052380706" style="color:#92fe9d;text-decoration:none;">۰۹۰۵۲۳۸۰۷۰۶</a></span></p>
+            <p>📱 تلگرام: <span style="color:#92fe9d;"><a href="https://t.me/Zarinklick_iran1" style="color:#92fe9d;text-decoration:none;">@Zarinklick_iran1</a></span></p>
+            <p>📧 ایمیل: <span style="color:#92fe9d;">info@zarinklick.ir</span></p>
+        </div>
+
+        <button class="btn-back" onclick="window.location.href='/'">⬅️ بازگشت به خانه</button>
+    </div>
+
+    <div class="bottom-nav">
+        <button class="nav-item" onclick="window.location.href='/'"><span class="icon">🏠</span><span>خانه</span></button>
+        <button class="nav-item active" onclick="window.location.href='/about.html'"><span class="icon">📖</span><span>درباره</span></button>
+        <button class="nav-item" onclick="window.location.href='/'"><span class="icon">📞</span><span>ارتباط</span></button>
+    </div>
+</body>
+</html>
