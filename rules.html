@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="enamad" content="26458570">
+    <title>قوانین - زرین‌کلیک</title>
+    <style>
+        *{margin:0;padding:0;box-sizing:border-box}
+        body{font-family:Tahoma,sans-serif;background:#0b0e1a;color:#fff;display:flex;justify-content:center;padding:20px;min-height:100vh}
+        .container{max-width:480px;width:100%;background:#141a2b;padding:20px;border-radius:24px;border:1px solid #2a3457;margin-bottom:80px}
+        h1{text-align:center;color:#ffd200;margin-bottom:20px;font-size:28px}
+        .box{background:#1f2942;padding:16px;border-radius:16px;margin-bottom:15px;border:1px solid #2a3457}
+        .box h3{color:#ffd200;margin-bottom:10px;font-size:16px}
+        .box p{font-size:14px;color:#8892b0;line-height:1.8}
+        .box ul{padding-right:20px;font-size:14px;color:#8892b0;line-height:2}
+        .box ul li{list-style:disc}
+        .btn-back{width:100%;padding:12px;background:linear-gradient(135deg,#f7971e,#ffd200);color:#0b0e1a;border:none;border-radius:12px;font-weight:700;font-size:16px;cursor:pointer;transition:.2s}
+        .btn-back:hover{transform:scale(1.02)}
+        .bottom-nav{position:fixed;bottom:0;left:0;right:0;background:#0f1422;border-top:1px solid #2a3457;display:flex;justify-content:space-around;padding:8px 0 12px 0;max-width:480px;margin:0 auto;z-index:1000;border-radius:20px 20px 0 0;width:100%}
+        .nav-item{display:flex;flex-direction:column;align-items:center;gap:2px;background:0 0;border:none;color:#8892b0;font-size:10px;cursor:pointer;padding:4px 8px;flex:1;max-width:70px}
+        .nav-item .icon{font-size:24px;line-height:1}
+        .nav-item.active{color:#f7971e}
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>💰 زرین‌کلیک</h1>
+
+        <div class="box">
+            <h3>📋 قوانین و مقررات</h3>
+            <ul>
+                <li><strong>۱. حساب کاربری:</strong> هر کاربر فقط یک حساب کاربری می‌تواند داشته باشد.</li>
+                <li><strong>۲. کلیک واقعی:</strong> کلیک روی تبلیغات باید توسط کاربر واقعی انجام شود.</li>
+                <li><strong>۳.禁止 ربات:</strong> استفاده از ربات یا روش‌های تقلبی برای کلیک ممنوع است.</li>
+                <li><strong>۴. محتوای تبلیغات:</strong> تبلیغات خلاف قوانین اسلامی و اخلاقی پذیرفته نمی‌شوند.</li>
+                <li><strong>۵. برداشت وجه:</strong> برداشت وجه فقط پس از تأیید ادمین انجام می‌شود.</li>
+                <li><strong>۶. محرمانگی:</strong> اطلاعات کاربران محرمانه باقی می‌ماند.</li>
+                <li><strong>۷. تغییر قوانین:</strong> زرین‌کلیک حق تغییر قوانین را بدون اطلاع قبلی دارد.</li>
+                <li><strong>۸. پشتیبانی:</strong> برای سوالات خود از بخش تیکت یا تماس با ما استفاده کنید.</li>
+            </ul>
+        </div>
+
+        <div class="box">
+            <h3>⚖️ حقوق کاربران</h3>
+            <ul>
+                <li>✅ دسترسی به درآمد خود در هر زمان</li>
+                <li>✅ درخواست برداشت وجه پس از رسیدن به حداقل مبلغ</li>
+                <li>✅ گزارش مشکلات و پیشنهادات</li>
+                <li>✅ دریافت پاسخ تیکت در سریع‌ترین زمان</li>
+            </ul>
+        </div>
+
+        <button class="btn-back" onclick="window.location.href='/'">⬅️ بازگشت به خانه</button>
+    </div>
+
+    <div class="bottom-nav">
+        <button class="nav-item" onclick="window.location.href='/'"><span class="icon">🏠</span><span>خانه</span></button>
+        <button class="nav-item active" onclick="window.location.href='/rules.html'"><span class="icon">⚖️</span><span>قوانین</span></button>
+        <button class="nav-item" onclick="window.location.href='/'"><span class="icon">📞</span><span>ارتباط</span></button>
+    </div>
+</body>
+</html>
