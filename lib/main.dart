@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:mongo_dart/mongo_dart.dart';
+import 'package:mongo_dart/mongo_dart.dart' as mongo;
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:intl/intl.dart';
 
@@ -7,13 +7,13 @@ const String MONGO_URL =
     "mongodb+srv://mhmdhsnjlyly40_db_user:JCiJRmXMBIceSojTQ@cluster0.cticac2.mongodb.net/?appName=Cluster0";
 
 class DB {
-  static Db? _db;
-  static DbCollection? users;
-  static DbCollection? posts;
+  static mongo.Db? _db;
+  static mongo.DbCollection? users;
+  static mongo.DbCollection? posts;
 
   static Future<bool> connect() async {
     try {
-      _db = await Db.create(MONGO_URL);
+      _db = await mongo.Db.create(MONGO_URL);
       await _db!.open();
       users = _db!.collection('users');
       posts = _db!.collection('posts');
@@ -25,7 +25,7 @@ class DB {
     }
   }
 
-  static bool get isConnected => _db?.isOpen ?? false;
+  static bool get isConnected => _db?.isConnected ?? false;
 }
 
 class Post {
@@ -97,6 +97,7 @@ class _LoginScreenState extends State<LoginScreen> {
     if (!DB.isConnected) {
       final ok = await DB.connect();
       if (!ok) {
+        if (!mounted) return;
         setState(() => _loading = false);
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text('اتصال به دیتابیس نشد')),
@@ -106,10 +107,10 @@ class _LoginScreenState extends State<LoginScreen> {
     }
 
     try {
-      final existing = await DB.users!.findOne(where.eq('name', name));
+      final existing = await DB.users!.findOne(mongo.where.eq('name', name));
       if (existing == null) {
         await DB.users!.insertOne({
-          '_id': ObjectId().oid,
+          '_id': mongo.ObjectId().oid,
           'name': name,
           'username': name,
           'bio': '',
@@ -126,6 +127,7 @@ class _LoginScreenState extends State<LoginScreen> {
         MaterialPageRoute(builder: (_) => const FeedScreen()),
       );
     } catch (e) {
+      if (!mounted) return;
       setState(() => _loading = false);
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('خطا: $e')),
@@ -204,7 +206,7 @@ class _FeedScreenState extends State<FeedScreen> {
     setState(() => _loading = true);
     try {
       final data = await DB.posts!
-          .find(where.sortBy('createdAt', descending: true).limit(50))
+          .find(mongo.where.sortBy('createdAt', descending: true).limit(50))
           .toList();
       setState(() {
         _posts = data.map((e) => Post.fromMap(e)).toList();
@@ -238,8 +240,8 @@ class _FeedScreenState extends State<FeedScreen> {
   Future<void> _likePost(Post post) async {
     try {
       await DB.posts!.updateOne(
-        where.eq('_id', ObjectId.fromHexString(post.id)),
-        modify.inc('likes', 1),
+        mongo.where.eq('_id', mongo.ObjectId.fromHexString(post.id)),
+        mongo.modify.inc('likes', 1),
       );
       await _loadPosts();
     } catch (e) {
@@ -250,7 +252,7 @@ class _FeedScreenState extends State<FeedScreen> {
   Future<void> _deletePost(Post post) async {
     try {
       await DB.posts!.deleteOne(
-        where.eq('_id', ObjectId.fromHexString(post.id)),
+        mongo.where.eq('_id', mongo.ObjectId.fromHexString(post.id)),
       );
       await _loadPosts();
     } catch (e) {
@@ -406,8 +408,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
   Future<void> _load() async {
     try {
-      final u = await DB.users!.findOne(where.eq('name', widget.name));
-      final count = await DB.posts!.count(where.eq('authorName', widget.name));
+      final u = await DB.users!.findOne(mongo.where.eq('name', widget.name));
+      final count = await DB.posts!
+          .count(mongo.where.eq('authorName', widget.name));
       setState(() {
         _user = u;
         _myPostCount = count;
@@ -445,7 +448,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
               padding: const EdgeInsets.all(24),
               child: Column(
                 children: [
-                  const CircleAvatar(radius: 50, child: Icon(Icons.person, size: 50)),
+                  const CircleAvatar(
+                      radius: 50, child: Icon(Icons.person, size: 50)),
                   const SizedBox(height: 16),
                   Text(widget.name,
                       style: const TextStyle(
