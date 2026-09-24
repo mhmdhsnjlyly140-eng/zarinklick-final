@@ -3,15 +3,9 @@ import 'package:mongo_dart/mongo_dart.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:intl/intl.dart';
 
-// ============================================================
-// 🚨 Connection String خودت رو اینجا بذار
-// ============================================================
 const String MONGO_URL =
     "mongodb+srv://mhmdhsnjlyly40_db_user:JCiJRmXMBIceSojTQ@cluster0.cticac2.mongodb.net/?appName=Cluster0";
 
-// ============================================================
-// 🗄 کلاس دیتابیس
-// ============================================================
 class DB {
   static Db? _db;
   static DbCollection? users;
@@ -23,10 +17,10 @@ class DB {
       await _db!.open();
       users = _db!.collection('users');
       posts = _db!.collection('posts');
-      print('✅ Connected to MongoDB');
+      print('Connected to MongoDB');
       return true;
     } catch (e) {
-      print('❌ DB Error: $e');
+      print('DB Error: $e');
       return false;
     }
   }
@@ -34,9 +28,6 @@ class DB {
   static bool get isConnected => _db?.isOpen ?? false;
 }
 
-// ============================================================
-// 📝 مدل پست
-// ============================================================
 class Post {
   final String id;
   final String authorName;
@@ -61,9 +52,6 @@ class Post {
       );
 }
 
-// ============================================================
-// 🎬 اپ اصلی
-// ============================================================
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await DB.connect();
@@ -78,18 +66,12 @@ class ManoAsghariApp extends StatelessWidget {
     return MaterialApp(
       title: 'منو اصغری',
       debugShowCheckedModeBanner: false,
-      theme: ThemeData(
-        primarySwatch: Colors.teal,
-        useMaterial3: true,
-      ),
+      theme: ThemeData(primarySwatch: Colors.teal, useMaterial3: true),
       home: const LoginScreen(),
     );
   }
 }
 
-// ============================================================
-// 🚪 صفحه ورود
-// ============================================================
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
 
@@ -160,15 +142,11 @@ class _LoginScreenState extends State<LoginScreen> {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              const Text(
-                'منو اصغری',
-                style: TextStyle(fontSize: 40, fontWeight: FontWeight.bold),
-              ),
+              const Text('منو اصغری',
+                  style: TextStyle(fontSize: 40, fontWeight: FontWeight.bold)),
               const SizedBox(height: 8),
-              const Text(
-                'اسمت رو بنویس و بیا تو',
-                style: TextStyle(color: Colors.grey),
-              ),
+              const Text('اسمت رو بنویس و بیا تو',
+                  style: TextStyle(color: Colors.grey)),
               const SizedBox(height: 32),
               TextField(
                 controller: _nameController,
@@ -197,9 +175,6 @@ class _LoginScreenState extends State<LoginScreen> {
   }
 }
 
-// ============================================================
-// 🏠 صفحه فید
-// ============================================================
 class FeedScreen extends StatefulWidget {
   const FeedScreen({super.key});
 
@@ -300,10 +275,7 @@ class _FeedScreenState extends State<FeedScreen> {
               );
             },
           ),
-          IconButton(
-            icon: const Icon(Icons.refresh),
-            onPressed: _loadPosts,
-          ),
+          IconButton(icon: const Icon(Icons.refresh), onPressed: _loadPosts),
         ],
       ),
       body: Column(
@@ -324,10 +296,7 @@ class _FeedScreenState extends State<FeedScreen> {
                   ),
                 ),
                 const SizedBox(width: 8),
-                ElevatedButton(
-                  onPressed: _addPost,
-                  child: const Text('بفرست'),
-                ),
+                ElevatedButton(onPressed: _addPost, child: const Text('بفرست')),
               ],
             ),
           ),
@@ -350,17 +319,14 @@ class _FeedScreenState extends State<FeedScreen> {
                               child: Padding(
                                 padding: const EdgeInsets.all(12),
                                 child: Column(
-                                  crossAxisAlignment:
-                                      CrossAxisAlignment.start,
+                                  crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
                                     Row(
                                       children: [
                                         CircleAvatar(
-                                          child: Text(
-                                            p.authorName.isNotEmpty
-                                                ? p.authorName[0]
-                                                : '?',
-                                          ),
+                                          child: Text(p.authorName.isNotEmpty
+                                              ? p.authorName[0]
+                                              : '?'),
                                         ),
                                         const SizedBox(width: 8),
                                         Expanded(
@@ -368,15 +334,12 @@ class _FeedScreenState extends State<FeedScreen> {
                                             crossAxisAlignment:
                                                 CrossAxisAlignment.start,
                                             children: [
+                                              Text(p.authorName,
+                                                  style: const TextStyle(
+                                                      fontWeight:
+                                                          FontWeight.bold)),
                                               Text(
-                                                p.authorName,
-                                                style: const TextStyle(
-                                                    fontWeight:
-                                                        FontWeight.bold),
-                                              ),
-                                              Text(
-                                                DateFormat(
-                                                        'yyyy/MM/dd - HH:mm')
+                                                DateFormat('yyyy/MM/dd - HH:mm')
                                                     .format(
                                                         p.createdAt.toLocal()),
                                                 style: const TextStyle(
@@ -396,14 +359,12 @@ class _FeedScreenState extends State<FeedScreen> {
                                     ),
                                     const SizedBox(height: 8),
                                     Text(p.text,
-                                        style:
-                                            const TextStyle(fontSize: 16)),
+                                        style: const TextStyle(fontSize: 16)),
                                     const SizedBox(height: 8),
                                     Row(
                                       children: [
                                         IconButton(
-                                          icon: const Icon(
-                                              Icons.favorite_border,
+                                          icon: const Icon(Icons.favorite_border,
                                               color: Colors.red),
                                           onPressed: () => _likePost(p),
                                         ),
@@ -424,9 +385,6 @@ class _FeedScreenState extends State<FeedScreen> {
   }
 }
 
-// ============================================================
-// 👤 صفحه پروفایل
-// ============================================================
 class ProfileScreen extends StatefulWidget {
   final String name;
   const ProfileScreen({super.key, required this.name});
@@ -478,10 +436,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
       appBar: AppBar(
         title: const Text('پروفایل'),
         actions: [
-          IconButton(
-            icon: const Icon(Icons.logout),
-            onPressed: _logout,
-          ),
+          IconButton(icon: const Icon(Icons.logout), onPressed: _logout),
         ],
       ),
       body: _loading
@@ -490,16 +445,11 @@ class _ProfileScreenState extends State<ProfileScreen> {
               padding: const EdgeInsets.all(24),
               child: Column(
                 children: [
-                  const CircleAvatar(
-                    radius: 50,
-                    child: Icon(Icons.person, size: 50),
-                  ),
+                  const CircleAvatar(radius: 50, child: Icon(Icons.person, size: 50)),
                   const SizedBox(height: 16),
-                  Text(
-                    widget.name,
-                    style: const TextStyle(
-                        fontSize: 24, fontWeight: FontWeight.bold),
-                  ),
+                  Text(widget.name,
+                      style: const TextStyle(
+                          fontSize: 24, fontWeight: FontWeight.bold)),
                   const SizedBox(height: 16),
                   Card(
                     child: ListTile(
